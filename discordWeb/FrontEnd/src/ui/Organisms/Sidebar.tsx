@@ -127,7 +127,7 @@ function DirectMessagesSideBar() {
     <>
       <div
         style={{ width: sidebarWidth }}
-        className=" relative flex flex-col items-center  text-amber-50 border-r-1 border-transparent text-center"
+        className=" relative flex flex-col items-center  text-amber-50 border-r border-transparent text-center"
       >
         <UserPanel />
         {/*Server adı ve özellikleri partı*/}
@@ -143,7 +143,7 @@ function DirectMessagesSideBar() {
               {/* İçterki daha ufak div */}
               <div
                 ref={dropdownRef}
-                className={`isServerSideBarTrue-dropdown-subdiv relative  border-b-1 border-[#1C1C1E] px-2 cursor-pointer h-12  w-[95%]  flex justify-between mx-auto items-center  
+                className={`isServerSideBarTrue-dropdown-subdiv relative  border-b border-[#1C1C1E] px-2 cursor-pointer h-12  w-[95%]  flex justify-between mx-auto items-center  
               `}
                 onClick={() => {
                   setIsOpen(!isOpen);
@@ -171,7 +171,7 @@ function DirectMessagesSideBar() {
                     <MdOutlineDiamond />
                   </div>
                   {/* ara bölücü uzun çizgi */}
-                  <div className="long-line border-b-1 border-[#303035] mt-2 mb-2"></div>
+                  <div className="long-line border-b border-[#303035] mt-2 mb-2"></div>
                   <div className="container flex items-center justify-between hover:bg-[#303035] cursor-pointer rounded-md py-2 px-2">
                     <p>İnsanları Davet Et</p>
                     <FaUserFriends />
@@ -198,7 +198,7 @@ function DirectMessagesSideBar() {
                     <p>Uygulama Dizini</p>
                     <MdOutlineWidgets />
                   </div>
-                  <div className="long-line border-b-1 border-[#303035] mt-2 mb-2"></div>
+                  <div className="long-line border-b border-[#303035] mt-2 mb-2"></div>
 
                   <div className="container flex items-center justify-between hover:bg-[#303035] cursor-pointer rounded-md py-2 px-2">
                     {" "}
@@ -224,7 +224,7 @@ function DirectMessagesSideBar() {
                     <p className=" ">Sust. Kanalları Gizle</p>
                   </div>
                   {/* bu server name altındaki uzun çizgi. */}
-                  <div className="long-line border-b-1 border-[#303035] mt-2 mb-2"></div>
+                  <div className="long-line border-b border-[#303035] mt-2 mb-2"></div>
                   <div className="container flex items-center justify-between hover:bg-[#34282D] cursor-pointer rounded-md py-2 px-2">
                     <p className=" text-red-500 ">Sunucudan Ayrıl</p>
                     <ImExit className="text-red-500" />
@@ -251,7 +251,7 @@ function DirectMessagesSideBar() {
           </div>
         ) : (
           /* Sohbet bul butonu*/
-          <div className="SOHBET-BUTONU flex flex-col  h-12   items-center w-full pb-1 pt-1 mx-auto border-b-1 border-[#1C1C1E] ">
+          <div className="SOHBET-BUTONU flex flex-col  h-12   items-center w-full pb-1 pt-1 mx-auto border-b border-[#1C1C1E] ">
             <button
               onClick={() => setOpenFindFriends(true)}
               className="bg-[#2C2C30] h-full rounded-xl w-[95%]  pt-2 pb-2 hover:bg-[#404040] hover:cursor-pointer transition-all "
@@ -261,7 +261,7 @@ function DirectMessagesSideBar() {
               </span>
             </button>
             {/* seçenekler kısmı */}
-            <div className="pb-2 w-full border-b-1  border-[#212124]">
+            <div className="pb-2 w-full border-b  border-[#212124]">
               {iconsAndTitles.map(({ Icon, title, route }, index) => (
                 <IconButton
                   key={index}

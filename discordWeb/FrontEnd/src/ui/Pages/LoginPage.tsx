@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import type { BadRequest, LoginResponse } from "../../types/types";
+import type { BadRequest, User} from "../../types/types";
 import { AppContext } from "../../context/userProvider";
 
 function DiscordLogin() {
@@ -12,7 +12,7 @@ function DiscordLogin() {
   if (!ctx) {
     return null;
   }
-  const setUser = ctx.setUser;
+  const { setUserInfo, setJwtToken } = ctx;
   async function handleLogin(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
 
@@ -34,12 +34,14 @@ function DiscordLogin() {
         return;
       }
 
-      // Başarılı olduysa
-      const data: LoginResponse = await res.json();
+      const data: User = await res.json();
+
       console.log("Register success:", data);
-      if (data.token) setUser(data.token); // Giriş sonrası
+      setUserInfo(data); // Kullanıcnın bilgileirni context'e koyuyor burası
+      console.log("login olduktan sonra user : ", data);
+      if (data.token) setJwtToken(data.token); // Bu localeStoreage'a jwt token bilgisini atyor.
       toast.success("Başarıyla giriş yapıldı");
-      navigate("/friends"); // İstersen ekle
+      navigate("/friends");
     } catch (error) {
       console.error("Network error:", error);
       toast.error("Sunucuya bağlanırken hata oluştu.");
@@ -93,7 +95,7 @@ function DiscordLogin() {
             />
           </div>
 
-          <a  className="text-blue-400 text-sm hover:underline">
+          <a className="text-blue-400 text-sm hover:underline">
             Forgot your password?
           </a>
 

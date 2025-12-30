@@ -1,37 +1,55 @@
 // UserPanel.tsx
 import { useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import tuta from "../../assets/Tuta.png"; // kendi dosyana göre değiştir
+import tuta from "../../assets/Tuta.png";
 import { FaMicrophone, FaHeadphones } from "react-icons/fa";
 import { AppContext } from "../../context/userProvider";
 import { IoIosSettings } from "react-icons/io";
+import { fetchUser } from "../../helpers/helpers";
+import type { User } from "../../types/types";
 
 function UserPanel() {
   const [mounted, setMounted] = useState(false);
   const [root, setRoot] = useState<HTMLElement | null>(null);
+
   const ctx = useContext(AppContext);
-  if (!ctx) return null;
-  const { sidebarWidth } = ctx;
+  const { sidebarWidth, jwtToken, setUserInfo, userInfo } = ctx;
+  // ✅ TÜM HOOK'LAR KOŞULSUZ OLMALI
   useEffect(() => {
     setMounted(true);
     setRoot(document.getElementById("root"));
   }, []);
-  console.log("sidebarwith", sidebarWidth);
-  if (!mounted || !root) return null;
-  // w-63 min    w-118 max
+
+  useEffect(() => {
+    if (!jwtToken) return;
+
+    const loadUser = async () => {
+      const userinfosu = await fetchUser(jwtToken);
+      setUserInfo(userinfosu);
+    };
+
+    loadUser();
+  }, [jwtToken]);
+
+  // ✅ Early return HOOK'LARDAN SONRA
+  if (!ctx || !mounted || !root) {
+    return null;
+  }
+  console.log(" User info : ", userInfo);
+
   return createPortal(
     <div
       style={{ width: sidebarWidth + 60 }}
-      className={`absolute text-white flex items-center justify-between ml-2 rounded-xl bottom-2  h-16   bg-[#202024]`}
+      className={`absolute text-white flex items-center justify-between ml-2 rounded-xl bottom-2 h-16 bg-[#202024]`}
     >
       {/* Sol kısım */}
-      <div className="flex flex-1  mx-2 h-10 hover:bg-[#323238] cursor-pointer transition-all rounded-xl items-center">
-        <img src={tuta} alt="tuta" className="  w-8 rounded mx-2" />
+      <div className="flex flex-1 mx-2 h-10 hover:bg-[#323238] cursor-pointer transition-all rounded-xl items-center">
+        <img src={tuta} alt="tuta" className="w-8 rounded mx-2" />
 
         {/* Orta kısım */}
         <div className="username-and-description flex flex-col justify-center leading-tight text-left min-w-0 h-8">
-          <h3 className="username text-sm truncate">Tuta Montana</h3>
-          <span className="text-xs truncate">açıklama</span>
+          <h3 className="username text-sm truncate">{userInfo?.user_name}</h3>
+          <span className="text-xs truncate">Açıklama</span>
         </div>
       </div>
 
@@ -53,4 +71,5 @@ function UserPanel() {
     root
   );
 }
+
 export default UserPanel;

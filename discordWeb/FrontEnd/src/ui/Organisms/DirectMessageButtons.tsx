@@ -1,10 +1,10 @@
-import type { User } from "../../types/types";
+import type { directMessageButton, User } from "../../types/types";
 import DirectMessageButton from "../Molecules/userButton";
 
 
 
 type SideBarButtonsProps = {
-  users: User[];
+  users: directMessageButton[];
 };
 function DirectMessageButtons({ users }: SideBarButtonsProps) {
   return (
