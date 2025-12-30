@@ -1,5 +1,5 @@
 public class LoginRequest
 {
-    public string email { get; set; }
-    public string password { get; set; }
+    public string Email { get; set; } = null!;
+    public string Password { get; set; } =null! ;
 }

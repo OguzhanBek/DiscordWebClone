@@ -24,9 +24,9 @@ export default function DiscordSignup() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
-          password,
-          user_name,
+          Email: email,
+          Password: password,
+          UserName: user_name,
         }),
       });
 
@@ -43,7 +43,7 @@ export default function DiscordSignup() {
       console.log("Register success:", data);
       if (data.token) setUser(data.token); // Giriş sonrası
       toast.success("Başarıyla giriş yapıldı");
-      navigate("/friends"); 
+      navigate("/friends");
     } catch (error) {
       console.error("Network error:", error);
       toast.error("Sunucuya bağlanırken hata oluştu.");
@@ -151,7 +151,7 @@ export default function DiscordSignup() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded transition-colors"
+            className="w-full cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded transition-colors"
           >
             Create Account
           </button>

@@ -1,7 +1,7 @@
 import { IoMdClose } from "react-icons/io";
-import type { User } from "../../types/types";
+import type { directMessageButton, User } from "../../types/types";
 
-function DirectMessageButton({ userName, userPhoto }: User) {
+function DirectMessageButton({ userName, userPhoto }: directMessageButton) {
   return (
     <div className="SEÇENEKLER-VE-DİREKT-MESAJLAR relative flex flex-col items-center  m-auto justify-center mt-2  ">
       <button className="flex gap-2 h-8  items-center bg-[#121214] rounded-xl w-[95%] pt-6 pb-6 hover:bg-[#1C1C1E] hover:cursor-pointer active:bg-[#2C2C30] group hover:text-white">

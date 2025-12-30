@@ -9,9 +9,9 @@ function AppContent() {
   const ctx = useContext(AppContext);
   if (!ctx) return null;
 
-  const user = ctx.user;
+  const jwtToken = ctx.jwtToken;
 
-  return user ? (
+  return jwtToken ? (
     <RouterProvider key="main" router={router} />
   ) : (
     <RouterProvider key="login" router={loginRouter} />

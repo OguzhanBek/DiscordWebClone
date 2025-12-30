@@ -7,6 +7,7 @@ import AddFriendPage from "./AddFriendPage";
 
 import FriendsNavbar from "../Molecules/FriendsPageComponents/FriendsNavbar";
 import { useLocation } from "react-router-dom";
+import FriendRequest from "../Molecules/FriendRequest";
 
 function FriendsPage() {
   const [friendsInfo, _setFriendsInfo] = useState([
@@ -38,20 +39,19 @@ function FriendsPage() {
   ]);
   const ctx = useContext(AppContext);
   if (!ctx) return null;
-  const { selectedNavbarButton } = ctx;
-
+  const { selectedNavbarButton, friendRequests, friendList } = ctx;
   const location = useLocation();
 
   return (
     <>
       <FriendsNavbar />
-      {location.pathname === "/friends" ||location.pathname === "/" ? (
+      {location.pathname === "/friends" || location.pathname === "/" ? (
         selectedNavbarButton.toLowerCase().trim() !== "arkadaş ekle" ? (
           //Navbarın aşağısı burası. Main kısmı.
           <div className="flex-1  bg-[#1A1A1E] custom-scrollbar ">
             <div className="w-[95%] mx-auto">
               {/* searchbar kısmı */}
-              <div className=" bg-[#1A1A1E] w-full border-t-1  border-[#2d2d30] ">
+              <div className=" bg-[#1A1A1E] w-full border-t  border-[#2d2d30] ">
                 <div className=" rounded-xl m-auto bg-[#101013] focus-within:border-[#5197ED] border-[#50506d] border flex items-center px-2 mt-2 mb-2">
                   <input
                     type="text"
@@ -74,43 +74,41 @@ function FriendsPage() {
                     : ""}
                 </p>
                 <div className="custom-scrollbar  h-[calc(100vh-200px)]">
-                  {selectedNavbarButton === "tümü"
-                    ? friendsInfo.map(
-                        ({ userPhoto, userName, onlineStatus }, index) => (
-                          <FriendsButton
-                            key={index}
-                            userName={userName}
-                            userPhoto={userPhoto}
-                            onlineStatus={onlineStatus}
-                          />
-                        )
+                  {selectedNavbarButton === "tümü" ? (
+                    friendList?.map(({ userName }, index) => (
+                      <FriendsButton
+                        key={index}
+                        userName={userName}
+                        userPhoto={tuta}
+                        onlineStatus={"porno"}
+                      />
+                    ))
+                  ) : selectedNavbarButton === "arkadaş ekle" ? (
+                    // BURAYI DÜZENLEMEYİ UNUTMA !!!
+                    friendsInfo.map(
+                      ({ userPhoto, userName, onlineStatus }, index) => (
+                        <FriendsButton
+                          key={index}
+                          userName={userName}
+                          userPhoto={userPhoto}
+                          onlineStatus={onlineStatus}
+                        />
                       )
-                    : selectedNavbarButton === "arkadaş ekle"
-                    ? // BURAYI DÜZENLEMEYİ UNUTMA !!!
-                      friendsInfo.map(
-                        ({ userPhoto, userName, onlineStatus }, index) => (
-                          <FriendsButton
-                            key={index}
-                            userName={userName}
-                            userPhoto={userPhoto}
-                            onlineStatus={onlineStatus}
-                          />
-                        )
-                      )
-                    : friendsInfo
-                        .filter(
-                          (friendsInfo) =>
-                            selectedNavbarButton.toLowerCase().trim() ===
-                            friendsInfo.onlineStatus.toLowerCase().trim()
-                        )
-                        .map(({ userPhoto, userName, onlineStatus }, index) => (
-                          <FriendsButton
-                            key={index}
-                            userName={userName}
-                            userPhoto={userPhoto}
-                            onlineStatus={onlineStatus}
-                          />
-                        ))}
+                    )
+                  ) : selectedNavbarButton === "bekleyen" ? (
+                    <div className="flex flex-col gap-2">
+                      {friendRequests.map((request, index: number) => (
+                        <FriendRequest
+                          key={index}
+                          otherPersonName={request.otherPersonName}
+                          isSentByMe={request.isSentByMe}
+                          userPhoto={tuta}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
             </div>

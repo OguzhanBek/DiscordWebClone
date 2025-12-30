@@ -1,7 +1,6 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoChatbubble } from "react-icons/io5";
-import IconWithDownSideHoverText from "./IconWithDownSideHoverText";
-import IconWithUpSideHoverText from "./IconWithHoverText";
+
 
 function FriendsButton({
   userPhoto,
