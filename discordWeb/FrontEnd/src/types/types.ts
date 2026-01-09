@@ -37,6 +37,7 @@ export type AppContextType = {
   sidebarWidth: number;
   setSidebarWidth: React.Dispatch<React.SetStateAction<number>>;
   getFriendList: () => Promise<void>;
+  getFriendRequests: () => Promise<void>;
 };
 
 export type TopSideTitle = {

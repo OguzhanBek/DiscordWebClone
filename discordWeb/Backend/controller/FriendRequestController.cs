@@ -134,7 +134,7 @@ public class FriendRequestController : ControllerBase
         return Ok(dtoList);
     }
 
-    [Authorize]
+
     [HttpPost("accept")]
     public async Task<IActionResult> AcceptFriendRequest([FromBody] AcceptFriendRequestDto request) // sadece sender name alıyorum.
     {
@@ -146,7 +146,7 @@ public class FriendRequestController : ControllerBase
             return BadRequest("Request body boş.");
         }
 
-        Console.WriteLine($"SenderName from body: '{request.SenderName}'");
+        Console.WriteLine($"SenderName from body: '{request.OtherPersonName}'");
 
         // JWT'den user id
         var userIdFromToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -173,11 +173,11 @@ public class FriendRequestController : ControllerBase
 
         // Sender
         var sender = await _dbContext.Users
-            .FirstOrDefaultAsync(u => u.UserName == request.SenderName);
+            .FirstOrDefaultAsync(u => u.UserName == request.OtherPersonName);
 
         if (sender == null)
         {
-            Console.WriteLine($"ERROR: Sender not found with username: {request.SenderName}");
+            Console.WriteLine($"ERROR: Sender not found with username: {request.OtherPersonName}");
             return NotFound("İsteği gönderen kullanıcı bulunamadı.");
         }
 
