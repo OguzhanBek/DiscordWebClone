@@ -7,6 +7,7 @@ import type {
   User,
 } from "../types/types";
 import { FaDiscord } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 export const AppContext = createContext<AppContextType | null>(null);
 
@@ -41,16 +42,13 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const getFriendList = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:5200/api/friend/list`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        }
-      );
+      const response = await fetch(`http://localhost:5200/api/friend/list`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
 
       if (!response.ok) {
         console.error("Friend list fetch failed");
@@ -62,6 +60,41 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
       console.log("Friend List: ", data);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const getFriendRequests = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      const response = await fetch(
+        "http://localhost:5200/api/friendrequest/check",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        console.log("response", response);
+        const data = await response.json();
+        console.log("data", data);
+        setFriendRequests(data);
+        return;
+      }
+
+      const message = await response.text();
+
+      if (response.status === 404) {
+        setFriendRequests([]); // listeyi temizle
+        toast.info(message); // "Arkadaşlık isteği yok."
+      } else {
+        toast.error(message);
+      }
+    } catch (error: any) {
+      toast.error("Sunucuya bağlanılamadı");
+      console.error(error);
     }
   };
 
@@ -85,6 +118,7 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
         sidebarWidth,
         setSidebarWidth,
         getFriendList,
+        getFriendRequests
       }}
     >
       {children}

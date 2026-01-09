@@ -8,14 +8,16 @@ function FriendRequest({
   userPhoto,
   otherPersonName,
   isSentByMe,
+  requestId,
 }: {
   userPhoto: string;
   otherPersonName: string;
   isSentByMe: boolean;
+  requestId: number;
 }) {
   const context = useContext(AppContext);
   if (!context) return null;
-  const { jwtToken, getFriendList } = context;
+  const { jwtToken, getFriendList, setFriendRequests, friendRequests } = context;
 
   const acceptFriendRequest = async () => {
     try {
@@ -40,7 +42,6 @@ function FriendRequest({
       console.log("Response status:", response.status);
 
       if (!response.ok) {
-        // Text olarak oku, sonra parse et
         const errorText = await response.text();
         console.error("Error response:", errorText);
 
@@ -57,6 +58,12 @@ function FriendRequest({
       console.log("Success response:", result);
 
       toast.success("Arkadaşlık isteği kabul edildi.");
+
+      // State'ten bu isteği requestId ile kaldır
+      const updatedRequests = friendRequests.filter(
+        (req: any) => req.requestId !== requestId
+      );
+      setFriendRequests(updatedRequests);
 
       // Arkadaş listesini yenile
       await getFriendList();
@@ -88,13 +95,15 @@ function FriendRequest({
         return;
       }
 
-      // Başarılı response'dan mesajı al
-      const data = await response.text(); // veya response.json() kullanabilirsin
-
+      const data = await response.text();
       toast.success(data);
 
-      // Friend requests listesini yenile
-      // Bu fonksiyonu context'e eklemen gerekebilir
+      // State'ten bu isteği requestId ile kaldır
+      const updatedRequests = friendRequests.filter(
+        (req: any) => req.requestId !== requestId
+      );
+      setFriendRequests(updatedRequests);
+      
     } catch (err) {
       console.error(err);
       toast.error("Sunucuya bağlanılamadı.");
@@ -122,7 +131,9 @@ function FriendRequest({
           " "
         ) : (
           <div
-            onClick={acceptFriendRequest}
+            onClick={() => {
+              acceptFriendRequest();
+            }}
             className="relative group/icon hover:text-green-500 cursor-pointer"
           >
             <TiTickOutline size={24} />
@@ -130,7 +141,9 @@ function FriendRequest({
         )}
 
         <div
-          onClick={rejectFriendRequest}
+          onClick={() => {
+            rejectFriendRequest();
+          }}
           className="relative group/icon hover:text-red-500 cursor-pointer"
         >
           <RxCross2 size={24} />

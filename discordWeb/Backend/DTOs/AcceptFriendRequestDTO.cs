@@ -2,7 +2,7 @@ namespace MyApi.DTOs.User
 {
             public class AcceptFriendRequestDto
             {
-                        public string SenderName { get; set; } = null!;
+                        public string OtherPersonName { get; set; } = null!;
 
             }
 }

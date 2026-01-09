@@ -68,9 +68,9 @@ function FriendsPage() {
                   {selectedNavbarButton === "çevrim içi"
                     ? "Çevrim içi -- 2 "
                     : selectedNavbarButton === "bekleyen"
-                    ? "Bekleyen -- 1 "
+                    ? `Bekleyen -- ${friendRequests?.length || 0}`
                     : selectedNavbarButton === "tümü"
-                    ? "Tüm-arkadaşlar -- 5 "
+                    ? `Tüm arkadaşlar -- ${friendList?.length} `
                     : ""}
                 </p>
                 <div className="custom-scrollbar  h-[calc(100vh-200px)]">
@@ -97,11 +97,12 @@ function FriendsPage() {
                     )
                   ) : selectedNavbarButton === "bekleyen" ? (
                     <div className="flex flex-col gap-2">
-                      {friendRequests.map((request, index: number) => (
+                      {friendRequests.map((request) => (
                         <FriendRequest
-                          key={index}
+                          key={request.requestId} 
                           otherPersonName={request.otherPersonName}
                           isSentByMe={request.isSentByMe}
+                          requestId={request.requestId} 
                           userPhoto={tuta}
                         />
                       ))}

@@ -6,8 +6,8 @@ function AddFriendPage() {
   const [input, setInput] = useState("");
   const context = useContext(AppContext);
   if (!context) return null;
-
-  const token = context.jwtToken;
+  const { jwtToken, getFriendRequests } =
+    context;
 
   const sendFriendRequest = async () => {
     if (!input.trim()) {
@@ -15,7 +15,7 @@ function AddFriendPage() {
       return;
     }
 
-    if (!token) {
+    if (!jwtToken) {
       toast.error("Token bulunamadı.");
       return;
     }
@@ -27,28 +27,32 @@ function AddFriendPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${jwtToken}`,
           },
           body: JSON.stringify({
-            SenderId: token,
+            SenderId: jwtToken,
             ReceiverName: input.trim(),
           }),
         }
       );
 
       if (!response.ok) {
-        const errorText = await response.json();
+        const errorText = await response.text(); // json yerine text
         toast.error(errorText);
         return;
       }
+
+      // Yeni isteği manuel olarak ekle
+
+      await getFriendRequests();
       setInput("");
       toast.success("Arkadaşlık isteği başarıyla gönderildi.");
     } catch (err) {
-      console.error(err);
-      toast.error("Sunucuya bağlanılamadı.");
+      console.error("Hata detayı:", err);
+      toast.error("Arkadaşlık isteği gönderilemedi");
     }
   };
-
+  //Yukarıdaki fonksiyonu adam etmek için bir de backend'e istek yollamak elzemdir.
   return (
     <div className=" w-full  mx-auto border-b-2 border-solid border-[#28282D] bg-[#1A1A1E]">
       <div className=" w-[95%] mx-auto mb-4 mt-4">
