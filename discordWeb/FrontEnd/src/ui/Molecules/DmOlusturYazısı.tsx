@@ -1,22 +1,33 @@
+import { useContext } from "react";
 import { grayBackground } from "../../Colors";
-{
-  /* Bunu ismini güncellemek lazım . sidebar'da direkt mesaj yazan kısımı oluşturuyor ama fonkisyonel oldu artık. Yeni isim bul. */
-}
+import { AppContext } from "../../context/userProvider";
+
 function DmOlusturYazısı({
   text,
 }: {
   text: string;
   beforeContentText: string;
 }) {
+  const ctx = useContext(AppContext);
+  if (!ctx) return null;
+  const { setOpenCreateDmModal, openCreateDmModal } = ctx;
+
   return (
-    <div className=" Dm-Olustur-Yazısı  flex items-center w-[85%] m-auto justify-between mt-2 hover:text-white group">
+    <div className=" Dm-Olustur-Yazısı  flex items-center  w-[85%] m-auto justify-between mt-2  hover:text-white group">
       <p className="text-sm text-gray-400 hover:cursor-default select-none group-hover:text-white">
         {text}
       </p>
 
       <span className="DM-Olustur-Before-Context  gap-1  ">
         <span className="relative group/item  ">
-          <span className="hover:cursor-pointer text-lg text-gray-400 ">+</span>
+          <span
+            onClick={() => {
+              setOpenCreateDmModal(!openCreateDmModal);
+            }}
+            className="hover:cursor-pointer text-lg text-gray-400 "
+          >
+            +
+          </span>
           {/* Her item'ın kendi tooltip'i */}
           <span
             style={{ backgroundColor: grayBackground }}
@@ -26,10 +37,6 @@ function DmOlusturYazısı({
           </span>
         </span>
       </span>
-
-      {/* <DmOlusturBeforeContent
-        items={[{ content: "+", tooltipText: beforeContentText }]}
-      /> */}
     </div>
   );
 }

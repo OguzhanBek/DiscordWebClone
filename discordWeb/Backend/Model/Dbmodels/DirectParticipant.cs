@@ -1,21 +1,23 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Numerics;
 
 namespace LoginAPI.Models
 {
+    [Table("DirectParticipant")]
     public class DirectParticipant
     {
         [Key]
+        [Column("id")]
+        public string Id { get; set; } = Guid.NewGuid().ToString(); // ✅ Default değer
+
         [Column("conversation_id")]
-        public int ConversationId { get; set; }
+        public string ConversationId { get; set; } = null!;
 
         [Required]
         [Column("user_id")]
-        public long UserId { get; set; }
+        public string UserId { get; set; } = null!;
 
-        [Required]
         [Column("joined_at")]
-        public DateTime JoinedAt { get; set; }
+        public DateTime JoinedAt { get; set; } = DateTime.UtcNow; // ✅ Default değer
     }
 }

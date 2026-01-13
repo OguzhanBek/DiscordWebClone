@@ -50,7 +50,7 @@ public class FriendController : ControllerBase
             .Where(u => friendIds.Contains(u.UserId))
             .Select(u => new
             {
-                u.UserId,
+                friendId = u.UserId,
                 u.UserName,
                 u.Email,
             })

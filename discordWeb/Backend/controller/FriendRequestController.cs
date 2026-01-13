@@ -20,6 +20,7 @@ public class FriendRequestController : ControllerBase
     }
 
     // Arkadaşlık isteği gönderme
+    [Authorize]
     [HttpPost("send")]
     public async Task<IActionResult> SendFriendRequest([FromBody] AddFriendRequestDto request)
     {
@@ -41,24 +42,11 @@ public class FriendRequestController : ControllerBase
             return BadRequest("Sender and receiver cannot be the same user.");
 
         // Receiver kullanıcısını kontrol et
-        var receiverExists = await _dbContext.Users
-            .AnyAsync(u => u.UserName == request.ReceiverName);
+        var receiver = await _dbContext.Users
+            .FirstOrDefaultAsync(u => u.UserName == request.ReceiverName);
 
-        if (!receiverExists)
-            return NotFound("Receiver not found.");
-        var receiver = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.ReceiverName);
         if (receiver == null)
-        {
-            return NotFound("Kullanıcı bulunamadı");
-        }
-
-        // Daha önce arkadaşlık isteği gönderilmiş mi kontrol et
-        var existingRequest = await _dbContext.FriendRequests
-            .AnyAsync(f => f.SenderName == sender.UserName &&
-                          f.ReceiverName == request.ReceiverName);
-
-        if (existingRequest)
-            return BadRequest("Friend request already sent.");
+            return NotFound("Receiver not found.");
 
         // Zaten arkadaş mı kontrol et (her iki yönü de kontrol et)
         var isFriend = await _dbContext.Friends.AnyAsync(f =>
@@ -68,6 +56,15 @@ public class FriendRequestController : ControllerBase
 
         if (isFriend)
             return BadRequest("You are already friends with this user.");
+
+        var existingRequest = await _dbContext.FriendRequests
+            .AnyAsync(f =>
+                (f.SenderName == sender.UserName && f.ReceiverName == request.ReceiverName) ||
+                (f.SenderName == request.ReceiverName && f.ReceiverName == sender.UserName)
+            );
+
+        if (existingRequest)
+            return BadRequest("Friend request already exists between these users.");
 
         // Yeni arkadaşlık isteği oluştur
         var friendRequest = new AddFriend
@@ -84,7 +81,7 @@ public class FriendRequestController : ControllerBase
         return Ok("Friend request sent.");
     }
 
-    // Kullanıcının bekleyen arkadaşlık isteklerini getirir
+    [Authorize]
     [HttpGet("check")]
     public async Task<IActionResult> CheckFriendRequests()
     {
@@ -111,7 +108,6 @@ public class FriendRequestController : ControllerBase
             .ToListAsync();
 
         Console.WriteLine($"Found Requests Count: {requests.Count}");
-
         if (requests.Count == 0)
         {
             return Ok(new List<CheckFriendRequestDto>());
@@ -119,13 +115,9 @@ public class FriendRequestController : ControllerBase
 
         var dtoList = requests.Select(r => new CheckFriendRequestDto
         {
-            // Eğer ben gönderdim ise karşı tarafın adını (ReceiverName)
-            // Eğer bana gönderildi ise gönderenin adını (SenderName) al
             OtherPersonName = r.SenderName == currentUserName ? r.ReceiverName : r.SenderName,
-
-            // Ben mi gönderdim yoksa bana mı gönderildi?
+            senderId = r.SenderId,
             IsSentByMe = r.SenderName == currentUserName,
-
             RequestId = r.Id
         }).ToList();
 
@@ -234,8 +226,6 @@ public class FriendRequestController : ControllerBase
 
         Console.WriteLine("=== Accept Friend Request Completed ===");
 
-
-
         return Ok("Arkadaşlık isteği kabul edildi.");
 
     }
@@ -319,6 +309,6 @@ public class FriendRequestController : ControllerBase
             ? "Arkadaşlık isteği geri çekildi."
             : "Arkadaşlık isteği reddedildi.";
 
-        return Ok(new { message = message });
+        return Ok(new { message });
     }
 }

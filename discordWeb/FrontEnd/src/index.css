@@ -1,1 +1,35 @@
 @import "tailwindcss";
+
+/* Discord benzeri scrollbar */
+.discord-scrollbar {
+  scrollbar-width: thin;               /* Firefox */
+  scrollbar-color: #3f4147 transparent;
+}
+
+/* Chrome / Edge / Safari */
+.discord-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.discord-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.discord-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #3f4147;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Hover efekti */
+.discord-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #5a5c63;
+}
+.discord-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(79, 84, 92, 0.4);
+}
+
+.discord-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(79, 84, 92, 0.8);
+}

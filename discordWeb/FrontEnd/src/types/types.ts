@@ -15,8 +15,12 @@ export type friendReuestType = {
 export type FriendType = {
   userName: string;
   email: string;
+  userId: string;
+  friendId: string;
 };
 export type AppContextType = {
+  dmFriendName: string;
+  setDmFriendName: React.Dispatch<React.SetStateAction<string>>;
   userInfo: User | null;
   setUserInfo: React.Dispatch<React.SetStateAction<User | null>>;
   friendRequests: friendReuestType[];
@@ -33,7 +37,8 @@ export type AppContextType = {
 
   selectedNavbarElement: string;
   setSelectedNavbarElement: React.Dispatch<React.SetStateAction<string>>;
-
+  openCreateDmModal: boolean;
+  setOpenCreateDmModal: React.Dispatch<React.SetStateAction<boolean>>;
   sidebarWidth: number;
   setSidebarWidth: React.Dispatch<React.SetStateAction<number>>;
   getFriendList: () => Promise<void>;
@@ -95,6 +100,7 @@ export type User = {
 export type directMessageButton = {
   userPhoto: string;
   userName: string;
+  friendId: string;
 };
 export interface LoginResponse {
   success: boolean;
