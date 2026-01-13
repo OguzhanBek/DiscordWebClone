@@ -7,5 +7,6 @@ namespace MyApi.DTOs.User
         public bool IsSentByMe { get; set; }
 
         public int RequestId { get; set; }
+        public string senderId { get; set; } = null!;
     }
 }

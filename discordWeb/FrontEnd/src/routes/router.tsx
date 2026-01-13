@@ -7,6 +7,7 @@ import ServerPage from "../ui/Pages/ServerPage";
 import DiscordLogin from "../ui/Pages/LoginPage";
 import { createBrowserRouter } from "react-router-dom";
 import DiscordSignup from "../ui/Pages/SignUpPage";
+import DirectMessagePage from "../ui/Pages/DirectMessagePage";
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
       { path: "/store", element: <DiscordNitroPage /> },
       { path: "/shop", element: <DiscordStorePage /> },
       { path: "/channels/:id", element: <ServerPage /> },
+      { path: "/directMessage/:chatId", element: <DirectMessagePage /> },
     ],
   },
   {

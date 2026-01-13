@@ -1,10 +1,9 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import {  FaUserFriends } from "react-icons/fa";
+import { FaUserFriends } from "react-icons/fa";
 import { GiSpinningBlades } from "react-icons/gi";
 import { CiCirclePlus, CiShop } from "react-icons/ci";
-import tuta from "../../assets/Tuta.png";
 import IconButton from "../Molecules/ButtonWithIcon";
-import DirectMessageButtons from "./DirectMessageButtons";
+import DirectConversationItems from "./DirectConversationItems";
 import Transparentmodal from "../../model/Transparentmodal";
 import FindFriends from "../Molecules/FindFriends";
 import { RxCross1 } from "react-icons/rx";
@@ -25,6 +24,7 @@ import DmOlusturYazısı from "../Molecules/DmOlusturYazısı";
 import ServerMutliChannelButton from "../Molecules/ServerMutliChannelButton";
 import UserPanel from "./UserPanel";
 import { AppContext } from "../../context/userProvider";
+import CreateDMModal from "./CreateDMModal";
 
 function DirectMessagesSideBar() {
   const [iconsAndTitles] = useState([
@@ -33,48 +33,13 @@ function DirectMessagesSideBar() {
     { Icon: CiShop, title: "Mağaza", route: "/shop" },
   ]);
 
-  const [directMessageInfo, _setDirectMessageInfo] = useState([
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-    },
-  ]);
-
   const [openFindFriends, setOpenFindFriends] = useState(false);
+
   const [isOpen, setIsOpen] = useState(false);
   const ctx = useContext(AppContext);
   if (!ctx) return null;
-  const { sidebarWidth, setSidebarWidth } = ctx;
+  const { sidebarWidth, setSidebarWidth, openCreateDmModal, friendList } = ctx;
   const { pathname } = useLocation();
-
   const dropdownRef = useRef<HTMLDivElement>(null);
   const startX = useRef(0);
   const startWidth = useRef(sidebarWidth);
@@ -98,7 +63,7 @@ function DirectMessagesSideBar() {
       return;
     }
     setSidebarWidth(clampedWidth);
-    console.log("gebişlik değiştiriliyor");
+    console.log("genişlik değiştiriliyor");
   };
 
   const handleMouseUp = () => {
@@ -123,6 +88,7 @@ function DirectMessagesSideBar() {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
   return (
     <>
       <div
@@ -161,11 +127,11 @@ function DirectMessagesSideBar() {
               </div>
 
               <div
-                className={`dropdown-menu absolute w-[220px] rounded-md top-full left-1/2 -translate-x-1/2 mt-1 bg-[#28282D] z-100  ${
+                className={`dropdown-menu  absolute w-[220px] rounded-md top-full left-1/2 -translate-x-1/2 mt-1 bg-[#28282D] z-100  ${
                   isOpen ? "" : "hidden"
                 } `}
               >
-                <div className="w-[95%] mx-auto text-sm mt-2 mb-2">
+                <div className="w-[95%]  mx-auto text-sm mt-2 mb-2">
                   <div className="container flex items-center justify-between  hover:bg-[#303035]   cursor-pointer rounded-md py-2 px-2">
                     <p>Sunucu Takviyesi</p>
                     <MdOutlineDiamond />
@@ -214,7 +180,7 @@ function DirectMessagesSideBar() {
                   </div>
                   <div className="container flex items-center justify-between hover:bg-[#303035] cursor-pointer rounded-md py-2 px-2">
                     {" "}
-                    <p className="hov  truncate">
+                    <p className="  truncate">
                       Sunucu Başına Profilini özelleştir
                     </p>
                     <PiPencilSimpleDuotone />
@@ -254,7 +220,7 @@ function DirectMessagesSideBar() {
           <div className="SOHBET-BUTONU flex flex-col  h-12   items-center w-full pb-1 pt-1 mx-auto border-b border-[#1C1C1E] ">
             <button
               onClick={() => setOpenFindFriends(true)}
-              className="bg-[#2C2C30] h-full rounded-xl w-[95%]  pt-2 pb-2 hover:bg-[#404040] hover:cursor-pointer transition-all "
+              className="bg-[#1C1C1E] h-full rounded-xl w-[95%]  pt-2 pb-2 hover:bg-[#27272A] hover:cursor-pointer transition-all "
             >
               <span className="text-sm font-semibold">
                 Sohbet bul ya da başlat
@@ -272,14 +238,14 @@ function DirectMessagesSideBar() {
               ))}
             </div>
             {/* Direkt mesajlar kısmı */}
-
-            <div className="mb-4 w-full   ">
+            <div className="mb-4 w-full  " onClick={() => setIsOpen(false)}>
               <DmOlusturYazısı
                 text={"Direkt Mesaj"}
                 beforeContentText={"DM Oluştur"}
               />
-              <DirectMessageButtons users={directMessageInfo} />
+              <DirectConversationItems />
             </div>
+            {openCreateDmModal && <CreateDMModal />}
           </div>
         )}
       </div>
@@ -291,7 +257,7 @@ function DirectMessagesSideBar() {
 
       {openFindFriends && (
         <Transparentmodal setOpenFindFriends={setOpenFindFriends}>
-          <FindFriends />
+          <FindFriends friendList={friendList} setOpenFindFriends={setOpenFindFriends} />
         </Transparentmodal>
       )}
     </>

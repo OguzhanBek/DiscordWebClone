@@ -1,123 +1,148 @@
-import { IoSearchOutline } from "react-icons/io5";
 import { useContext, useState } from "react";
 import tuta from "../../assets/Tuta.png";
-import FriendsButton from "../Molecules/FriendsButton";
+import FriendListItem from "../Molecules/FriendListItem";
 import { AppContext } from "../../context/userProvider";
 import AddFriendPage from "./AddFriendPage";
-
 import FriendsNavbar from "../Molecules/FriendsPageComponents/FriendsNavbar";
 import { useLocation } from "react-router-dom";
 import FriendRequest from "../Molecules/FriendRequest";
 
 function FriendsPage() {
-  const [friendsInfo, _setFriendsInfo] = useState([
+  const [friendsInfo] = useState([
     {
       userPhoto: tuta,
       userName: "Tuta Montana",
       onlineStatus: "Porno izliyor",
+      friendId: "31",
     },
     {
       userPhoto: tuta,
       userName: "Tuta Montana",
       onlineStatus: "DUa ediyor",
+      friendId: "31",
     },
     {
       userPhoto: tuta,
       userName: "Tuta Montana",
       onlineStatus: "bekleyen",
+      friendId: "31",
     },
     {
       userPhoto: tuta,
       userName: "Tuta Montana",
       onlineStatus: "çevrim içi",
+      friendId: "31",
     },
     {
       userPhoto: tuta,
       userName: "Tuta Montana",
       onlineStatus: "çevrim içi",
+      friendId: "31",
     },
   ]);
+
+  const [input, setInput] = useState("");
   const ctx = useContext(AppContext);
   if (!ctx) return null;
-  const { selectedNavbarButton, friendRequests, friendList } = ctx;
-  const location = useLocation();
 
+  const { selectedNavbarButton, friendRequests, friendList } = ctx;
+  console.log(friendList?.map((id) => id.friendId));
+  const location = useLocation();
   return (
     <>
       <FriendsNavbar />
-      {location.pathname === "/friends" || location.pathname === "/" ? (
-        selectedNavbarButton.toLowerCase().trim() !== "arkadaş ekle" ? (
-          //Navbarın aşağısı burası. Main kısmı.
-          <div className="flex-1  bg-[#1A1A1E] custom-scrollbar ">
+
+      {(location.pathname === "/friends" || location.pathname === "/") &&
+        (selectedNavbarButton.toLowerCase().trim() !== "arkadaş ekle" ? (
+          <div className="flex-1 bg-[#1A1A1E] custom-scrollbar">
             <div className="w-[95%] mx-auto">
-              {/* searchbar kısmı */}
-              <div className=" bg-[#1A1A1E] w-full border-t  border-[#2d2d30] ">
-                <div className=" rounded-xl m-auto bg-[#101013] focus-within:border-[#5197ED] border-[#50506d] border flex items-center px-2 mt-2 mb-2">
+              {/* SEARCH BAR */}
+              <div className="bg-[#1A1A1E] w-full border-t border-[#2d2d30]">
+                <div className="rounded-xl m-auto bg-[#101013] focus-within:border-[#5865F2] border-[#50506d] border flex items-center px-2 mt-2 mb-2">
                   <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
                     type="text"
-                    name="search"
-                    id="search"
                     placeholder="Ara"
                     className="bg-transparent outline-none text-white w-full py-2"
                   />
-                  <IoSearchOutline className="text-white mr-2" />
+                  {/* <IoSearchOutline className="text-white mr-2" /> */}
                 </div>
               </div>
-              <div className="custom-scrollbar  ">
-                <p className="mb-4 mt-4 text-sm">
-                  {selectedNavbarButton === "çevrim içi"
-                    ? "Çevrim içi -- 2 "
-                    : selectedNavbarButton === "bekleyen"
-                    ? `Bekleyen -- ${friendRequests?.length || 0}`
-                    : selectedNavbarButton === "tümü"
-                    ? `Tüm arkadaşlar -- ${friendList?.length} `
-                    : ""}
-                </p>
-                <div className="custom-scrollbar  h-[calc(100vh-200px)]">
-                  {selectedNavbarButton === "tümü" ? (
-                    friendList?.map(({ userName }, index) => (
-                      <FriendsButton
-                        key={index}
-                        userName={userName}
-                        userPhoto={tuta}
-                        onlineStatus={"porno"}
-                      />
-                    ))
-                  ) : selectedNavbarButton === "arkadaş ekle" ? (
-                    // BURAYI DÜZENLEMEYİ UNUTMA !!!
-                    friendsInfo.map(
-                      ({ userPhoto, userName, onlineStatus }, index) => (
-                        <FriendsButton
-                          key={index}
-                          userName={userName}
-                          userPhoto={userPhoto}
-                          onlineStatus={onlineStatus}
-                        />
+
+              {/* TITLE */}
+              <p className="mb-4 mt-4 text-sm">
+                {selectedNavbarButton === "çevrim içi"
+                  ? "Çevrim içi -- 2"
+                  : selectedNavbarButton === "bekleyen"
+                  ? `Bekleyen -- ${friendRequests?.length || 0}`
+                  : selectedNavbarButton === "tümü"
+                  ? `Tüm arkadaşlar -- ${friendList?.length || 0}`
+                  : ""}
+              </p>
+
+              {/* CONTENT */}
+              <div className="custom-scrollbar h-[calc(100vh-200px)]">
+                {/* TÜMÜ */}
+                {selectedNavbarButton === "tümü" &&
+                  (input.length > 0
+                    ? friendList?.filter((friend) =>
+                        friend.userName
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
                       )
+                    : friendList
+                  )?.map(({ userName, friendId }) => (
+                    <FriendListItem
+                      key={friendId}
+                      friendId={friendId}
+                      userName={userName}
+                      userPhoto={tuta}
+                      onlineStatus="porno"
+                    />
+                  ))}
+
+                {/* ARKADAŞ EKLE */}
+                {selectedNavbarButton === "arkadaş ekle" &&
+                  friendsInfo.map(
+                    ({ userPhoto, userName, onlineStatus, friendId }) => (
+                      <FriendListItem
+                        friendId={friendId}
+                        key={friendId}
+                        userName={userName}
+                        userPhoto={userPhoto}
+                        onlineStatus={onlineStatus}
+                      />
                     )
-                  ) : selectedNavbarButton === "bekleyen" ? (
-                    <div className="flex flex-col gap-2">
-                      {friendRequests.map((request) => (
-                        <FriendRequest
-                          key={request.requestId} 
-                          otherPersonName={request.otherPersonName}
-                          isSentByMe={request.isSentByMe}
-                          requestId={request.requestId} 
-                          userPhoto={tuta}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    ""
                   )}
-                </div>
+
+                {/* BEKLEYEN */}
+                {selectedNavbarButton === "bekleyen" && (
+                  <div className="flex flex-col gap-2">
+                    {(input.length > 0
+                      ? friendRequests?.filter((request) =>
+                          request.otherPersonName
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        )
+                      : friendRequests
+                    )?.map((request) => (
+                      <FriendRequest
+                        key={request.requestId}
+                        otherPersonName={request.otherPersonName}
+                        isSentByMe={request.isSentByMe}
+                        requestId={request.requestId}
+                        userPhoto={tuta}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
         ) : (
           <AddFriendPage />
-        )
-      ) : null}
+        ))}
     </>
   );
 }

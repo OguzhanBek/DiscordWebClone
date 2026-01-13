@@ -9,10 +9,12 @@ function Rightbar() {
 
   const home = location.pathname === "/";
   const friendsPage = location.pathname === "/friends";
+  const directMessagePage = location.pathname === "/directMessage";
+
   return (
     <>
-      {(home || friendsPage) && (
-        <div className={` flex bg-[${rightBarColor}] `}>
+      {(home || friendsPage || directMessagePage) && (
+        <div className={` xl:block  hidden bg-[${rightBarColor}]`}>
           <div className="w-[90%] m-auto mt-4">
             <p className="text-sm font-semibold mb-2 text-gray-300">
               Şimdi Aktif

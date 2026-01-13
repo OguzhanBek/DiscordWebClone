@@ -13,8 +13,10 @@ export const AppContext = createContext<AppContextType | null>(null);
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
   const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [dmFriendName, setDmFriendName] = useState("");
   const [friendRequests, setFriendRequests] = useState<friendReuestType[]>([]);
   const [friendList, setFriendList] = useState<FriendType[]>();
+  const [openCreateDmModal, setOpenCreateDmModal] = useState<boolean>(false);
   const [jwtToken, setJwtToken] = useState<string | null>(
     localStorage.getItem("jwtToken")
   );
@@ -65,13 +67,12 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const getFriendRequests = async () => {
     try {
-      const token = localStorage.getItem("jwtToken");
       const response = await fetch(
         "http://localhost:5200/api/friendrequest/check",
         {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${jwtToken}`,
           },
         }
       );
@@ -98,13 +99,19 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+ 
+
   return (
     <AppContext.Provider
       value={{
+        dmFriendName,
+        setDmFriendName,
         userInfo,
         setUserInfo,
         friendList,
         setFriendList,
+        openCreateDmModal,
+        setOpenCreateDmModal,
         friendRequests,
         setFriendRequests,
         jwtToken,
@@ -118,7 +125,7 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
         sidebarWidth,
         setSidebarWidth,
         getFriendList,
-        getFriendRequests
+        getFriendRequests,
       }}
     >
       {children}
