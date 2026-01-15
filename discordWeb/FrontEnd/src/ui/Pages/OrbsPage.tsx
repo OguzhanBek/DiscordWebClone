@@ -26,7 +26,7 @@ function OrbsPage() {
               className=" w-full h-52 col-span-full relative rounded-3xl overflow-hidden "
             >
               {/* Yazı overlay'i */}
-              <div className="absolute w-[70%]  h-full bg-gradient-to-r from-[#121214]/80 to-[#403A92]/40 via-[#211F37]/10 "></div>
+              <div className="absolute w-[70%]  h-full bg-linear-to-r from-[#121214]/80 to-[#403A92]/40 via-[#211F37]/10 "></div>
               <div className="absolute  inset-0 flex items-center ">
                 <div className=" ml-6  w-80">
                   <h3 className="text-2xl text-white font-medium">

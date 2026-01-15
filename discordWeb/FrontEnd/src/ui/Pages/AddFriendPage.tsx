@@ -1,13 +1,16 @@
 import { useContext, useState } from "react";
 import { AppContext } from "../../context/userProvider";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { getFriendRequests, UnauthorizedError } from "../../helpers/helpers";
 
 function AddFriendPage() {
+  const navigate = useNavigate();
+
   const [input, setInput] = useState("");
   const context = useContext(AppContext);
   if (!context) return null;
-  const { jwtToken, getFriendRequests } =
-    context;
+  const { jwtToken, setJwtToken, setFriendRequests } = context;
 
   const sendFriendRequest = async () => {
     if (!input.trim()) {
@@ -30,28 +33,43 @@ function AddFriendPage() {
             Authorization: `Bearer ${jwtToken}`,
           },
           body: JSON.stringify({
-            SenderId: jwtToken,
             ReceiverName: input.trim(),
+            SenderId: jwtToken,
           }),
         }
       );
 
-      if (!response.ok) {
-        const errorText = await response.text(); // json yerine text
-        toast.error(errorText);
-        return;
+      if (response.status === 401) {
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        navigate("/login");
+        throw new UnauthorizedError("Token expired");
       }
 
-      // Yeni isteği manuel olarak ekle
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
 
-      await getFriendRequests();
+      const requests = await getFriendRequests(jwtToken);
+      setFriendRequests(requests);
+
       setInput("");
       toast.success("Arkadaşlık isteği başarıyla gönderildi.");
     } catch (err) {
       console.error("Hata detayı:", err);
-      toast.error("Arkadaşlık isteği gönderilemedi");
+
+      if (err instanceof UnauthorizedError) {
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        navigate("/login");
+        return;
+      }
+
+      toast.error(err instanceof Error ? err.message : "İstek gönderilemedi");
     }
   };
+
   //Yukarıdaki fonksiyonu adam etmek için bir de backend'e istek yollamak elzemdir.
   return (
     <div className=" w-full  mx-auto border-b-2 border-solid border-[#28282D] bg-[#1A1A1E]">

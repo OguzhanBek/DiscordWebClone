@@ -96,7 +96,7 @@ const TakeALookPage = () => {
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-            className="flex  items-center    relative rounded-4xl w-[100%] h-[200px]  "
+            className="flex  items-center    relative rounded-4xl w-full h-[200px]  "
           >
             <img src={secretGarden} alt="secretGarden" className="w-100 h-22 rounded-4xl ml-8" />
   

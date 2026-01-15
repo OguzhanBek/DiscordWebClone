@@ -3,6 +3,8 @@ import { RxCross2 } from "react-icons/rx";
 import { useContext } from "react";
 import { AppContext } from "../../context/userProvider";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { getFriendList, UnauthorizedError } from "../../helpers/helpers";
 
 function FriendRequest({
   userPhoto,
@@ -17,8 +19,14 @@ function FriendRequest({
 }) {
   const context = useContext(AppContext);
   if (!context) return null;
-  const { jwtToken, getFriendList, setFriendRequests, friendRequests } = context;
-
+  const {
+    jwtToken,
+    setJwtToken,
+    setFriendRequests,
+    friendRequests,
+    setFriendList,
+  } = context;
+  const navigate = useNavigate();
   const acceptFriendRequest = async () => {
     try {
       console.log("=== Accept Friend Request ===");
@@ -41,6 +49,13 @@ function FriendRequest({
 
       console.log("Response status:", response.status);
 
+      if (response.status === 401) {
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        navigate("/login");
+        return;
+      }
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Error response:", errorText);
@@ -59,15 +74,20 @@ function FriendRequest({
 
       toast.success("Arkadaşlık isteği kabul edildi.");
 
-      // State'ten bu isteği requestId ile kaldır
       const updatedRequests = friendRequests.filter(
         (req: any) => req.requestId !== requestId
       );
       setFriendRequests(updatedRequests);
 
       // Arkadaş listesini yenile
-      await getFriendList();
+      const friendList = await getFriendList(jwtToken);
+      setFriendList(friendList);
     } catch (err) {
+      if (err instanceof UnauthorizedError) {
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        navigate("/login");
+      }
       console.error("Fetch error:", err);
       toast.error("Sunucuya bağlanılamadı.");
     }
@@ -94,7 +114,12 @@ function FriendRequest({
         toast.error(errorText);
         return;
       }
-
+      if (response.status === 401) {
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        navigate("/login");
+        return;
+      }
       const data = await response.text();
       toast.success(data);
 
@@ -103,7 +128,6 @@ function FriendRequest({
         (req: any) => req.requestId !== requestId
       );
       setFriendRequests(updatedRequests);
-      
     } catch (err) {
       console.error(err);
       toast.error("Sunucuya bağlanılamadı.");

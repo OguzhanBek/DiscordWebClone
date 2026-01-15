@@ -20,11 +20,10 @@ function FriendListItem({
   const context = useContext(AppContext);
   if (!context) return null;
 
-  const { jwtToken , setDmFriendName } = context;
+  const { jwtToken, setDmFriendName,setJwtToken } = context;
 
   const createOrOpenChat = async () => {
     if (!jwtToken) {
-      toast.error("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
       navigate("/login");
       return;
     }
@@ -53,7 +52,8 @@ function FriendListItem({
       clearTimeout(timeoutId);
 
       if (response.status === 401) {
-        toast.error("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
         navigate("/login");
         return;
       }
@@ -83,7 +83,7 @@ function FriendListItem({
 
       console.log(data);
       navigate(`/directMessage/${data.conversationId}`);
-      setDmFriendName(data.friendName)
+      setDmFriendName(data.friendName);
     } catch (error: any) {
       if (error.name === "AbortError") {
         toast.error("İstek zaman aşımına uğradı. Lütfen tekrar deneyin.");

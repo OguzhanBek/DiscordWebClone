@@ -37,7 +37,7 @@ const DiscordStoreNavbar: React.FC = () => {
               tab === "home" || tab === null
                 ? "before:visible before:bg-white text-white"
                 : "before:invisible hover:before:visible hover:before:bg-blue-500"
-            } cursor-pointer before:content-[''] before:absolute before:w-full before:h-0.5 before:bottom-[0] `}
+            } cursor-pointer before:content-[''] before:absolute before:w-full before:h-0.5 before:bottom-0 `}
           >
             Öne Çıkanlar
           </h1>
@@ -50,7 +50,7 @@ const DiscordStoreNavbar: React.FC = () => {
             <div className="Göz-At-Butonu h-full  flex items-center ">
               <h1
                 className={` cursor-pointer  select-none  whitespace-nowrap 
-                  before:content-[''] before:absolute before:w-full before:h-0.5 before:bottom-[0] 
+                  before:content-[''] before:absolute before:w-full before:h-0.5 before:bottom-0 
                   ${
                     tab === "catalog"
                       ? "before:visible before:bg-white text-white"
@@ -108,7 +108,7 @@ const DiscordStoreNavbar: React.FC = () => {
               tab === "orbs"
                 ? "before:visible before:bg-white text-white"
                 : "before:invisible hover:before:visible hover:before:bg-blue-500"
-            } cursor-pointer before:content-[''] before:absolute before:w-full before:h-0.5 before:bottom-[0] `}
+            } cursor-pointer before:content-[''] before:absolute before:w-full before:h-0.5 before:bottom-0 `}
           >
             Orbs Özel
           </h1>

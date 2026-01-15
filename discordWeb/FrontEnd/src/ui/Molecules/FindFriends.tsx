@@ -16,7 +16,7 @@ function FindFriends({ friendList, setOpenFindFriends }: FindFriendsProps) {
 
   const ctx = useContext(AppContext);
   if (!ctx) return null;
-  const { setDmFriendName, jwtToken } = ctx;
+  const { setDmFriendName, jwtToken,setJwtToken } = ctx;
 
   const createOrOpenChat = async (friendId: string) => {
     if (!jwtToken) {
@@ -39,7 +39,12 @@ function FindFriends({ friendList, setOpenFindFriends }: FindFriendsProps) {
         toast.error("Chat açılamadı");
         return;
       }
-
+      if (response.status === 401) {
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        navigate("/login");
+        return;
+      }
       const data = await response.json();
       navigate(`/directMessage/${data.conversationId}`);
       setDmFriendName(data.friendName);
@@ -71,7 +76,7 @@ function FindFriends({ friendList, setOpenFindFriends }: FindFriendsProps) {
               onClick={() => {
                 createOrOpenChat(friend.friendId);
                 setOpenFindFriends(false);
-              }} 
+              }}
               className="px-2 flex items-center gap-2 hover:bg-[#2f2f3a] cursor-pointer py-2"
             >
               <img className="h-6 w-6 rounded-2xl" src={tuta} />
