@@ -27,6 +27,7 @@ export type AppContextType = {
   setFriendRequests: React.Dispatch<React.SetStateAction<friendReuestType[]>>;
   jwtToken: string | null;
   setJwtToken: React.Dispatch<React.SetStateAction<string | null>>;
+  
   friendList: FriendType[] | undefined;
   setFriendList: React.Dispatch<React.SetStateAction<FriendType[] | undefined>>;
   selectedNavbarButton: string;
@@ -41,8 +42,6 @@ export type AppContextType = {
   setOpenCreateDmModal: React.Dispatch<React.SetStateAction<boolean>>;
   sidebarWidth: number;
   setSidebarWidth: React.Dispatch<React.SetStateAction<number>>;
-  getFriendList: () => Promise<void>;
-  getFriendRequests: () => Promise<void>;
 };
 
 export type TopSideTitle = {

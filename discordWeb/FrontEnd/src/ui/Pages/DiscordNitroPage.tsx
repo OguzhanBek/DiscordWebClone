@@ -65,7 +65,7 @@ export default function DiscordNitroPage() {
             <div className="flex justify-center mb-8">
               <Crown className="w-20 h-20 text-yellow-400" />
             </div>
-            <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-[#706d5f] to-white bg-clip-text  text-transparent">
+            <h1 className="text-6xl font-bold mb-6 bg-linear-to-r from-[#706d5f] to-white bg-clip-text  text-transparent">
               Discord Nitro
             </h1>
             <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
@@ -143,7 +143,7 @@ export default function DiscordNitroPage() {
                 <ul className="space-y-4 h-60">
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center">
-                      <Check className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                      <Check className="w-5 h-5 text-green-400 mr-3 shrink-0" />
                       <span className="text-gray-300">{feature}</span>
                     </li>
                   ))}
@@ -159,7 +159,7 @@ export default function DiscordNitroPage() {
         </div>
       </section>
       {/* CTA Section */}
-      <section className="CTA Section py-24 bg-gradient-to-r from-[#1d1d1f] to-[#222227]">
+      <section className="CTA Section py-24 bg-linear-to-r from-[#1d1d1f] to-[#222227]">
         {" "}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold mb-4">Hemen Başla</h2>
@@ -174,7 +174,7 @@ export default function DiscordNitroPage() {
       {/* App Bottom Section */}
       <section className="py-16 bg-[#18191c]">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="bg-gradient-to-r from-[#201f20] to-[#212224] rounded-2xl p-8 mb-8">
+          <div className="bg-linear-to-r from-[#201f20] to-[#212224] rounded-2xl p-8 mb-8">
             <h3 className="text-2xl font-bold mb-4">
               Nitro ile Discord'u Keşfet
             </h3>

@@ -36,7 +36,7 @@ function ServersButton({
       <span
         className="
           absolute left-full z-10 font-semibold text-sm top-1/2 -translate-y-1/2 bg-[#1A1A1E]   ml-2  px-2 py-2 rounded-md  invisible
-           group-hover:visible before:content-[''] before:absolute before:left-[-4px] before:top-1/2 before:-translate-y-1/2 before:bg-[#1A1A1E] before:h-2 before:w-2 before:rotate-45 pointer-events-none 
+           group-hover:visible before:content-[''] before:absolute before:-left-1 before:top-1/2 before:-translate-y-1/2 before:bg-[#1A1A1E] before:h-2 before:w-2 before:rotate-45 pointer-events-none 
            
      "
       >

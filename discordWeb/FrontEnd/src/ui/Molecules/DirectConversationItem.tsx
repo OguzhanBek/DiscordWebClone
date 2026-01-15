@@ -14,15 +14,9 @@ function DirectConversationItem({
 
   const ctx = useContext(AppContext);
   if (!ctx) return null;
-  const { setDmFriendName, jwtToken } = ctx;
+  const { setDmFriendName, jwtToken, setJwtToken } = ctx;
 
   const createOrOpenChat = async () => {
-    if (!jwtToken) {
-      toast.error("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
-      navigate("/login");
-      return;
-    }
-
     if (!friendId) {
       toast.error("Kullanıcı bilgisi bulunamadı.");
       return;
@@ -30,7 +24,7 @@ function DirectConversationItem({
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); 
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const response = await fetch("http://localhost:5200/api/chat/create", {
         method: "POST",
@@ -47,7 +41,9 @@ function DirectConversationItem({
       clearTimeout(timeoutId);
 
       if (response.status === 401) {
-        toast.error("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        toast.info("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
         navigate("/login");
         return;
       }

@@ -17,9 +17,8 @@ namespace Backend.Controllers
             _dbContext = dbContext;
         }
 
-        // Yeni endpoint - token'dan otomatik user bilgisi
         [HttpGet("me")]
-        [Authorize] // JWT Authentication gerekli
+        [Authorize]
         public async Task<IActionResult> GetCurrentUser()
         {
             // Token'dan user_id'yi al
@@ -40,22 +39,5 @@ namespace Backend.Controllers
                 user_name = user.UserName
             });
         }
-
-//         // Eski endpoint - ID ile kullanıcı getir
-//         [HttpGet("{userId}")]
-//         public async Task<IActionResult> GetUser(string userId)
-//         {
-//             var user = await _dbContext.Users
-//                 .FirstOrDefaultAsync(u => u.user_id == userId);
-
-//             if (user == null)
-//                 return NotFound("User not found");
-
-//             return Ok(new
-//             {
-//                 email = user.email,
-//                 user_name = user.user_name
-//             });
-//         }
     }
 }

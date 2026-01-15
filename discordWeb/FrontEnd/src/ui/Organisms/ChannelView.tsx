@@ -18,7 +18,7 @@ function ChannelView() {
     <div className="flex flex-col-reverse h-full overflow-y-auto">
       {/* Message Input Bar – en altta */}
       <div className="mx-auto w-full py-2 px-2 ">
-        <div className="mx-auto flex items-center bg-[#232428] rounded-xl px-4 gap-3 border-1 border-[#2B2D31] h-14">
+        <div className="mx-auto flex items-center bg-[#232428] rounded-xl px-4 gap-3 border border-[#2B2D31] h-14">
           {/* Attach Button */}
           <button
             className="text-gray-300  transition-all hover:text-white 
@@ -127,7 +127,7 @@ etkinleştirmek icin Avarlar'a gidi"
             <PiPencilSimpleLineDuotone /> <span>Kanalı Düzenle</span>
           </button>
           {/* Bölüm alt çizgisi */}
-          <div className="w-full h-[2px] mb-4 bg-[#2d2d4b] mt-4"></div>
+          <div className="w-full h-0.5 mb-4 bg-[#2d2d4b] mt-4"></div>
         </div>
 
         {/* Message */}

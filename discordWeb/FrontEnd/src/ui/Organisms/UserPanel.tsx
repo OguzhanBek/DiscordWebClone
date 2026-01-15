@@ -5,16 +5,21 @@ import tuta from "../../assets/Tuta.png";
 import { FaMicrophone, FaHeadphones } from "react-icons/fa";
 import { AppContext } from "../../context/userProvider";
 import { IoIosSettings } from "react-icons/io";
-import { fetchUser } from "../../helpers/helpers";
-import type { User } from "../../types/types";
+import { fetchUser, UnauthorizedError } from "../../helpers/helpers";
+import { useNavigate } from "react-router-dom";
 
 function UserPanel() {
+  const navigate = useNavigate();
+
   const [mounted, setMounted] = useState(false);
   const [root, setRoot] = useState<HTMLElement | null>(null);
 
   const ctx = useContext(AppContext);
-  const { sidebarWidth, jwtToken, setUserInfo, userInfo } = ctx;
-  // ✅ TÜM HOOK'LAR KOŞULSUZ OLMALI
+  if (!ctx) {
+    return null;
+  }
+  const { sidebarWidth, jwtToken, setJwtToken, setUserInfo, userInfo } = ctx;
+
   useEffect(() => {
     setMounted(true);
     setRoot(document.getElementById("root"));
@@ -24,14 +29,21 @@ function UserPanel() {
     if (!jwtToken) return;
 
     const loadUser = async () => {
-      const userinfosu = await fetchUser(jwtToken);
-      setUserInfo(userinfosu);
+      try {
+        const user = await fetchUser(jwtToken!);
+        setUserInfo(user);
+      } catch (error) {
+        if (error instanceof UnauthorizedError) {
+          localStorage.removeItem("jwtToken");
+          setJwtToken(null);
+          navigate("/login");
+        }
+      }
     };
 
     loadUser();
   }, [jwtToken]);
 
-  // ✅ Early return HOOK'LARDAN SONRA
   if (!ctx || !mounted || !root) {
     return null;
   }

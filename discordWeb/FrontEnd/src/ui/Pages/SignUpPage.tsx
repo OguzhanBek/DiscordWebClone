@@ -15,7 +15,7 @@ export default function DiscordSignup() {
   if (!ctx) {
     return null;
   }
-  const setUser = ctx.setUser;
+  const {setJwtToken} = ctx;
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
 
@@ -41,7 +41,7 @@ export default function DiscordSignup() {
       // Başarılı olduysa
       const data: LoginResponse = await res.json();
       console.log("Register success:", data);
-      if (data.token) setUser(data.token); // Giriş sonrası
+      if (data.token) setJwtToken(data.token); // Giriş sonrası
       toast.success("Başarıyla giriş yapıldı");
       navigate("/friends");
     } catch (error) {

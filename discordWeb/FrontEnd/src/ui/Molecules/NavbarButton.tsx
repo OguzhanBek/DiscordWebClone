@@ -1,42 +1,89 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/userProvider";
+import {
+  getFriendList,
+  getFriendRequests,
+  UnauthorizedError,
+} from "../../helpers/helpers";
+import { useNavigate } from "react-router-dom";
 
 function NavbarButton({ buttonText }: { buttonText: string }) {
+  const navigate = useNavigate();
   const [friendRequestLength, setFriendRequestLength] = useState<number>(0);
   const ctx = useContext(AppContext);
   if (!ctx) return null;
   const {
+    jwtToken,
+    setJwtToken,
     selectedNavbarButton,
     setSelectedNavbarButton,
-    getFriendList,
     friendRequests,
-
-    getFriendRequests,
+    setFriendRequests,
+    setFriendList,
   } = ctx;
 
-  useEffect(() => {
-    getFriendRequests();
-  }, []);
-  {
-    useEffect(() => {
-      if (!friendRequests) {
-        setFriendRequestLength(0);
-        return;
+  const handleGetFriendList = async () => {
+    try {
+      const list = await getFriendList(jwtToken);
+      setFriendList(list);
+    } catch (err) {
+      if (err instanceof UnauthorizedError) {
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        navigate("/login");
       }
+    }
+  };
 
-      const count = friendRequests.filter(
-        (req) => !req.isSentByMe 
-      ).length;
+  const handleGetFriendRequests = async () => {
+    try {
+      const requests = await getFriendRequests(jwtToken);
+      setFriendRequests(requests);
+    } catch (error: any) {
+      if (error instanceof UnauthorizedError) {
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        navigate("/login");
+      }
+    }
+  };
 
-      setFriendRequestLength(count);
-    }, [friendRequests]);
-  }
+  useEffect(() => {
+    if (!friendRequests) {
+      setFriendRequestLength(0);
+      return;
+    }
+
+    const count = friendRequests.filter((req) => !req.isSentByMe).length;
+    setFriendRequestLength(count);
+  }, [friendRequests]);
+
+  useEffect(() => {
+    const handleGetFriendRequests = async () => {
+      try {
+        const requests = await getFriendRequests(jwtToken);
+        setFriendRequests(requests);
+      } catch (error: any) {
+        if (error instanceof UnauthorizedError) {
+          localStorage.removeItem("jwtToken");
+          setJwtToken(null);
+          navigate("/login");
+        }
+      }
+    };
+    handleGetFriendRequests();
+  }, []);
+
   return (
     <button
       onClick={() => {
         setSelectedNavbarButton(buttonText.toLowerCase().trim());
-        if (buttonText.toLowerCase().trim() === "bekleyen") getFriendRequests();
-        if (buttonText.toLowerCase().trim() === "tümü") getFriendList();
+        if (buttonText.toLowerCase().trim() === "bekleyen") {
+          handleGetFriendRequests();
+        }
+        if (buttonText.toLowerCase().trim() === "tümü") {
+          handleGetFriendList();
+        }
       }}
       className={`relative px-3 py-1.5 rounded-lg text-sm text-gray-300 whitespace-nowrap
     ${
