@@ -2,19 +2,62 @@ import { useContext, useState } from "react";
 import { IoClose, IoSearchOutline } from "react-icons/io5";
 import tuta from "../../assets/Tuta.png";
 import { AppContext } from "../../context/userProvider";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function CreateDMModal() {
+  const navigate = useNavigate();
   const [input, setInput] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const ctx = useContext(AppContext);
   if (!ctx) return null;
-  const { setOpenCreateDmModal, friendList } = ctx;
+  const {
+    setOpenCreateDmModal,
+    friendList,
+    jwtToken,
+    setJwtToken,
+    setDmFriendName,
+  } = ctx;
 
   function toggleUser(id: string) {
     setSelectedUsers((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
   }
+  const createOrDm = async (friendId: string[]) => {
+    if (!jwtToken) {
+      toast.error("Oturum süreniz dolmuş.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5200/api/chat/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtToken}`,
+        },
+        body: JSON.stringify({ friendId }),
+      });
+
+      if (!response.ok) {
+        toast.error("Chat açılamadı");
+        return;
+      }
+      if (response.status === 401) {
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        navigate("/login");
+        return;
+      }
+      const data = await response.json();
+      navigate(`/directMessage/${data.conversationId}`);
+      setDmFriendName([data.friendName]);
+    } catch {
+      toast.error("Bir hata oluştu");
+    }
+  };
 
   return (
     <div
@@ -106,6 +149,7 @@ function CreateDMModal() {
           </button>
 
           <button
+            onClick={() => createOrDm(selectedUsers)}
             disabled={selectedUsers.length === 0}
             className={`w-full disabled:cursor-not-allowed px-5 py-2.5 text-sm rounded-md bg-[#4654C0] cursor-pointer transition-all font-medium 
               ${

@@ -9,13 +9,13 @@ import h from "../../../assets/f2e2ae7b-326b-4025-a446-dae327d36bb3.jfif";
 import j from "../../../assets/fadıl.webp";
 import n from "../../../assets/resume1.png";
 import z from "../../../assets/fadıl contra.png";
-import ServersButton from "../../../ui/Molecules/ServersButtons";
-import DiscordDefaultButton from "../../../ui/Molecules/DiscordDefaultButtons";
-import DiscordOtherButtons from "../../../ui/Molecules/DiscordOtherButtons";
+import DiscordHomeButton from "../../../ui/Molecules/DiscordHomeButton";
 import { CiCirclePlus } from "react-icons/ci";
 import { FaCompass } from "react-icons/fa";
 import { TfiDownload } from "react-icons/tfi";
 import type { ServerInfo } from "../../../types/types";
+import ServerListItem from "../../../ui/Molecules/ServerListItem";
+import ServerListAction from "../../../ui/Molecules/ServerListAction";
 
 
 
@@ -69,10 +69,10 @@ function Servers() {
     <>
       <div className="bg-[#121214] TUTA flex relative ">
         <div className="servers flex flex-col gap-0.5 w-20 items-center text-amber-50 ">
-          <DiscordDefaultButton activeServer={activeServer} setActiveServer = {setActiveServer}/>
+          <DiscordHomeButton activeServer={activeServer} setActiveServer = {setActiveServer}/>
 
           {serverInfos.map((serverInfo, index) => (
-            <ServersButton 
+            <ServerListItem 
               index={index}
               activeServer={activeServer}
               setActiveServer={setActiveServer}
@@ -81,9 +81,9 @@ function Servers() {
               key={index}
             />
           ))}
-          <DiscordOtherButtons İcon={CiCirclePlus} name={"Bir Sunucu Ekle"} />
-          <DiscordOtherButtons İcon={FaCompass} name={"Keşfet"} />
-          <DiscordOtherButtons
+          <ServerListAction İcon={CiCirclePlus} name={"Bir Sunucu Ekle"} />
+          <ServerListAction İcon={FaCompass} name={"Keşfet"} />
+          <ServerListAction
             İcon={TfiDownload}
             name={"Uygulamaları İndir "}
           />

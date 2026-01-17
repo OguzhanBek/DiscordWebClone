@@ -33,27 +33,40 @@ namespace ChatController.Controllers
             if (myUserId == null)
                 return Unauthorized();
 
-            var targetUserId = request.FriendId;
+            var targetsUserId = request.FriendId;
 
-            if (myUserId == targetUserId)
+            if (targetsUserId.Contains(myUserId))
                 return BadRequest("Kendine mesaj atamazsın");
 
             // Arkadaşın bilgilerini çek
-            var friend = await _context.Users
-                .Where(u => u.UserId == targetUserId)
+            var friends = await _context.Users
+                .Where(u => targetsUserId.Contains(u.UserId))
                 .Select(u => new { u.UserId, u.UserName })
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
-            if (friend == null)
+            if (friends == null || friends.Count == 0)
                 return BadRequest("Kullanıcı bulunamadı");
 
-            // Mevcut konuşmayı kontrol et
-            var conversationId = await _context.DirectParticipants
-                .Where(dp => dp.UserId == myUserId || dp.UserId == targetUserId)
+            // Mevcut conversation'u kontrol et
+            var allUserIds = targetsUserId.Append(myUserId).OrderBy(x => x).ToList();
+
+            // ✅ KAPSAMLI DÜZELTME: Tam olarak aynı katılımcılara sahip conversation'ı bul
+            var existingConversations = await _context.DirectParticipants
                 .GroupBy(dp => dp.ConversationId)
-                .Where(g => g.Select(x => x.UserId).Distinct().Count() == 2)
-                .Select(g => g.Key)
-                .FirstOrDefaultAsync();
+                .Select(g => new
+                {
+                    ConversationId = g.Key,
+                    UserIds = g.Select(x => x.UserId).OrderBy(x => x).ToList()
+                })
+                .ToListAsync();
+
+            // Memory'de karşılaştır (LINQ to Objects)
+            var conversationId = existingConversations
+                .FirstOrDefault(c =>
+                    c.UserIds.Count == allUserIds.Count &&
+                    c.UserIds.SequenceEqual(allUserIds)
+                )?.ConversationId;
+
 
             if (conversationId == null)
             {
@@ -68,30 +81,27 @@ namespace ChatController.Controllers
 
                 conversationId = conversation.Id;
 
-                _context.DirectParticipants.AddRange(
-                    new DirectParticipant
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        ConversationId = conversationId,
-                        UserId = myUserId,
-                        JoinedAt = DateTime.UtcNow
-                    },
-                    new DirectParticipant
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        ConversationId = conversationId,
-                        UserId = targetUserId,
-                        JoinedAt = DateTime.UtcNow
-                    }
-                );
+                var participants = new List<DirectParticipant>();
 
+                foreach (var friendId in allUserIds)
+                {
+                    participants.Add(new DirectParticipant
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        ConversationId = conversationId,
+                        UserId = friendId,
+                        JoinedAt = DateTime.UtcNow
+                    });
+                }
+                _context.DirectParticipants.AddRange(participants);
                 await _context.SaveChangesAsync();
-            }
 
+            }
+            var friendsName = friends.Select(friends => friends.UserName);
             return Ok(new
             {
                 ConversationId = conversationId,
-                FriendName = friend.UserName
+                FriendName = friendsName
             });
         }
         [Authorize]
@@ -109,7 +119,7 @@ namespace ChatController.Controllers
                 return Forbid();
 
             // Karşı tarafın bilgisini bul
-            var otherUser = await _context.DirectParticipants
+            var otherUsers = await _context.DirectParticipants
                 .Where(dp => dp.ConversationId == conversationId && dp.UserId != myUserId)
                 .Join(_context.Users,
                     dp => dp.UserId,
@@ -119,7 +129,7 @@ namespace ChatController.Controllers
                         user.UserId,
                         user.UserName
                     })
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
             var messages = await _context.DirectMessages
                 .Where(m => m.ConversationId == conversationId)
@@ -140,16 +150,47 @@ namespace ChatController.Controllers
 
             return Ok(new
             {
-                FriendName = otherUser,
+                FriendName = otherUsers.Select(friend => friend.UserName),
                 Messages = messages
             });
         }
         [Authorize]
-        [HttpGet("{conversationId}/dmUser")]
-        public async Task<IActionResult> GetDmUser(string conversationId) // .net otomatik olarak URL'deki adı parametre olarak alıyor. 
+        [HttpGet("getConversationList")]
+        public async Task<IActionResult> GetConversations()
         {
-            return Ok("");
+            var myId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (myId == null)
+                return Unauthorized();
+
+            // 1️⃣ Benim dahil olduğum conversationId'ler
+            var myConversationIds = await _context.DirectParticipants
+                .Where(dp => dp.UserId == myId)
+                .Select(dp => dp.ConversationId)
+                .Distinct()
+                .ToListAsync();
+
+            // 2️⃣ Bu conversation'lardaki DİĞER kullanıcılar
+            var conversations = await _context.DirectParticipants
+                .Where(dp =>
+                    myConversationIds.Contains(dp.ConversationId) &&
+                    dp.UserId != myId
+                )
+                .Join(
+                    _context.Users,
+                    dp => dp.UserId,
+                    u => u.UserId,
+                    (dp, u) => new
+                    {
+                        ConversationId = dp.ConversationId,
+                        FriendId = u.UserId,
+                        UserName = u.UserName
+                    }
+                )
+                .ToListAsync();
+
+            return Ok(conversations);
         }
+
         [Authorize]
         [HttpPost("{conversationId}/message")]
         public async Task<IActionResult> SendMessage(string conversationId, [FromBody] SendMessageDto dto)
@@ -177,7 +218,6 @@ namespace ChatController.Controllers
             _context.DirectMessages.Add(message);
             await _context.SaveChangesAsync();
 
-            // ✅ Username'i de ekle
             var user = await _context.Users.FindAsync(myUserId);
 
             return Ok(new
@@ -185,7 +225,7 @@ namespace ChatController.Controllers
                 message.Id,
                 message.ConversationId,
                 message.AuthorUserId,
-                AuthorUsername = user?.UserName, // ✅ Eklendi
+                AuthorUsername = user?.UserName,
                 message.Content,
                 message.CreatedAt,
                 message.EditedAt

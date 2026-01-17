@@ -2,10 +2,10 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { GiSpinningBlades } from "react-icons/gi";
 import { CiCirclePlus, CiShop } from "react-icons/ci";
-import IconButton from "../Molecules/ButtonWithIcon";
+import SidebarNavItem from "../Molecules/SidebarNavItem";
 import DirectConversationItems from "./DirectConversationItems";
 import Transparentmodal from "../../model/Transparentmodal";
-import FindFriends from "../Molecules/FindFriends";
+import StartConversationPanel from "../Molecules/StartConversationPanel";
 import { RxCross1 } from "react-icons/rx";
 import { FiFolderPlus } from "react-icons/fi";
 import { PiPencilSimpleDuotone } from "react-icons/pi";
@@ -20,13 +20,13 @@ import {
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { useLocation } from "react-router-dom";
-import DmOlusturYazısı from "../Molecules/DmOlusturYazısı";
-import ServerMutliChannelButton from "../Molecules/ServerMutliChannelButton";
+import ChannelButton from "../Molecules/ChannelButton";
 import UserPanel from "./UserPanel";
 import { AppContext } from "../../context/userProvider";
 import CreateDMModal from "./CreateDMModal";
+import { grayBackground } from "../../Colors";
 
-function DirectMessagesSideBar() {
+function SideBar() {
   const [iconsAndTitles] = useState([
     { Icon: FaUserFriends, title: "Arkadaşlar", route: "/friends" },
     { Icon: GiSpinningBlades, title: "Nitro", route: "/store" },
@@ -38,7 +38,7 @@ function DirectMessagesSideBar() {
   const [isOpen, setIsOpen] = useState(false);
   const ctx = useContext(AppContext);
   if (!ctx) return null;
-  const { sidebarWidth, setSidebarWidth, openCreateDmModal, friendList } = ctx;
+  const { sidebarWidth, setSidebarWidth, openCreateDmModal, friendList , setOpenCreateDmModal, } = ctx;
   const { pathname } = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const startX = useRef(0);
@@ -52,7 +52,6 @@ function DirectMessagesSideBar() {
 
     document.addEventListener("mouseup", handleMouseUp);
 
-    console.log("fareye basıldı");
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -200,16 +199,16 @@ function DirectMessagesSideBar() {
             </div>
             {/* sohbet ve ses odaları kısmı. */}
             <div className="mt-2">
-              <ServerMutliChannelButton ChannelType="text" ChannelName="tuta" />
-              <ServerMutliChannelButton
+              <ChannelButton ChannelType="text" ChannelName="tuta" />
+              <ChannelButton
                 ChannelType="text"
                 ChannelName="koser"
               />
-              <ServerMutliChannelButton
+              <ChannelButton
                 ChannelType="voice"
                 ChannelName="erkan"
               />
-              <ServerMutliChannelButton
+              <ChannelButton
                 ChannelType="string"
                 ChannelName="ozan"
               />
@@ -229,7 +228,7 @@ function DirectMessagesSideBar() {
             {/* seçenekler kısmı */}
             <div className="pb-2 w-full border-b  border-[#212124]">
               {iconsAndTitles.map(({ Icon, title, route }, index) => (
-                <IconButton
+                <SidebarNavItem
                   key={index}
                   Icon={Icon}
                   title={title}
@@ -237,12 +236,34 @@ function DirectMessagesSideBar() {
                 />
               ))}
             </div>
-            {/* Direkt mesajlar kısmı */}
+            {/* Direkt mesaj açmak için kişi listesi */}
             <div className="mb-4 w-full  " onClick={() => setIsOpen(false)}>
-              <DmOlusturYazısı
-                text={"Direkt Mesaj"}
-                beforeContentText={"DM Oluştur"}
-              />
+
+              <div className=" Dm-Olustur-Yazısı  flex items-center  w-[85%] m-auto justify-between mt-2  hover:text-white group">
+                <p className="text-sm text-gray-400 hover:cursor-default select-none group-hover:text-white">
+                  Direkt Mesaj
+                </p>
+
+                <span className="DM-Olustur-Before-Context  gap-1  ">
+                  <span className="relative group/item  ">
+                    <span
+                      onClick={() => {
+                        setOpenCreateDmModal(!openCreateDmModal);
+                      }}
+                      className="hover:cursor-pointer text-lg text-gray-400 "
+                    >
+                      +
+                    </span>
+                    {/* Her item'ın kendi tooltip'i */}
+                    <span
+                      style={{ backgroundColor: grayBackground }}
+                      className="absolute left-1/2 -translate-x-1/2 bottom-[130%] opacity-0 group-hover/item:opacity-100 transition-opacity text-white px-2 py-2 rounded-md text-sm pointer-events-none whitespace-nowrap z-10"
+                    >
+                      DM Oluştur
+                    </span>
+                  </span>
+                </span>
+              </div>
               <DirectConversationItems />
             </div>
             {openCreateDmModal && <CreateDMModal />}
@@ -257,10 +278,13 @@ function DirectMessagesSideBar() {
 
       {openFindFriends && (
         <Transparentmodal setOpenFindFriends={setOpenFindFriends}>
-          <FindFriends friendList={friendList} setOpenFindFriends={setOpenFindFriends} />
+          <StartConversationPanel
+            friendList={friendList}
+            setOpenFindFriends={setOpenFindFriends}
+          />
         </Transparentmodal>
       )}
     </>
   );
 }
-export default DirectMessagesSideBar;
+export default SideBar;

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function ServersButton({
+function ServerListItem({
   photo,
   name,
   index,
@@ -46,4 +46,4 @@ function ServersButton({
   );
 }
 
-export default ServersButton;
+export default ServerListItem;

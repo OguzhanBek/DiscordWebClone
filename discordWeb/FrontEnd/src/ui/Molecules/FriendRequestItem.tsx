@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { getFriendList, UnauthorizedError } from "../../helpers/helpers";
 
-function FriendRequest({
+function FriendRequestItem({
   userPhoto,
   otherPersonName,
   isSentByMe,
@@ -177,4 +177,4 @@ function FriendRequest({
   );
 }
 
-export default FriendRequest;
+export default FriendRequestItem;

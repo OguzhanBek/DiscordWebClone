@@ -2,7 +2,7 @@ import React from "react";
 import dcMagaza from "../../assets/discordmağazaimage.png";
 import { Gamepad2 } from "lucide-react";
 
-import DiscordStoreNavbar from "../Molecules/DiscordStorePageComponents/DiscordStoreNavbar";
+import DiscordStoreNavbar from "../Molecules/DiscordStoreNavbar";
 import { useSearchParams } from "react-router-dom";
 
 import TakeALookPage from "./TakeALookPage";

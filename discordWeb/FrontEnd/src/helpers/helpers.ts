@@ -45,6 +45,31 @@ export const getFriendList = async (jwtToken: string | null) => {
   return response.json();
 };
 
+export const getConversationList = async (jwtToken: string | null) => {
+  if (!jwtToken) throw new Error("No token");
+
+  const response = await fetch(
+    "http://localhost:5200/api/chat/getConversationList",
+    {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (response.status === 401) {
+    toast.info("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
+    throw new UnauthorizedError("Token expired");
+  }
+
+  if (!response.ok) {
+    throw new Error("Friend list fetch failed");
+  }
+
+  return response.json();
+};
+
 export const getFriendRequests = async (jwtToken: string | null) => {
   try {
     const response = await fetch(

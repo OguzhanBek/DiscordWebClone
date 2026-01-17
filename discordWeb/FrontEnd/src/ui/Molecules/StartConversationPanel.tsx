@@ -10,7 +10,7 @@ type FindFriendsProps = {
   setOpenFindFriends: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function FindFriends({ friendList, setOpenFindFriends }: FindFriendsProps) {
+function StartConversationPanel({ friendList, setOpenFindFriends }: FindFriendsProps) {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ function FindFriends({ friendList, setOpenFindFriends }: FindFriendsProps) {
   if (!ctx) return null;
   const { setDmFriendName, jwtToken,setJwtToken } = ctx;
 
-  const createOrOpenChat = async (friendId: string) => {
+  const createOrOpenDm = async (friendId: string) => {
     if (!jwtToken) {
       toast.error("Oturum süreniz dolmuş.");
       navigate("/login");
@@ -47,7 +47,7 @@ function FindFriends({ friendList, setOpenFindFriends }: FindFriendsProps) {
       }
       const data = await response.json();
       navigate(`/directMessage/${data.conversationId}`);
-      setDmFriendName(data.friendName);
+      setDmFriendName([data.friendName]);
     } catch {
       toast.error("Bir hata oluştu");
     }
@@ -74,7 +74,7 @@ function FindFriends({ friendList, setOpenFindFriends }: FindFriendsProps) {
             <div
               key={friend.friendId}
               onClick={() => {
-                createOrOpenChat(friend.friendId);
+                createOrOpenDm(friend.friendId);
                 setOpenFindFriends(false);
               }}
               className="px-2 flex items-center gap-2 hover:bg-[#2f2f3a] cursor-pointer py-2"
@@ -88,4 +88,4 @@ function FindFriends({ friendList, setOpenFindFriends }: FindFriendsProps) {
   );
 }
 
-export default FindFriends;
+export default StartConversationPanel;

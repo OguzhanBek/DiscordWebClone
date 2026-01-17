@@ -1,10 +1,10 @@
 import { FaUserFriends } from "react-icons/fa";
 import { CiSettings } from "react-icons/ci";
 import { IoChatbubble } from "react-icons/io5";
-import DmOlusturBeforeContent from "../Atoms/DmOlusturBeforeContent";
+import ChannelIcon from "./ChannelIcon";
 import { Link } from "react-router-dom";
 
-function ServerMutliChannelButton({
+function ChannelButton({
   ChannelType,
   ChannelName,
 }: {
@@ -25,8 +25,8 @@ function ServerMutliChannelButton({
                 <span>#</span>
                 <p>{ChannelName}</p>
               </div>
-              {/* Server'lardaki metin ve ses odalarına gelince yanlarında çıkan logolar. */}
-              <DmOlusturBeforeContent
+              {/* Server'lardaki metin ve ses kanallarına gelince yanlarında çıkan logolar. */}
+              <ChannelIcon
                 items={[
                   { content: <FaUserFriends />, tooltipText: "Davet Oluştur" },
                   { content: <CiSettings />, tooltipText: "Kanalı Düzenle" },
@@ -47,7 +47,7 @@ function ServerMutliChannelButton({
                 <span>🔊</span>
                 <p>{ChannelName}</p>
               </div>
-              <DmOlusturBeforeContent
+              <ChannelIcon
                 items={[
                   {
                     content: <IoChatbubble />,
@@ -64,4 +64,4 @@ function ServerMutliChannelButton({
     </>
   );
 }
-export default ServerMutliChannelButton;
+export default ChannelButton;

@@ -1,7 +1,7 @@
 import { FaDiscord } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-function DiscordDefaultButton({
+function DiscordHomeButton({
   activeServer,
   setActiveServer,
 }: {
@@ -38,4 +38,4 @@ function DiscordDefaultButton({
   );
 }
 
-export default DiscordDefaultButton;
+export default DiscordHomeButton;

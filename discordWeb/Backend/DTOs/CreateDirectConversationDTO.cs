@@ -1,4 +1,4 @@
 public class CreateDirectConversation
 {
-            public string FriendId { get; set; } = null!;
+            public string[] FriendId { get; set; } = null!;
 }

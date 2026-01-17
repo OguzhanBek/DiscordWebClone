@@ -3,9 +3,10 @@ import tuta from "../../assets/Tuta.png";
 import FriendListItem from "../Molecules/FriendListItem";
 import { AppContext } from "../../context/userProvider";
 import AddFriendPage from "./AddFriendPage";
-import FriendsNavbar from "../Molecules/FriendsPageComponents/FriendsNavbar";
+
 import { useLocation } from "react-router-dom";
-import FriendRequest from "../Molecules/FriendRequest";
+import FriendRequestItem from "../Molecules/FriendRequestItem";
+import FriendsNavbar from "../Molecules/FriendsNavbar";
 
 function FriendsPage() {
   const [friendsInfo] = useState([
@@ -127,7 +128,7 @@ function FriendsPage() {
                         )
                       : friendRequests
                     )?.map((request) => (
-                      <FriendRequest
+                      <FriendRequestItem
                         key={request.requestId}
                         otherPersonName={request.otherPersonName}
                         isSentByMe={request.isSentByMe}

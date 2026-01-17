@@ -1,4 +1,4 @@
-import ServerNavbar from "../Molecules/ServerPageComponents/ServerNavbar";
+import ServerNavbar from "../Molecules/ServerNavbar";
 import MainContent from "../Organisms/ChannelView";
 
 function ServerPage() {

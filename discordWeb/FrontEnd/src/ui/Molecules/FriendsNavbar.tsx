@@ -1,9 +1,10 @@
 import { useContext, useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { TbMessageCircleCheck } from "react-icons/tb";
-import NavbarButton from "../NavbarButton";
 import { useLocation } from "react-router-dom";
-import { AppContext } from "../../../context/userProvider";
+import { AppContext } from "../../context/userProvider";
+import FriendsNavbarButton from "./FriendsNavbarButton";
+
 
 function FriendsNavbar() {
   const [butons, _setButons] = useState<string[]>([
@@ -32,7 +33,7 @@ function FriendsNavbar() {
                     <span className="select-none">Arkadaşlar</span>
                   </div>
                   {butons.map((buttonText, index) => (
-                    <NavbarButton buttonText={buttonText} key={index} />
+                    <FriendsNavbarButton buttonText={buttonText} key={index} />
                   ))}
                 </div>
 
