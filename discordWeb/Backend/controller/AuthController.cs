@@ -154,7 +154,7 @@ namespace LoginAPI.Controllers
                 issuer: jwtSettings["Issuer"],
                 audience: jwtSettings["Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(2),
+                expires: DateTime.UtcNow.AddDays(4),
                 signingCredentials: credentials
             );
 

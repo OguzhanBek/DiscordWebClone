@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Search, Globe } from "lucide-react";
 import { FaDiscord } from "react-icons/fa";
-import { AppContext } from "../../../context/userProvider";
+import { AppContext } from "../../context/userProvider";
 import { useSearchParams } from "react-router-dom";
 
 const DiscordStoreNavbar: React.FC = () => {

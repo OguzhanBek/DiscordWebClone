@@ -1,6 +1,6 @@
 import tuta from "../../assets/Tuta.png";
 import ActiveGameBox from "../Molecules/ActiveGameBox";
-import VoiceChannel from "../Molecules/VoiceChannel";
+import VoiceChannel from "../Molecules/RightBarVoiceChannel";
 import SpotifyBox from "../Molecules/SpotifyBox";
 import { rightBarColor } from "../../Colors";
 import { useLocation } from "react-router-dom";

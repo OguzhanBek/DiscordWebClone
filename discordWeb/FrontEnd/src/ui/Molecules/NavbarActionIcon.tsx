@@ -1,17 +1,17 @@
 import { grayBackground } from "../../Colors";
 import React from "react";
 
-type IconWithHoverTextProps = {
+type NavbarActionIcon = {
   Icon: React.ComponentType<{ size?: number; className?: string }>;
   tooltipText: string;
 };
 
-function IconWithDownSideHoverText({
+function NavbarActionIcon({
   Icon,
   tooltipText,
-}: IconWithHoverTextProps) {
+}: NavbarActionIcon) {
   return (
-    <span className="IconWithDownSideHoverText gap-1 shadow-xl ">
+    <span className="NavbarActionIcon gap-1 shadow-xl ">
       <span className="relative group/item shadow-2xl shadow-xl/20">
         <span className="hover:cursor-pointer text-lg ">
           <Icon size={20} className="hover:text-gray-200 cursor-pointer " />
@@ -29,4 +29,4 @@ function IconWithDownSideHoverText({
   );
 }
 
-export default IconWithDownSideHoverText;
+export default NavbarActionIcon;

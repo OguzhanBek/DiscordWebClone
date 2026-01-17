@@ -7,7 +7,7 @@ import {
 } from "../../helpers/helpers";
 import { useNavigate } from "react-router-dom";
 
-function NavbarButton({ buttonText }: { buttonText: string }) {
+function FriendsNavbarButton({ buttonText }: { buttonText: string }) {
   const navigate = useNavigate();
   const [friendRequestLength, setFriendRequestLength] = useState<number>(0);
   const ctx = useContext(AppContext);
@@ -74,6 +74,22 @@ function NavbarButton({ buttonText }: { buttonText: string }) {
     handleGetFriendRequests();
   }, []);
 
+  useEffect(() => {
+    const loadFriendList = async () => {
+      try {
+        const list = await getFriendList(jwtToken);
+        setFriendList(list);
+      } catch (err) {
+        if (err instanceof UnauthorizedError) {
+          localStorage.removeItem("jwtToken");
+          setJwtToken(null);
+          navigate("/login");
+        }
+      }
+    };
+    loadFriendList();
+  }, []);
+
   return (
     <button
       onClick={() => {
@@ -120,4 +136,4 @@ function NavbarButton({ buttonText }: { buttonText: string }) {
   );
 }
 
-export default NavbarButton;
+export default FriendsNavbarButton;

@@ -22,7 +22,7 @@ function FriendListItem({
 
   const { jwtToken, setDmFriendName,setJwtToken } = context;
 
-  const createOrOpenChat = async () => {
+  const createOrOpenDm = async () => {
     if (!jwtToken) {
       navigate("/login");
       return;
@@ -44,7 +44,7 @@ function FriendListItem({
           Authorization: `Bearer ${jwtToken}`,
         },
         body: JSON.stringify({
-          friendId: friendId,
+          friendId: [friendId],
         }),
         signal: controller.signal,
       });
@@ -83,7 +83,7 @@ function FriendListItem({
 
       console.log(data);
       navigate(`/directMessage/${data.conversationId}`);
-      setDmFriendName(data.friendName);
+      setDmFriendName([data.friendName]);
     } catch (error: any) {
       if (error.name === "AbortError") {
         toast.error("İstek zaman aşımına uğradı. Lütfen tekrar deneyin.");
@@ -100,7 +100,7 @@ function FriendListItem({
 
   return (
     <button
-      className="border-t group border-[#31313b] hover:border-transparent flex items-center justify-between
+      className="Friend-List-Item border-t group border-[#31313b] hover:border-transparent flex items-center justify-between
              rounded-md h-16 transition-all bg-[#1A1A1E] w-full px-4
              hover:bg-[#232327] hover:cursor-pointer active:bg-[#2C2C30] group"
     >
@@ -119,7 +119,7 @@ function FriendListItem({
         <div className="relative group/icon">
           <IoChatbubble
             onClick={() => {
-              createOrOpenChat();
+              createOrOpenDm();
             }}
             size={40}
             className="group-hover:bg-[#19191D] hover:text-white rounded-full p-2 transition"

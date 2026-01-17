@@ -19,17 +19,21 @@ export type FriendType = {
   friendId: string;
 };
 export type AppContextType = {
-  dmFriendName: string;
-  setDmFriendName: React.Dispatch<React.SetStateAction<string>>;
+  dmFriendName: string[];
+  setDmFriendName: React.Dispatch<React.SetStateAction<string[]>>;
   userInfo: User | null;
   setUserInfo: React.Dispatch<React.SetStateAction<User | null>>;
   friendRequests: friendReuestType[];
   setFriendRequests: React.Dispatch<React.SetStateAction<friendReuestType[]>>;
   jwtToken: string | null;
   setJwtToken: React.Dispatch<React.SetStateAction<string | null>>;
-  
+
   friendList: FriendType[] | undefined;
   setFriendList: React.Dispatch<React.SetStateAction<FriendType[] | undefined>>;
+  conversationList: conversationList[] | undefined;
+  setConversationList: React.Dispatch<
+    React.SetStateAction<conversationList[] | undefined>
+  >;
   selectedNavbarButton: string;
   setSelectedNavbarButton: React.Dispatch<React.SetStateAction<string>>;
 
@@ -82,11 +86,11 @@ export type Product = {
   gradient: string; // Tailwind CSS gradient class
 };
 
-export type DiscordOtherButton = {
+export type ServerListActionProps = {
   İcon: React.ElementType;
   name: string;
 };
-export type IconButtonProps = {
+export type SidebarNavItemProps = {
   Icon: IconType;
   title: string;
   route: string;
@@ -100,6 +104,11 @@ export type directMessageButton = {
   userPhoto: string;
   userName: string;
   friendId: string;
+};
+export type conversationList = {
+  conversationId: string;
+  friendId: string;
+  userName: string;
 };
 export interface LoginResponse {
   success: boolean;

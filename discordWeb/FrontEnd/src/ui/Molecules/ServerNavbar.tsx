@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { Search } from "lucide-react";
 import { FaUserFriends } from "react-icons/fa";
-import { AppContext } from "../../../context/userProvider";
 import { IoIosNotifications } from "react-icons/io";
 import { PiPushPinBold } from "react-icons/pi";
 import { IoPricetag } from "react-icons/io5";
-import IconWithDownSideHoverText from "../IconWithDownSideHoverText";
+import { AppContext } from "../../context/userProvider";
+import NavbarActionIcon from "./NavbarActionIcon";
 
 const ServerNavbar: React.FC = () => {
   const ctx = useContext(AppContext);
@@ -26,19 +26,19 @@ const ServerNavbar: React.FC = () => {
       {/* Right side */}
       <section className="flex items-center space-x-4">
         <div className="relative flex items-center gap-6 ">
-          <IconWithDownSideHoverText
+          <NavbarActionIcon
             Icon={IoPricetag}
             tooltipText="Alt başlıklar"
           />
-          <IconWithDownSideHoverText
+          <NavbarActionIcon
             Icon={IoIosNotifications}
             tooltipText="Bildirim Ayarları"
           />
-          <IconWithDownSideHoverText
+          <NavbarActionIcon
             Icon={PiPushPinBold}
             tooltipText="Sabitlenmiş Mesajlar"
           />
-          <IconWithDownSideHoverText
+          <NavbarActionIcon
             Icon={FaUserFriends}
             tooltipText="Üye Bilgilerini Göster"
           />

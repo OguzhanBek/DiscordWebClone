@@ -1,9 +1,9 @@
 import { grayBackground } from "../../Colors";
 import type { DmOlusturBeforeContentProps } from "../../types/types";
-{/* Bunun ismini de değiş. DMoluştur'a ait değil artık. Dinamik bir veriye hitap ediyor. */}
-function DmOlusturBeforeContent({ items }: DmOlusturBeforeContentProps) {
+
+function ChannelIcon({ items }: DmOlusturBeforeContentProps) {
   return (
-    <span className="DM-Olustur-Before-Context  gap-1 hidden group- group-hover/channel:flex ">
+    <span className="DM-Olustur-Before-Context  gap-1 hidden group group-hover/channel:flex ">
       {items.map(({ content, tooltipText }, index) => (
         <span key={index} className="relative group/item  ">
           <span  className="hover:cursor-pointer hover:text-white text-lg text-gray-400 ">
@@ -22,4 +22,4 @@ function DmOlusturBeforeContent({ items }: DmOlusturBeforeContentProps) {
   );
 }
 
-export default DmOlusturBeforeContent;
+export default ChannelIcon;

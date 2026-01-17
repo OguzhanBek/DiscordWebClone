@@ -1,9 +1,9 @@
-import type { DiscordOtherButton } from "../../types/types";
+import type { ServerListActionProps } from "../../types/types";
 
-function DiscordOtherButtons({
+function ServerListAction({
   İcon,
   name,
-}: DiscordOtherButton) {
+}: ServerListActionProps) {
   return (
     <div className="h-10 group w-10 mt-2 relative rounded-xl bg-[#202022] hover:bg-[#5764F1] focus:bg-[#5764F1] cursor-pointer flex items-center justify-center transition-all duration-200  ">
       <İcon size={24} />
@@ -16,4 +16,4 @@ function DiscordOtherButtons({
   );
 }
 
-export default DiscordOtherButtons;
+export default ServerListAction;

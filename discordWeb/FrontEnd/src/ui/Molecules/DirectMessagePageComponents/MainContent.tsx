@@ -1,6 +1,6 @@
 import { PiGifFill, PiSubtitlesDuotone } from "react-icons/pi";
 import ben from "../../../assets/Tuta.png";
-import IconWithUpSideHoverText from "../../Molecules/IconWithHoverText";
+import IconWithUpSideHoverText from "../IconWithUpSideHoverText";
 import { FaGift, FaPlus } from "react-icons/fa";
 import { LuSticker } from "react-icons/lu";
 import { BiSolidWidget } from "react-icons/bi";
@@ -53,7 +53,7 @@ function MainContent() {
 
         const data = await response.json();
         setMessages(data.messages);
-        setDmFriendName(data.friendName?.userName || "Bilinmeyen Kullanıcı");
+        setDmFriendName([data.friendName || "Bilinmeyen Kullanıcı"]);
       } catch (error) {
         console.log(error);
       }

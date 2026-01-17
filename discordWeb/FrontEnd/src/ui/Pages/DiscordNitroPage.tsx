@@ -1,9 +1,9 @@
 import { Crown, Upload, Users, MessageCircle, Star, Check } from "lucide-react";
 import discordNitroFooter from "../../assets/discord nitro footerpicture.png";
-import BlackButton from "../Atoms/BlackButton";
-import PurpleButton from "../Atoms/PurpleButton";
-import BlackLongButton from "../Atoms/BlackLongButton";
-import PurpleLongButton from "../Atoms/PurpleLongButton";
+import NitroSecondaryButton from "../Atoms/NitroSecondaryButton";
+import NitroPrimaryButton from "../Atoms/NitroPrimaryButton";
+import NitroSecondaryWideButton from "../Atoms/NitroSecondaryWideButton";
+import NitroPrimaryWideButton from "../Atoms/NitroPrimaryWideButton";
 export default function DiscordNitroPage() {
   const features = [
     {
@@ -73,9 +73,9 @@ export default function DiscordNitroPage() {
               özel emojiler, HD video ve daha fazlası için Nitro'yu dene.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <PurpleButton text={"Nitro Al"} />
+              <NitroPrimaryButton text={"Nitro Al"} />
 
-              <BlackButton text={"Daha Fazla Bilgi"} />
+              <NitroSecondaryButton text={"Daha Fazla Bilgi"} />
             </div>
           </div>
         </div>
@@ -149,9 +149,9 @@ export default function DiscordNitroPage() {
                   ))}
                 </ul>
                 {plan.popular ? (
-                  <PurpleLongButton text={plan.name} />
+                  <NitroPrimaryWideButton text={plan.name} />
                 ) : (
-                  <BlackLongButton text={plan.name} />
+                  <NitroSecondaryWideButton text={plan.name} />
                 )}
               </div>
             ))}
@@ -168,7 +168,7 @@ export default function DiscordNitroPage() {
             iptal edebilirsin.
           </p>
 
-          <BlackButton text={"Ücretsiz Dene"} />
+          <NitroSecondaryButton text={"Ücretsiz Dene"} />
         </div>
       </section>
       {/* App Bottom Section */}
@@ -186,7 +186,7 @@ export default function DiscordNitroPage() {
               <button className="bg-white text-[#5864F0] hover:bg-[#DFE0E2] px-6 py-3 rounded-md font-semibold transition-all duration-200 transform cursor-pointer">
                 Nitro Satın Al
               </button>
-              <BlackButton text={"Daha fazla bilgi"} />
+              <NitroSecondaryButton text={"Daha fazla bilgi"} />
             </div>
           </div>
 

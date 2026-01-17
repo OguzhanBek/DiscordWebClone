@@ -4,7 +4,7 @@ import {
   PiSubtitlesDuotone,
 } from "react-icons/pi";
 import ben from "../../assets/Tuta.png";
-import IconWithUpSideHoverText from "../Molecules/IconWithHoverText";
+import IconWithUpSideHoverText from "../Molecules/IconWithUpSideHoverText";
 import { FaGift, FaPlus } from "react-icons/fa";
 import { LuSticker } from "react-icons/lu";
 import { BiSolidWidget } from "react-icons/bi";

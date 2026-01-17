@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import { AppContext } from "../../context/userProvider";
 import { useNavigate, useLocation } from "react-router-dom";
-import type { IconButtonProps } from "../../types/types";
+import type { SidebarNavItemProps  } from "../../types/types";
 
-function ButtonWithIcon({ Icon, title, route }: IconButtonProps) {
+function SidebarNavItem ({ Icon, title, route }: SidebarNavItemProps ) {
   const ctx = useContext(AppContext);
   if (!ctx) return null;
   const { setTopSideTitle } = ctx;
@@ -41,4 +41,4 @@ function ButtonWithIcon({ Icon, title, route }: IconButtonProps) {
   );
 }
 
-export default ButtonWithIcon;
+export default SidebarNavItem ;

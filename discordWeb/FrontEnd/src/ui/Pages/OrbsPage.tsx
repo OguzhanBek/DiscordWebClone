@@ -1,4 +1,4 @@
-import DiscordOrbsPageNavbar from "../Molecules/DiscordOrbsPageComponents/DiscordOrbsPageNavbar";
+import DiscordOrbsPageNavbar from "../Molecules/DiscordOrbsNavbar";
 import orbbüyü from "../../assets/orb büyücüsü.png";
 import Tutacard from "../Organisms/Tutacard";
 function OrbsPage() {

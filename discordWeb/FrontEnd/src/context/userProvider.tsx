@@ -1,20 +1,22 @@
 import { createContext, useState, useEffect, type ReactNode } from "react";
-import type {
-  AppContextType,
-  friendReuestType,
-  FriendType,
-  TopSideTitle,
-  User,
+import {
+  type AppContextType,
+  type conversationList,
+  type friendReuestType,
+  type FriendType,
+  type TopSideTitle,
+  type User,
 } from "../types/types";
 import { FaDiscord } from "react-icons/fa";
-
 
 export const AppContext = createContext<AppContextType | null>(null);
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
   const [userInfo, setUserInfo] = useState<User | null>(null);
-  const [dmFriendName, setDmFriendName] = useState("");
+  const [dmFriendName, setDmFriendName] = useState<string[]>([]);
   const [friendRequests, setFriendRequests] = useState<friendReuestType[]>([]);
+  const [conversationList, setConversationList] =
+    useState<conversationList[]>();
   const [friendList, setFriendList] = useState<FriendType[]>();
   const [openCreateDmModal, setOpenCreateDmModal] = useState<boolean>(false);
   const [jwtToken, setJwtToken] = useState<string | null>(
@@ -42,7 +44,6 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [jwtToken]);
 
-
   return (
     <AppContext.Provider
       value={{
@@ -52,6 +53,8 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
         setUserInfo,
         friendList,
         setFriendList,
+        conversationList,
+        setConversationList,
         openCreateDmModal,
         setOpenCreateDmModal,
         friendRequests,
@@ -65,7 +68,7 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
         topSideTitle,
         setTopSideTitle,
         sidebarWidth,
-        setSidebarWidth
+        setSidebarWidth,
       }}
     >
       {children}
