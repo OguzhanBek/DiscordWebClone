@@ -1,47 +1,55 @@
-import { IoMdClose } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/userProvider";
 
-type DirectConversationItemProps = {
+interface Participant {
+  friendId: string;
+  userName: string;
+}
+
+interface DirectConversationItemProps {
   conversationId: string;
-  participants: Array<{ friendId: string; userName: string }>;
+  participants: Participant[];
   userPhoto: string;
-};
+}
 
 function DirectConversationItem({
   conversationId,
   participants,
   userPhoto,
 }: DirectConversationItemProps) {
-  const navigate = useNavigate();
   const ctx = useContext(AppContext);
+  const navigate = useNavigate();
+
   if (!ctx) return null;
+
   const { setDmFriendName } = ctx;
 
-  // ✅ Katılımcı isimlerini birleştir
-  const displayName = participants.map(p => p.userName).join(", ");
-
-  const openConversation = () => {
-    // ✅ Conversation zaten var, direkt aç
+  const handleClick = () => {
+    // Tüm participant isimlerini context'e kaydet
+    const names = participants.map((p) => p.userName);
+    setDmFriendName(names);
+    
+    // Conversation'a yönlendir
     navigate(`/directMessage/${conversationId}`);
-    setDmFriendName(participants.map(p => p.userName));
   };
+
+  // Gösterim için isimleri birleştir
+  const displayName = participants.map((p) => p.userName).join(", ");
 
   return (
     <div
-      onClick={openConversation}
-      className="DİREKT-MESAJLAR relative flex flex-col items-center m-auto"
+      onClick={handleClick}
+      className="flex items-center gap-3 px-2 py-2 rounded hover:bg-[#35363C] cursor-pointer "
     >
-      <button className="flex gap-2 h-8 items-center bg-[#121214] rounded-xl w-[95%] pt-6 pb-6 hover:bg-[#1C1C1E] hover:cursor-pointer active:bg-[#2C2C30] group hover:text-white">
-        <img className="h-8 w-8 rounded-2xl ml-2" src={userPhoto} alt="" />
-        <p className="text-md font-semibold text-gray-400 group-hover:text-white">
-          {displayName}
-        </p>
-        <span className="absolute right-6 text-gray-400 group-hover:text-white group-hover:visible invisible">
-          <IoMdClose className="text-gray-400 hover:text-white" />
-        </span>
-      </button>
+      <img
+        src={userPhoto}
+        alt="user"
+        className="w-8 h-8 rounded-full"
+      />
+      <span className="text-gray-300 font-medium truncate">
+        {displayName}
+      </span>
     </div>
   );
 }

@@ -20,8 +20,12 @@ function FriendListItem({
   const context = useContext(AppContext);
   if (!context) return null;
 
-  const { jwtToken, setDmFriendName,setJwtToken } = context;
-
+  const {
+    jwtToken,
+    setDmFriendName,
+    setJwtToken,
+    setConversationList,
+  } = context;
   const createOrOpenDm = async () => {
     if (!jwtToken) {
       navigate("/login");
@@ -75,21 +79,54 @@ function FriendListItem({
       }
 
       const data = await response.json();
-      console.log("data", data);
       if (!data?.conversationId) {
         toast.error("Geçersiz sunucu yanıtı.");
         return;
       }
-
+      console.log("data : ", data);
       console.log(data);
       navigate(`/directMessage/${data.conversationId}`);
-      setDmFriendName([data.friendName]);
+
+      // ✅ İsimleri array olarak set et
+      const friendNames = Array.isArray(data.friendName)
+        ? data.friendName
+        : [data.friendName];
+      setDmFriendName(friendNames);
+
+      const newConversations = friendNames.map(
+        (name: string) => ({
+          conversationId: data.conversationId,
+          friendId: friendId, // ✅ Mevcut friendId'yi kullan (FriendListItem'dan geliyor)
+          userName: name,
+        }),
+      );
+
+      setConversationList((prev) => {
+        const current = prev || [];
+
+        // Eski conversation'ın index'ini bul
+        const firstOccurrenceIndex = current.findIndex(
+          (c) => c.conversationId === data.conversationId,
+        );
+
+        if (firstOccurrenceIndex === -1) {
+          // Yoksa sona ekle
+          return [...current, ...newConversations];
+        }
+
+        // Varsa aynı pozisyonda güncelle
+        const withoutOld = current.filter(
+          (c) => c.conversationId !== data.conversationId,
+        );
+        withoutOld.splice(firstOccurrenceIndex, 0, ...newConversations);
+        return withoutOld;
+      });
     } catch (error: any) {
       if (error.name === "AbortError") {
         toast.error("İstek zaman aşımına uğradı. Lütfen tekrar deneyin.");
       } else if (error instanceof TypeError) {
         toast.error(
-          "Sunucuya bağlanılamıyor. İnternet bağlantınızı kontrol edin."
+          "Sunucuya bağlanılamıyor. İnternet bağlantınızı kontrol edin.",
         );
       } else {
         console.error("Chat açılırken hata:", error);

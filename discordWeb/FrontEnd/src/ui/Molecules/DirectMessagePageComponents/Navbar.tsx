@@ -23,8 +23,12 @@ const Navbar: React.FC = () => {
             <img className="rounded-full w-8 h-8 ml-4 " src={ben} alt="tuta" />
           </div>
           {dmFriendName.map((friendName, index) => (
-            <span key={index} className="font-semibold select-none whitespace-nowrap">
+            <span
+              key={index}
+              className="font-semibold select-none whitespace-nowrap"
+            >
               {friendName}
+              {index < dmFriendName.length - 1 && ", "}
             </span>
           ))}
         </section>
