@@ -3,64 +3,86 @@ using Backend.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Backend.Hubs; // 👈 ChatHub için
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CORS
+// ===================== CORS =====================
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5173")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
 });
 
-// Controllers & Swagger
+// ===================== Controllers & Swagger =====================
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// EF Core DbContext
+// ===================== EF Core =====================
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    );
 });
 
-// ✅ JWT Authentication Ekle
+// ===================== JWT =====================
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"];
 
 if (string.IsNullOrEmpty(secretKey))
 {
-    throw new InvalidOperationException("JWT SecretKey is not configured in appsettings.json");
+    throw new InvalidOperationException("JWT SecretKey is not configured");
 }
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-        ClockSkew = TimeSpan.Zero // Token süresini tam kullan
-    };
-});
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(secretKey)
+            ),
+            ClockSkew = TimeSpan.Zero
+        };
+
+        // 🔥 SIGNALR JWT İÇİN ŞART
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/hub/chat"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 builder.Services.AddAuthorization();
 
+// ===================== SIGNALR =====================
+builder.Services.AddSignalR();
+
+// ===================== APP =====================
 var app = builder.Build();
 
 app.UseCors("AllowFrontend");
@@ -73,10 +95,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ✅ Sıra önemli: Önce Authentication, sonra Authorization
+//  SIRA ÖNEMLİ
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// 🔥 SIGNALR HUB ROUTE
+app.MapHub<ChatHub>("/hub/chat");
 
 app.Run();

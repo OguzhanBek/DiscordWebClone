@@ -4,6 +4,12 @@ import tuta from "../../assets/Tuta.png";
 import { AppContext } from "../../context/userProvider";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import type { conversationList } from "../../types/types";
+
+type data = {
+  conversationId: string;
+  friendName: string[];
+};
 
 function CreateDMModal() {
   const navigate = useNavigate();
@@ -17,14 +23,15 @@ function CreateDMModal() {
     jwtToken,
     setJwtToken,
     setDmFriendName,
+    setConversationList,
   } = ctx;
 
   function toggleUser(id: string) {
     setSelectedUsers((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   }
-  const createOrDm = async (friendId: string[]) => {
+  const createOrOpenDm = async (friendId: string[]) => {
     if (!jwtToken) {
       toast.error("Oturum süreniz dolmuş.");
       navigate("/login");
@@ -41,20 +48,55 @@ function CreateDMModal() {
         body: JSON.stringify({ friendId }),
       });
 
-      if (!response.ok) {
-        toast.error("Chat açılamadı");
-        return;
-      }
       if (response.status === 401) {
         localStorage.removeItem("jwtToken");
         setJwtToken(null);
         navigate("/login");
         return;
       }
+
+      if (!response.ok) {
+        toast.error("Chat açılamadı");
+        return;
+      }
+
       const data = await response.json();
+
+      // friendName'in her zaman aray ollmasını sağlamak için kullanıldı.'
+      const friendNames = Array.isArray(data.friendName)
+        ? data.friendName
+        : [data.friendName];
+
+      setDmFriendName(friendNames);
+
+
+      const newConversations = friendNames.map((name: string) => ({
+        conversationId: data.conversationId,
+        friendId: friendId,
+        userName: name,
+      }));
+
+      setConversationList((prev) => {
+        const current = prev || [];
+
+        const firstOccurrenceIndex = current.findIndex(
+          (c) => c.conversationId === data.conversationId,
+        );
+
+        if (firstOccurrenceIndex === -1) { // bu eşleşem yoksa demek.
+          return [...current, ...newConversations];
+        }
+
+        const withoutOld = current.filter(
+          (c) => c.conversationId !== data.conversationId,
+        );
+
+        withoutOld.splice(firstOccurrenceIndex, 0, ...newConversations);
+        return withoutOld;
+      });
+
       navigate(`/directMessage/${data.conversationId}`);
-      setDmFriendName([data.friendName]);
-    } catch {
+    } catch (error) {
       toast.error("Bir hata oluştu");
     }
   };
@@ -100,7 +142,7 @@ function CreateDMModal() {
         <div className="scrollbar-discord h-[460px] overflow-y-auto px-2 text-left">
           {friendList
             ?.filter((f) =>
-              f.userName.toLowerCase().includes(input.toLowerCase())
+              f.userName.toLowerCase().includes(input.toLowerCase()),
             )
             .map((friend) => {
               const isSelected = selectedUsers.includes(friend.friendId);
@@ -149,7 +191,10 @@ function CreateDMModal() {
           </button>
 
           <button
-            onClick={() => createOrDm(selectedUsers)}
+            onClick={() => {
+              createOrOpenDm(selectedUsers);
+              setOpenCreateDmModal(false);
+            }}
             disabled={selectedUsers.length === 0}
             className={`w-full disabled:cursor-not-allowed px-5 py-2.5 text-sm rounded-md bg-[#4654C0] cursor-pointer transition-all font-medium 
               ${

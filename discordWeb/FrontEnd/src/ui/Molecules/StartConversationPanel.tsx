@@ -10,15 +10,18 @@ type FindFriendsProps = {
   setOpenFindFriends: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function StartConversationPanel({ friendList, setOpenFindFriends }: FindFriendsProps) {
+function StartConversationPanel({
+  friendList,
+  setOpenFindFriends,
+}: FindFriendsProps) {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
 
   const ctx = useContext(AppContext);
   if (!ctx) return null;
-  const { setDmFriendName, jwtToken,setJwtToken } = ctx;
+  const { setDmFriendName, jwtToken, setJwtToken, setConversationList } = ctx;
 
-  const createOrOpenDm = async (friendId: string) => {
+  const createOrOpenDm = async (friendId: string[]) => {
     if (!jwtToken) {
       toast.error("Oturum süreniz dolmuş.");
       navigate("/login");
@@ -35,20 +38,55 @@ function StartConversationPanel({ friendList, setOpenFindFriends }: FindFriendsP
         body: JSON.stringify({ friendId }),
       });
 
-      if (!response.ok) {
-        toast.error("Chat açılamadı");
-        return;
-      }
       if (response.status === 401) {
         localStorage.removeItem("jwtToken");
         setJwtToken(null);
         navigate("/login");
         return;
       }
+
+      if (!response.ok) {
+        toast.error("Chat açılamadı");
+        return;
+      }
+
       const data = await response.json();
+
+      // 🔹 friendName her zaman array olsun
+      const friendNames = Array.isArray(data.friendName)
+        ? data.friendName
+        : [data.friendName];
+
+      setDmFriendName(friendNames);
+
+      // 🔹 ConversationList için entry’ler
+      const newConversations = friendNames.map((name: string) => ({
+        conversationId: data.conversationId,
+        friendId: friendId,
+        userName: name,
+      }));
+
+      setConversationList((prev) => {
+        const current = prev || [];
+
+        const firstOccurrenceIndex = current.findIndex(
+          (c) => c.conversationId === data.conversationId,
+        );
+
+        if (firstOccurrenceIndex === -1) {
+          return [...current, ...newConversations];
+        }
+
+        const withoutOld = current.filter(
+          (c) => c.conversationId !== data.conversationId,
+        );
+
+        withoutOld.splice(firstOccurrenceIndex, 0, ...newConversations);
+        return withoutOld;
+      });
+
       navigate(`/directMessage/${data.conversationId}`);
-      setDmFriendName([data.friendName]);
-    } catch {
+    } catch (error) {
       toast.error("Bir hata oluştu");
     }
   };
@@ -68,13 +106,13 @@ function StartConversationPanel({ friendList, setOpenFindFriends }: FindFriendsP
       <div className="bg-[#212125] h-40 overflow-y-auto">
         {friendList
           ?.filter((f) =>
-            f.userName.toLowerCase().includes(input.toLowerCase())
+            f.userName.toLowerCase().includes(input.toLowerCase()),
           )
           .map((friend) => (
             <div
               key={friend.friendId}
               onClick={() => {
-                createOrOpenDm(friend.friendId);
+                createOrOpenDm([friend.friendId]);
                 setOpenFindFriends(false);
               }}
               className="px-2 flex items-center gap-2 hover:bg-[#2f2f3a] cursor-pointer py-2"

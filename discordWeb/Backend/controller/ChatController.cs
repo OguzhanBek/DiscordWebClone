@@ -24,6 +24,7 @@ namespace ChatController.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateDirectConversation request = null!)
         {
+            Console.WriteLine("request", request);
             if (request == null)
             {
                 return BadRequest("request boş");
@@ -38,7 +39,6 @@ namespace ChatController.Controllers
             if (targetsUserId.Contains(myUserId))
                 return BadRequest("Kendine mesaj atamazsın");
 
-            // Arkadaşın bilgilerini çek
             var friends = await _context.Users
                 .Where(u => targetsUserId.Contains(u.UserId))
                 .Select(u => new { u.UserId, u.UserName })
@@ -47,25 +47,20 @@ namespace ChatController.Controllers
             if (friends == null || friends.Count == 0)
                 return BadRequest("Kullanıcı bulunamadı");
 
-            // Mevcut conversation'u kontrol et
-            var allUserIds = targetsUserId.Append(myUserId).OrderBy(x => x).ToList();
+            var allUserIds = targetsUserId.Append(myUserId).ToList();
+            var expectedCount = allUserIds.Count;
 
-            // ✅ KAPSAMLI DÜZELTME: Tam olarak aynı katılımcılara sahip conversation'ı bul
-            var existingConversations = await _context.DirectParticipants
+            var conversationId = await _context.DirectParticipants
+                .Where(dp => allUserIds.Contains(dp.UserId))
                 .GroupBy(dp => dp.ConversationId)
-                .Select(g => new
-                {
-                    ConversationId = g.Key,
-                    UserIds = g.Select(x => x.UserId).OrderBy(x => x).ToList()
-                })
-                .ToListAsync();
-
-            // Memory'de karşılaştır (LINQ to Objects)
-            var conversationId = existingConversations
-                .FirstOrDefault(c =>
-                    c.UserIds.Count == allUserIds.Count &&
-                    c.UserIds.SequenceEqual(allUserIds)
-                )?.ConversationId;
+                .Where(g => g.Count() == expectedCount)  //  Bu conversation'da TAM bu kadar kayıt var mı?
+                .Select(g => g.Key)
+                .Where(convId =>
+                    !_context.DirectParticipants
+                        .Where(dp => dp.ConversationId == convId)
+                        .Any(dp => !allUserIds.Contains(dp.UserId))
+                ) // Buradaki sorgu Where sorgusu hallediyor her şeyi
+                .FirstOrDefaultAsync();
 
 
             if (conversationId == null)
@@ -104,6 +99,7 @@ namespace ChatController.Controllers
                 FriendName = friendsName
             });
         }
+
         [Authorize]
         [HttpGet("{conversationId}/messages")]
         public async Task<IActionResult> GetMessages(string conversationId)
@@ -118,7 +114,6 @@ namespace ChatController.Controllers
             if (!isParticipant)
                 return Forbid();
 
-            // Karşı tarafın bilgisini bul
             var otherUsers = await _context.DirectParticipants
                 .Where(dp => dp.ConversationId == conversationId && dp.UserId != myUserId)
                 .Join(_context.Users,
@@ -154,6 +149,7 @@ namespace ChatController.Controllers
                 Messages = messages
             });
         }
+
         [Authorize]
         [HttpGet("getConversationList")]
         public async Task<IActionResult> GetConversations()
@@ -162,14 +158,12 @@ namespace ChatController.Controllers
             if (myId == null)
                 return Unauthorized();
 
-            // 1️⃣ Benim dahil olduğum conversationId'ler
             var myConversationIds = await _context.DirectParticipants
                 .Where(dp => dp.UserId == myId)
                 .Select(dp => dp.ConversationId)
                 .Distinct()
                 .ToListAsync();
 
-            // 2️⃣ Bu conversation'lardaki DİĞER kullanıcılar
             var conversations = await _context.DirectParticipants
                 .Where(dp =>
                     myConversationIds.Contains(dp.ConversationId) &&
