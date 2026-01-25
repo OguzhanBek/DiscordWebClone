@@ -4,7 +4,7 @@ import IconWithUpSideHoverText from "../IconWithUpSideHoverText";
 import { FaGift, FaPlus } from "react-icons/fa";
 import { LuSticker } from "react-icons/lu";
 import { BiSolidWidget } from "react-icons/bi";
-import { useContext, useEffect, useState, useRef } from "react";
+import { useContext, useEffect, useState, useRef } from "react"; //genellikle en üstte paketler olur , boşluk olucak bir altta sonra da kendi yazdıklarımız olacak.
 import { AiTwotoneFileAdd } from "react-icons/ai";
 import { RiSurveyFill } from "react-icons/ri";
 import { useParams } from "react-router-dom";
@@ -26,20 +26,28 @@ function MainContent() {
     userId: string;
     username: string;
   };
+  //contextler en üsste olur. Sonra bir altta hook varsa hoook gelir. Hooktan sonra da userefler gelir. Sonra da usestate gelir. Sonra da useffect. useEffectlerden sonra da if'ler gelir.
+
+  
+  const context = useContext(AppContext);
+  const signalContext = useContext(SignalRContext);
+
+  const { chatId } = useParams<{ chatId: string }>();
+
+  const typingTimeoutRef = useRef<number | null>(null);
+
+
 
   const [openDropdown, setOpenDropdown] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
-  const typingTimeoutRef = useRef(null);
 
-  const { chatId } = useParams<{ chatId: string }>();
-  const context = useContext(AppContext);
-  const signalContext = useContext(SignalRContext);
   if (!context) return null;
 
   const { jwtToken, dmFriendName, setDmFriendName } = context;
 
+  //Bunu service dosyasına feth kodunu yazıp , sonra useQury ile hook oluşturulmalı.
   useEffect(() => {
     if (!chatId) return;
 
@@ -85,11 +93,16 @@ function MainContent() {
     }
 
     try {
-      await signalContext?.invoke("SendMessage", chatId, input);
-      
+      //socketi provider'dan yönetilen hook şeklinde istiyorlar.
+      await signalContext?.chatConnection?.invoke("SendMessage", chatId, input);
+
       // Typing durumunu kapat
-      await signalContext?.invoke("UserTyping", chatId, false);
-      
+      await signalContext?.chatConnection?.invoke("UserTyping", chatId, false);
+      console.log("signal context mount bilgisi : ", signalContext);
+      console.log(
+        "signal context chat konection bilgisi : ",
+        signalContext?.chatConnection,
+      );
       setInput("");
     } catch (error) {
       console.error(error);
@@ -102,54 +115,120 @@ function MainContent() {
 
     if (!chatId || !signalContext) return;
 
-    // Typing 
+    // Typing
     try {
-      await signalContext.invoke("UserTyping", chatId, true);
-
+      await signalContext.chatConnection?.invoke("UserTyping", chatId, true);
 
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
 
-      // 2 saniye sonra typing durumunu kapat
+      // settimeout kullanmadan kullanmam lazımmış.
       typingTimeoutRef.current = setTimeout(async () => {
-        await signalContext.invoke("UserTyping", chatId, false);
-      }, 2000); // her input değişiminde burası burayı resetliyorum. Sürekli 2 saniye sonra kapanıcak şekilde ayarlanıyor. 
+        await signalContext.chatConnection?.invoke("UserTyping", chatId, false);
+      }, 2000); // her input değişiminde burası burayı resetliyorum. Sürekli 2 saniye sonra kapanıcak şekilde ayarlanıyor.
     } catch (error) {
       console.error("Typing event gönderilemedi:", error);
     }
   };
 
   useEffect(() => {
-    if (!signalContext) return;
+    if (!signalContext?.chatConnection) return;
 
-    signalContext.on("ReceiveMessage", (msg) => {
-      if (msg.conversationId !== chatId) return;
-      setMessages(prev => [...prev, msg]);
-    });
+    // Bağlantının hazır olmasını bekle
+    const setupListeners = async () => {
+      // Eğer bağlantı "Connected" durumunda değilse, bekle
+      if (signalContext.chatConnection?.state !== "Connected") {
+        console.log("Bağlantı henüz hazır değil, bekleniyor...");
+        // Bağlantının kurulmasını bekle
+        await new Promise((resolve) => {
+          const checkConnection = setInterval(() => {
+            if (signalContext.chatConnection?.state === "Connected") {
+              clearInterval(checkConnection);
+              resolve(true);
+            }
+          }, 100);
+        });
+      }
 
-    signalContext.on("UserTyping", (data: { conversationId: string; userId: string; username: string; isTyping: boolean }) => {
-      if (data.conversationId !== chatId) return;
+      const handleReceiveMessage = (msg: Message) => {
+        if (msg.conversationId !== chatId) return;
+        setMessages((prev) => [...prev, msg]);
+        console.log("Mesaj alındı:", msg.content);
+      };
 
-      setTypingUsers(prev => {
-        if (data.isTyping) {
-          // Kullanıcıyı ekleme yapıyom çünkü kimin ne yazdığını göremem lazım.
-          if (!prev.find(u => u.userId === data.userId)) {
-            return [...prev, { userId: data.userId, username: data.username }];
+      const handleUserTyping = (data: {
+        conversationId: string;
+        userId: string;
+        username: string;
+        isTyping: boolean; // bu şekilde object destructin type ı istemioyrlar. Types dosyasından gelcek her type.
+      }) => {
+        if (data.conversationId !== chatId) return;
+
+        setTypingUsers((prev) => {
+          if (data.isTyping) {
+            if (!prev.find((u) => u.userId === data.userId)) {
+              return [
+                ...prev,
+                { userId: data.userId, username: data.username },
+              ];
+            }
+            return prev;
+          } else {
+            return prev.filter((u) => u.userId !== data.userId);
           }
-          return prev;  //Burada kullanıcı zaten varsa değiştirmiyorm. Bağlantı sürekli açık olacağı için normalden farklı çalışıyor. data.istyping her saniye kontrol edilir. Tek seferlik kontrol edilmez. Sürekli tetiklenme oluyyor. O yüzden return prev'i eklemem lazım ki data.istyiping ture olduğunda eğer ypingusers'da yoksam eklenmem lazım . Varsam aynı array'i bas geç. 
-        } else {
-          // Kullanıcıyı çıkar
-          return prev.filter(u => u.userId !== data.userId);
-        }
-      });
-    });
+        });
+      };
+
+      // Listener'ları ekle
+      signalContext.chatConnection?.on("ReceiveMessage", handleReceiveMessage);
+      signalContext.chatConnection?.on("UserTyping", handleUserTyping);
+
+      console.log("✅ SignalR listeners kuruldu");
+
+      // Cleanup
+      return () => {
+        signalContext.chatConnection?.off(
+          "ReceiveMessage",
+          handleReceiveMessage,
+        );
+        signalContext.chatConnection?.off("UserTyping", handleUserTyping);
+        console.log("🧹 SignalR listeners temizlendi");
+      };
+    };
+
+    setupListeners();
+  }, [signalContext?.chatConnection, chatId]);
+
+  useEffect(() => {
+    return () => {
+      // Component unmount olduğunda timeout'u temizle
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!signalContext?.chatConnection || !chatId) return;
+
+    const joinConversation = async () => {
+      try {
+        await signalContext.chatConnection?.invoke("JoinConversation", chatId);
+        console.log("✅ Sohbete katıldı:", chatId);
+      } catch (error) {
+        console.error("❌ Sohbete katılamadı:", error);
+      }
+    };
+
+    joinConversation(); // bu şekilde kod yazılmaz. UseEffect içine fonksyion yazılmaz. Fonskiyton callback olarak dışarıdan çağırılmalı. useCallback ile yapabilirim.
 
     return () => {
-      signalContext.off("ReceiveMessage");
-      signalContext.off("UserTyping");
+      signalContext.chatConnection
+        ?.invoke("LeaveConversation", chatId)
+        .catch((err) => console.error("Ayrılma hatası:", err));
     };
-  }, [signalContext, chatId]);
+  }, [chatId, signalContext?.chatConnection]);
 
   return (
     <div className="flex h-full flex-col-reverse overflow-y-auto discord-scrollbar">
@@ -161,7 +240,7 @@ function MainContent() {
             className="text-gray-300 transition-all hover:text-white 
 text-3xl cursor-pointer flex items-center justify-center"
           >
-            {/* + butonu - Dropdown menü */}
+            {/* + butonu - Dropdown menü  Burası tamamen klomponent olacak.*/}
             <div
               onClick={() => {
                 setOpenDropdown(!openDropdown);
@@ -287,12 +366,22 @@ text-3xl cursor-pointer flex items-center justify-center"
             <img src={ben} className="select-none h-10 w-10 rounded-full" />
             <div className="text-gray-400 flex items-center gap-2">
               <span className="italic">
-                {typingUsers.map(u => u.username).join(", ")} yazıyor
+                {typingUsers.map((u) => u.username).join(", ")} yazıyor
               </span>
               <div className="flex gap-1">
                 <span className="animate-bounce">.</span>
-                <span className="animate-bounce" style={{ animationDelay: "0.1s" }}>.</span>
-                <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>.</span>
+                <span
+                  className="animate-bounce"
+                  style={{ animationDelay: "0.1s" }}
+                >
+                  .
+                </span>
+                <span
+                  className="animate-bounce"
+                  style={{ animationDelay: "0.2s" }}
+                >
+                  .
+                </span>
               </div>
             </div>
           </div>

@@ -2,7 +2,12 @@ import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { createContext, useContext, useEffect, useState } from "react";
 import { AppContext } from "./userProvider";
 
-export const SignalRContext = createContext<HubConnection | null>(null);
+interface SignalRContextType {
+  chatConnection: HubConnection | null;
+  presenceConnection: HubConnection | null;
+}
+
+export const SignalRContext = createContext<SignalRContextType | null>(null);
 
 export const SignalRProvider = ({
   children,
@@ -10,12 +15,29 @@ export const SignalRProvider = ({
   children: React.ReactNode;
 }) => {
   const appCtx = useContext(AppContext);
-  const [connection, setConnection] = useState<HubConnection | null>(null);
+  const [chatConnection, setChatConnection] = useState<HubConnection | null>(
+    null,
+  );
+  const [presenceConnection, setPresenceConnection] =
+    useState<HubConnection | null>(null);
 
   useEffect(() => {
     if (!appCtx?.jwtToken) return;
 
-    const connect = async () => {
+    const connectToPresence = async () => {
+      const conn = new HubConnectionBuilder()
+        .withUrl("http://localhost:5200/hub/presence", {
+          accessTokenFactory: () => appCtx.jwtToken!,
+        })
+        .withAutomaticReconnect()
+        .build();
+
+      await conn.start();
+      setPresenceConnection(conn);
+      console.log("✅ Presence hub'a bağlandı");
+    };
+
+    const connectToChat = async () => {
       const conn = new HubConnectionBuilder()
         .withUrl("http://localhost:5200/hub/chat", {
           accessTokenFactory: () => appCtx.jwtToken!,
@@ -24,18 +46,22 @@ export const SignalRProvider = ({
         .build();
 
       await conn.start();
-      setConnection(conn);
+      setChatConnection(conn);
+      console.log("✅ Chat hub'a bağlandı");
+
     };
 
-    connect();
+    connectToChat();
+    connectToPresence();
 
     return () => {
-      connection?.stop();
+      chatConnection?.stop();
+      presenceConnection?.stop();
     };
   }, [appCtx?.jwtToken]);
 
   return (
-    <SignalRContext.Provider value={connection}>
+    <SignalRContext.Provider value={{presenceConnection, chatConnection  }}>
       {children}
     </SignalRContext.Provider>
   );

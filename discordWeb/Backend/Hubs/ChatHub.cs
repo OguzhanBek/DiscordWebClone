@@ -14,13 +14,14 @@ public class ChatHub : Hub
     {
         _context = context;
     }
-// Array [ {userid:online }   , user2 : id ]
+
     // Kullanıcı bağlandığında
     public override async Task OnConnectedAsync()
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId != null)
         {
+            Console.WriteLine($"ChatHub - user : {userId}");
             var conversationIds = await _context.DirectParticipants
                 .Where(p => p.UserId == userId)
                 .Select(p => p.ConversationId)
@@ -76,6 +77,29 @@ public class ChatHub : Hub
         });
     }
 
+    public async Task JoinConversation(string conversationId)
+    {
+        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId)) return;
+
+        var isParticipant = await _context.DirectParticipants
+            .AnyAsync(p => p.ConversationId == conversationId && p.UserId == userId);
+
+        if (!isParticipant)
+        {
+            Console.WriteLine($"⚠️ User {userId} is not a participant of {conversationId}");
+            return;
+        }
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
+        Console.WriteLine($"✅ User {userId} joined conversation {conversationId}");
+    }
+
+    public async Task LeaveConversation(string conversationId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, conversationId);
+        Console.WriteLine($"🚪 User left conversation {conversationId}");
+    }
     public async Task UserTyping(string conversationId, bool isTyping)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;

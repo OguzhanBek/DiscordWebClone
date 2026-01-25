@@ -20,13 +20,14 @@ export type FriendType = {
 };
 export type AppContextType = {
   dmFriendName: string[];
+  logout : ()=> void;
+  setJwtToken: (token:string |null) => void;
   setDmFriendName: React.Dispatch<React.SetStateAction<string[]>>;
   userInfo: User | null;
   setUserInfo: React.Dispatch<React.SetStateAction<User | null>>;
   friendRequests: friendReuestType[];
   setFriendRequests: React.Dispatch<React.SetStateAction<friendReuestType[]>>;
   jwtToken: string | null;
-  setJwtToken: React.Dispatch<React.SetStateAction<string | null>>;
 
   friendList: FriendType[] | undefined;
   setFriendList: React.Dispatch<React.SetStateAction<FriendType[] | undefined>>;

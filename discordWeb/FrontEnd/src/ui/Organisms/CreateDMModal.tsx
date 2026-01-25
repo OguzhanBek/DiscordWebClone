@@ -4,12 +4,8 @@ import tuta from "../../assets/Tuta.png";
 import { AppContext } from "../../context/userProvider";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import type { conversationList } from "../../types/types";
 
-type data = {
-  conversationId: string;
-  friendName: string[];
-};
+
 
 function CreateDMModal() {
   const navigate = useNavigate();
