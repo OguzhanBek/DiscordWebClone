@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import tuta from "../../assets/Tuta.png";
 import FriendListItem from "../Molecules/FriendListItem";
 import { AppContext } from "../../context/userProvider";
@@ -7,6 +7,7 @@ import AddFriendPage from "./AddFriendPage";
 import { useLocation } from "react-router-dom";
 import FriendRequestItem from "../Molecules/FriendRequestItem";
 import FriendsNavbar from "../Molecules/FriendsNavbar";
+import { SignalRContext } from "../../context/signalRContext";
 
 function FriendsPage() {
   const [friendsInfo] = useState([
@@ -42,13 +43,73 @@ function FriendsPage() {
     },
   ]);
 
+  type onlinefriend = {
+    friendId: string;
+    userName: string;
+  };
+
   const [input, setInput] = useState("");
+  const [onlineFriends, setOnlineFriends] = useState<onlinefriend[]>([]);
   const ctx = useContext(AppContext);
+  const signalContext = useContext(SignalRContext);
+
   if (!ctx) return null;
 
   const { selectedNavbarButton, friendRequests, friendList } = ctx;
-  console.log(friendList?.map((id) => id.friendId));
   const location = useLocation();
+
+  useEffect(() => {
+    if (!signalContext?.presenceConnection) return;
+
+    const handleInitialOnlineUsers = (users: any[]) => {
+      console.log("📋 İlk online liste:", users);
+      users.filter(user  => user.friendId !== ctx.jwtToken)
+      setOnlineFriends(users);
+    };
+
+    const handleUserOnline = (user: any) => {
+      console.log("👤 Yeni online user:", user);
+      setOnlineFriends((prev) => {
+        if (prev.some((u) => u.friendId === user.friendId)) {
+          return prev;
+        }
+        return [...prev, user];
+      });
+    };
+
+    const handleUserOffline = (userId: string) => {
+      console.log("👋 User offline:", userId);
+      setOnlineFriends((prev) => prev.filter((u) => u.friendId !== userId));
+    };
+
+    // Listener'ları ekle
+    signalContext.presenceConnection.on("initialOnlineUsers",handleInitialOnlineUsers,);
+    signalContext.presenceConnection.on("useronline", handleUserOnline);
+    signalContext.presenceConnection.on("useroffline", handleUserOffline);
+
+
+    signalContext.presenceConnection
+      .invoke("GetOnlineUsers")
+      .then(() => console.log("✅ GetOnlineUsers başarıyla çağrıldı"))
+      .catch((err) => console.error("❌ GetOnlineUsers hatası:", err));
+
+
+    signalContext.presenceConnection
+      .invoke("OnConnectedAsync")
+      .then(() => console.log("✅ OnConnectedAsync başarıyla çağrıldı"))
+      .catch((err) => console.error("❌ OnConnectedAsync hatası:", err));
+
+      
+    return () => {
+      signalContext.presenceConnection?.off(
+        "initialOnlineUsers",
+        handleInitialOnlineUsers,
+      );
+      signalContext.presenceConnection?.off("useronline", handleUserOnline);
+      signalContext.presenceConnection?.off("useroffline", handleUserOffline);
+    };
+  }, [signalContext?.presenceConnection]);
+
   return (
     <>
       <FriendsNavbar />
@@ -67,19 +128,18 @@ function FriendsPage() {
                     placeholder="Ara"
                     className="bg-transparent outline-none text-white w-full py-2"
                   />
-                  {/* <IoSearchOutline className="text-white mr-2" /> */}
                 </div>
               </div>
 
               {/* TITLE */}
               <p className="mb-4 mt-4 text-sm">
                 {selectedNavbarButton === "çevrim içi"
-                  ? "Çevrim içi -- 2"
+                  ? `Çevrim içi -- ${onlineFriends.length}`
                   : selectedNavbarButton === "bekleyen"
-                  ? `Bekleyen -- ${friendRequests?.length || 0}`
-                  : selectedNavbarButton === "tümü"
-                  ? `Tüm arkadaşlar -- ${friendList?.length || 0}`
-                  : ""}
+                    ? `Bekleyen -- ${friendRequests?.length || 0}`
+                    : selectedNavbarButton === "tümü"
+                      ? `Tüm arkadaşlar -- ${friendList?.length || 0}`
+                      : ""}
               </p>
 
               {/* CONTENT */}
@@ -90,7 +150,7 @@ function FriendsPage() {
                     ? friendList?.filter((friend) =>
                         friend.userName
                           .toLowerCase()
-                          .includes(input.toLowerCase())
+                          .includes(input.toLowerCase()),
                       )
                     : friendList
                   )?.map(({ userName, friendId }) => (
@@ -100,6 +160,25 @@ function FriendsPage() {
                       userName={userName}
                       userPhoto={tuta}
                       onlineStatus="porno"
+                    />
+                  ))}
+
+                {/* ÇEVRİM İÇİ */}
+                {selectedNavbarButton === "çevrim içi" &&
+                  (input.length > 0
+                    ? onlineFriends.filter((friend) =>
+                        friend.userName
+                          .toLowerCase()
+                          .includes(input.toLowerCase()),
+                      )
+                    : onlineFriends
+                  )?.map(({ userName, friendId }) => (
+                    <FriendListItem
+                      key={friendId}
+                      friendId={friendId}
+                      userName={userName}
+                      userPhoto={tuta}
+                      onlineStatus="çevrim içi"
                     />
                   ))}
 
@@ -114,7 +193,7 @@ function FriendsPage() {
                         userPhoto={userPhoto}
                         onlineStatus={onlineStatus}
                       />
-                    )
+                    ),
                   )}
 
                 {/* BEKLEYEN */}
@@ -124,7 +203,7 @@ function FriendsPage() {
                       ? friendRequests?.filter((request) =>
                           request.otherPersonName
                             .toLowerCase()
-                            .includes(input.toLowerCase())
+                            .includes(input.toLowerCase()),
                         )
                       : friendRequests
                     )?.map((request) => (
@@ -147,5 +226,4 @@ function FriendsPage() {
     </>
   );
 }
-
 export default FriendsPage;

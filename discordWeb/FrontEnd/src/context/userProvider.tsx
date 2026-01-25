@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useState, type ReactNode } from "react";
 import {
   type AppContextType,
   type conversationList,
@@ -19,8 +19,8 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
     useState<conversationList[]>();
   const [friendList, setFriendList] = useState<FriendType[]>();
   const [openCreateDmModal, setOpenCreateDmModal] = useState<boolean>(false);
-  const [jwtToken, setJwtToken] = useState<string | null>(
-    localStorage.getItem("jwtToken")
+  const [jwtToken, _setJwtToken] = useState<string | null>(
+    localStorage.getItem("jwtToken"),
   );
 
   const [selectedNavbarButton, setSelectedNavbarButton] =
@@ -36,17 +36,22 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [sidebarWidth, setSidebarWidth] = useState(240);
 
-  useEffect(() => {
-    if (jwtToken) {
-      localStorage.setItem("jwtToken", jwtToken);
-    } else {
-      localStorage.removeItem("jwtToken");
-    }
-  }, [jwtToken]);
+  //
+  const setJwtToken = (token: string | null) => {
+    _setJwtToken(token);
+    localStorage.setItem("jwtToken", token || "");
+  };
+  const logout = () => {
+    localStorage.removeItem("jwtToken");
+    _setJwtToken(null);
+  };
+
 
   return (
     <AppContext.Provider
       value={{
+        setJwtToken,
+        logout,
         dmFriendName,
         setDmFriendName,
         userInfo,
@@ -60,7 +65,6 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
         friendRequests,
         setFriendRequests,
         jwtToken,
-        setJwtToken,
         selectedNavbarButton,
         setSelectedNavbarButton,
         selectedNavbarElement,

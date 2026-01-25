@@ -103,7 +103,7 @@ function StartConversationPanel({
 
       <span className="text-xs">ÖNCEKİ KANALLAR</span>
 
-      <div className="bg-[#212125] h-40 overflow-y-auto">
+      <div className="scrollbar-discord bg-[#212125] h-full overflow-y-auto">
         {friendList
           ?.filter((f) =>
             f.userName.toLowerCase().includes(input.toLowerCase()),
@@ -125,5 +125,30 @@ function StartConversationPanel({
     </>
   );
 }
-
+{
+  /* Discord Style Scrollbar CSS */
+}
+<style>{`
+        .scrollbar-discord::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        .scrollbar-discord::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        .scrollbar-discord::-webkit-scrollbar-thumb {
+          background-color: #1a1b1e;
+          border-radius: 4px;
+        }
+        
+        .scrollbar-discord::-webkit-scrollbar-thumb:hover {
+          background-color: #2e3035;
+        }
+        
+        .scrollbar-discord {
+          scrollbar-width: thin;
+          scrollbar-color: #1a1b1e transparent;
+        }
+      `}</style>;
 export default StartConversationPanel;
