@@ -1,24 +1,24 @@
-import { useContext, useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { TbMessageCircleCheck } from "react-icons/tb";
 import { useLocation } from "react-router-dom";
+import { useContext, useState } from "react";
+
 import { AppContext } from "../../context/userProvider";
 import FriendsNavbarButton from "./FriendsNavbarButton";
 
-
 function FriendsNavbar() {
+  const ctx = useContext(AppContext);
+  const location = useLocation();
+
+  if (!ctx) return null;
+  const { setOpenCreateDmModal, openCreateDmModal } = ctx;
+
   const [butons, _setButons] = useState<string[]>([
     "Çevrim içi",
     "Tümü",
     "Bekleyen",
     "Arkadaş Ekle",
   ]);
-
-  const location = useLocation();
-
-  const ctx = useContext(AppContext);
-  if (!ctx) return null;
-  const { setOpenCreateDmModal, openCreateDmModal } = ctx;
 
   return (
     <>

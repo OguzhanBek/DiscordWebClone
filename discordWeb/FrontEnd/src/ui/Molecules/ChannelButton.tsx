@@ -1,16 +1,15 @@
 import { FaUserFriends } from "react-icons/fa";
 import { CiSettings } from "react-icons/ci";
 import { IoChatbubble } from "react-icons/io5";
-import ChannelIcon from "./ChannelIcon";
 import { Link } from "react-router-dom";
 
-function ChannelButton({
-  ChannelType,
-  ChannelName,
-}: {
-  ChannelType: String;
+import ChannelIcon from "./ChannelIcon";
+
+type ChannelButtonProps = {
+  ChannelType: string;
   ChannelName: string;
-}) {
+};
+function ChannelButton({ ChannelType, ChannelName }: ChannelButtonProps) {
   return (
     <>
       {ChannelType === "text" ? (

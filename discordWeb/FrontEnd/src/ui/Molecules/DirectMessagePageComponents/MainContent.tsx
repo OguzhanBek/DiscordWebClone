@@ -1,90 +1,37 @@
 import { PiGifFill, PiSubtitlesDuotone } from "react-icons/pi";
-import ben from "../../../assets/Tuta.png";
-import IconWithUpSideHoverText from "../IconWithUpSideHoverText";
 import { FaGift, FaPlus } from "react-icons/fa";
 import { LuSticker } from "react-icons/lu";
 import { BiSolidWidget } from "react-icons/bi";
-import { useContext, useEffect, useState, useRef } from "react"; //genellikle en üstte paketler olur , boşluk olucak bir altta sonra da kendi yazdıklarımız olacak.
 import { AiTwotoneFileAdd } from "react-icons/ai";
 import { RiSurveyFill } from "react-icons/ri";
-import { useParams } from "react-router-dom";
-import { AppContext } from "../../../context/userProvider";
 import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
+
+import ben from "../../../assets/Tuta.png";
+import IconWithUpSideHoverText from "../IconWithUpSideHoverText";
+import { useContext, useEffect, useState, useRef } from "react";
+import { AppContext } from "../../../context/userProvider";
 import { SignalRContext } from "../../../context/signalRContext";
+import type { Message } from "../../../types/chat/message";
+import type { TypingUser } from "../../../types/chat/typing";
+
 
 function MainContent() {
-  type Message = {
-    conversationId: string;
-    authorUserId: string;
-    authorUsername: string;
-    content: string;
-    createdAt: string;
-    editedAt: string;
-  };
-
-  type TypingUser = {
-    userId: string;
-    username: string;
-  };
-  //contextler en üsste olur. Sonra bir altta hook varsa hoook gelir. Hooktan sonra da userefler gelir. Sonra da usestate gelir. Sonra da useffect. useEffectlerden sonra da if'ler gelir.
-
-  
   const context = useContext(AppContext);
   const signalContext = useContext(SignalRContext);
-
   const { chatId } = useParams<{ chatId: string }>();
-
   const typingTimeoutRef = useRef<number | null>(null);
-
-
 
   const [openDropdown, setOpenDropdown] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
 
+  //contextler en üsste olur. Sonra bir altta hook varsa hoook gelir. Hooktan sonra da userefler gelir. Sonra da usestate gelir. Sonra da useffect. useEffectlerden sonra da if'ler gelir.
+
   if (!context) return null;
 
   const { jwtToken, dmFriendName, setDmFriendName } = context;
-
-  //Bunu service dosyasına feth kodunu yazıp , sonra useQury ile hook oluşturulmalı.
-  useEffect(() => {
-    if (!chatId) return;
-
-    const getMessages = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5200/api/chat/${chatId}/messages`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${jwtToken}`,
-            },
-          },
-        );
-
-        if (!response.ok) {
-          toast.error("Mesajlar alınamadı");
-          return;
-        }
-
-        const data = await response.json();
-        setMessages(data.messages);
-
-        if (!dmFriendName || dmFriendName.length === 0) {
-          const friendNames = Array.isArray(data.friendName)
-            ? data.friendName
-            : [data.friendName || "Bilinmeyen Kullanıcı"];
-          setDmFriendName(friendNames);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    getMessages();
-  }, [chatId, jwtToken]);
 
   const sendMessage = async () => {
     if (!input.trim() || !chatId) {
@@ -131,6 +78,45 @@ function MainContent() {
       console.error("Typing event gönderilemedi:", error);
     }
   };
+
+  //Bunu service dosyasına feth kodunu yazıp , sonra useQury ile hook oluşturulmalı.
+  useEffect(() => {
+    if (!chatId) return;
+
+    const getMessages = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5200/api/chat/${chatId}/messages`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwtToken}`,
+            },
+          },
+        );
+
+        if (!response.ok) {
+          toast.error("Mesajlar alınamadı");
+          return;
+        }
+
+        const data = await response.json();
+        setMessages(data.messages);
+
+        if (!dmFriendName || dmFriendName.length === 0) {
+          const friendNames = Array.isArray(data.friendName)
+            ? data.friendName
+            : [data.friendName || "Bilinmeyen Kullanıcı"];
+          setDmFriendName(friendNames);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getMessages();
+  }, [chatId, jwtToken]);
 
   useEffect(() => {
     if (!signalContext?.chatConnection) return;
@@ -226,7 +212,7 @@ function MainContent() {
     return () => {
       signalContext.chatConnection
         ?.invoke("LeaveConversation", chatId)
-        .catch((err) => console.error("Ayrılma hatası:", err));
+        .catch((err : any) => console.error("Ayrılma hatası:", err));
     };
   }, [chatId, signalContext?.chatConnection]);
 

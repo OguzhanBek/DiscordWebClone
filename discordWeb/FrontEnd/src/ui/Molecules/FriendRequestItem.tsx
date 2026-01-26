@@ -1,23 +1,28 @@
 import { TiTickOutline } from "react-icons/ti";
 import { RxCross2 } from "react-icons/rx";
-import { useContext } from "react";
-import { AppContext } from "../../context/userProvider";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+
 import { getFriendList, UnauthorizedError } from "../../helpers/helpers";
+import { AppContext } from "../../context/userProvider";
+
+type FriendRequestItemProps = {
+  userPhoto: string;
+  otherPersonName: string;
+  isSentByMe: boolean;
+  requestId: number;
+};
 
 function FriendRequestItem({
   userPhoto,
   otherPersonName,
   isSentByMe,
   requestId,
-}: {
-  userPhoto: string;
-  otherPersonName: string;
-  isSentByMe: boolean;
-  requestId: number;
-}) {
+}: FriendRequestItemProps) {
   const context = useContext(AppContext);
+
+  const navigate = useNavigate();
   if (!context) return null;
   const {
     jwtToken,
@@ -26,7 +31,7 @@ function FriendRequestItem({
     friendRequests,
     setFriendList,
   } = context;
-  const navigate = useNavigate();
+
   const acceptFriendRequest = async () => {
     try {
       console.log("=== Accept Friend Request ===");
@@ -44,7 +49,7 @@ function FriendRequestItem({
           body: JSON.stringify({
             OtherPersonName: otherPersonName.trim(),
           }),
-        }
+        },
       );
 
       console.log("Response status:", response.status);
@@ -75,7 +80,7 @@ function FriendRequestItem({
       toast.success("Arkadaşlık isteği kabul edildi.");
 
       const updatedRequests = friendRequests.filter(
-        (req: any) => req.requestId !== requestId
+        (req: any) => req.requestId !== requestId,
       );
       setFriendRequests(updatedRequests);
 
@@ -106,7 +111,7 @@ function FriendRequestItem({
           body: JSON.stringify({
             OtherPersonName: otherPersonName.trim(),
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -125,7 +130,7 @@ function FriendRequestItem({
 
       // State'ten bu isteği requestId ile kaldır
       const updatedRequests = friendRequests.filter(
-        (req: any) => req.requestId !== requestId
+        (req: any) => req.requestId !== requestId,
       );
       setFriendRequests(updatedRequests);
     } catch (err) {

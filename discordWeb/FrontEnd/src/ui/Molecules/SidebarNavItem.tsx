@@ -1,16 +1,18 @@
-import { useContext } from "react";
-import { AppContext } from "../../context/userProvider";
 import { useNavigate, useLocation } from "react-router-dom";
-import type { SidebarNavItemProps  } from "../../types/types";
+import { useContext } from "react";
 
-function SidebarNavItem ({ Icon, title, route }: SidebarNavItemProps ) {
+import { AppContext } from "../../context/userProvider";
+import type { SidebarNavItemProps } from "../../types/common";
+
+function SidebarNavItem({ Icon, title, route }: SidebarNavItemProps) {
   const ctx = useContext(AppContext);
+  const location = useLocation();
+  const navigate = useNavigate();
   if (!ctx) return null;
   const { setTopSideTitle } = ctx;
-  const location = useLocation();
 
-  const url: boolean = location.pathname.includes(route); // aktif sayfa mı kontrolü
-  const navigate = useNavigate();
+  const url: boolean = location.pathname.includes(route);
+
   return (
     <div
       onClick={() => {
@@ -25,10 +27,10 @@ function SidebarNavItem ({ Icon, title, route }: SidebarNavItemProps ) {
             ? route === "/friends"
               ? "#1C1C1E"
               : route === "/store"
-              ? "#1C1C1E"
-              : route === "/shop"
-              ? "#1C1C1E"
-              : ""
+                ? "#1C1C1E"
+                : route === "/shop"
+                  ? "#1C1C1E"
+                  : ""
             : "",
         }}
         className={`flex gap-2 h-8 items-center bg-[#121214] rounded-xl w-[95%] pt-2 pb-2 hover:bg-[#1C1C1E] hover:cursor-pointer active:bg-[#2C2C30]
@@ -41,4 +43,4 @@ function SidebarNavItem ({ Icon, title, route }: SidebarNavItemProps ) {
   );
 }
 
-export default SidebarNavItem ;
+export default SidebarNavItem;

@@ -1,9 +1,11 @@
 import { Crown, Upload, Users, MessageCircle, Star, Check } from "lucide-react";
+
 import discordNitroFooter from "../../assets/discord nitro footerpicture.png";
 import NitroSecondaryButton from "../Atoms/NitroSecondaryButton";
 import NitroPrimaryButton from "../Atoms/NitroPrimaryButton";
 import NitroSecondaryWideButton from "../Atoms/NitroSecondaryWideButton";
 import NitroPrimaryWideButton from "../Atoms/NitroPrimaryWideButton";
+
 export default function DiscordNitroPage() {
   const features = [
     {
@@ -57,7 +59,7 @@ export default function DiscordNitroPage() {
   ];
 
   return (
-    <div className="custom-scrollbar min-h-screen bg-[#121212] text-white overflow-y-auto select-none">
+    <div className="discord-scrollbar min-h-screen bg-[#121212] text-white overflow-y-auto select-none">
       {/* Hero Section */}
       <section className="relative bg-[#18181b] overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">

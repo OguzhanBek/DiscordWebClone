@@ -1,18 +1,20 @@
 import { useNavigate } from "react-router-dom";
 
+type ServerListItemProps = {
+  photo: string;
+  name: string;
+  index: number;
+  activeServer: number | null;
+  setActiveServer: React.Dispatch<React.SetStateAction<number | null>>;
+};
+
 function ServerListItem({
   photo,
   name,
   index,
   activeServer,
   setActiveServer,
-}: {
-  photo: string;
-  name: string;
-  index: number;
-  activeServer: number | null;
-  setActiveServer: React.Dispatch<React.SetStateAction<number | null>>;
-}) {
+}: ServerListItemProps) {
   const navigate = useNavigate();
   return (
     <div

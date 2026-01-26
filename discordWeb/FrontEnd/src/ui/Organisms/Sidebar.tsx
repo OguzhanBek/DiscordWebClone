@@ -1,11 +1,6 @@
-import { useContext, useEffect, useRef, useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { GiSpinningBlades } from "react-icons/gi";
 import { CiCirclePlus, CiShop } from "react-icons/ci";
-import SidebarNavItem from "../Molecules/SidebarNavItem";
-import DirectConversationItems from "./DirectConversationItems";
-import Transparentmodal from "../../model/Transparentmodal";
-import StartConversationPanel from "../Molecules/StartConversationPanel";
 import { RxCross1 } from "react-icons/rx";
 import { FiFolderPlus } from "react-icons/fi";
 import { PiPencilSimpleDuotone } from "react-icons/pi";
@@ -20,6 +15,12 @@ import {
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { useLocation } from "react-router-dom";
+import { useContext, useEffect, useRef, useState } from "react";
+
+import SidebarNavItem from "../Molecules/SidebarNavItem";
+import DirectConversationItems from "./DirectConversationItems";
+import Transparentmodal from "../../model/Transparentmodal";
+import StartConversationPanel from "../Molecules/StartConversationPanel";
 import ChannelButton from "../Molecules/ChannelButton";
 import UserPanel from "./UserPanel";
 import { AppContext } from "../../context/userProvider";
@@ -27,22 +28,29 @@ import CreateDMModal from "./CreateDMModal";
 import { grayBackground } from "../../Colors";
 
 function SideBar() {
+  const ctx = useContext(AppContext);
+  if (!ctx) return null;
+  const {
+    sidebarWidth,
+    setSidebarWidth,
+    openCreateDmModal,
+    friendList,
+    setOpenCreateDmModal,
+  } = ctx;
+
+  const { pathname } = useLocation();
+
+  const startX = useRef(0);
+  const startWidth = useRef(sidebarWidth);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [openFindFriends, setOpenFindFriends] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [iconsAndTitles] = useState([
     { Icon: FaUserFriends, title: "Arkadaşlar", route: "/friends" },
     { Icon: GiSpinningBlades, title: "Nitro", route: "/store" },
     { Icon: CiShop, title: "Mağaza", route: "/shop" },
   ]);
-
-  const [openFindFriends, setOpenFindFriends] = useState(false);
-
-  const [isOpen, setIsOpen] = useState(false);
-  const ctx = useContext(AppContext);
-  if (!ctx) return null;
-  const { sidebarWidth, setSidebarWidth, openCreateDmModal, friendList , setOpenCreateDmModal, } = ctx;
-  const { pathname } = useLocation();
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const startX = useRef(0);
-  const startWidth = useRef(sidebarWidth);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     startX.current = e.clientX;
@@ -51,7 +59,6 @@ function SideBar() {
     document.addEventListener("mousemove", handleMouseMove);
 
     document.addEventListener("mouseup", handleMouseUp);
-
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -200,18 +207,9 @@ function SideBar() {
             {/* sohbet ve ses odaları kısmı. */}
             <div className="mt-2">
               <ChannelButton ChannelType="text" ChannelName="tuta" />
-              <ChannelButton
-                ChannelType="text"
-                ChannelName="koser"
-              />
-              <ChannelButton
-                ChannelType="voice"
-                ChannelName="erkan"
-              />
-              <ChannelButton
-                ChannelType="string"
-                ChannelName="ozan"
-              />
+              <ChannelButton ChannelType="text" ChannelName="koser" />
+              <ChannelButton ChannelType="voice" ChannelName="erkan" />
+              <ChannelButton ChannelType="string" ChannelName="ozan" />
             </div>
           </div>
         ) : (
@@ -238,7 +236,6 @@ function SideBar() {
             </div>
             {/* Direkt mesaj açmak için kişi listesi */}
             <div className="mb-4 w-full  " onClick={() => setIsOpen(false)}>
-
               <div className=" Dm-Olustur-Yazısı  flex items-center  w-[85%] m-auto justify-between mt-2  hover:text-white group">
                 <p className="text-sm text-gray-400 hover:cursor-default select-none group-hover:text-white">
                   Direkt Mesaj

@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { ChevronDown, Filter } from "lucide-react";
+import { useState } from "react";
 
 import secretGarden from "../../assets/discordmağazaimage.png";
-
 import Tutacard from "../Organisms/Tutacard";
+
 const TakeALookPage = () => {
   const [sortBy, setSortBy] = useState("Yakın Zamanda Eklenen");
 
@@ -49,7 +49,7 @@ const TakeALookPage = () => {
   ];
 
   return (
-    <div className=" select-none w-[75%] mt-10 mx-auto bg-[#1E1F22] overflow-y-auto custom-scrollbar">
+    <div className=" select-none w-[75%] mt-10 mx-auto bg-[#1E1F22] overflow-y-auto discord-scrollbar">
       {/* Hero Section */}
       <div className="px-8 py-6 ">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -98,8 +98,11 @@ const TakeALookPage = () => {
             }}
             className="flex  items-center    relative rounded-4xl w-full h-[200px]  "
           >
-            <img src={secretGarden} alt="secretGarden" className="w-100 h-22 rounded-4xl ml-8" />
-  
+            <img
+              src={secretGarden}
+              alt="secretGarden"
+              className="w-100 h-22 rounded-4xl ml-8"
+            />
           </div>
         </header>
       </div>
