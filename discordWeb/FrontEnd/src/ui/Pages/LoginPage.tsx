@@ -1,18 +1,23 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import type { BadRequest, User} from "../../types/types";
-import { AppContext } from "../../context/userProvider";
 
-function DiscordLogin() {
+import { AppContext } from "../../context/userProvider";
+import type { BadRequest } from "../../types/request";
+import type { User } from "../../types/user";
+
+function DiscordLogin() { 
+  const ctx = useContext(AppContext);  
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-  const ctx = useContext(AppContext);
+ 
   if (!ctx) {
     return null;
   }
   const { setUserInfo, setJwtToken } = ctx;
+
   async function handleLogin(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
 

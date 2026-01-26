@@ -1,4 +1,4 @@
-import type { ServerListActionProps } from "../../types/types";
+import type { ServerListActionProps } from "../../types/server";
 
 function ServerListAction({
   İcon,

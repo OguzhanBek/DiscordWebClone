@@ -3,7 +3,7 @@ import orbbüyü from "../../assets/orb büyücüsü.png";
 import Tutacard from "../Organisms/Tutacard";
 function OrbsPage() {
   return (
-    <div className="Orbs-Page select-none mt-10 bg-[#1A1A1E] text-gray-200 font-sans overflow-y-auto custom-scrollbar">
+    <div className="Orbs-Page select-none mt-10 bg-[#1A1A1E] text-gray-200 font-sans overflow-y-auto discord-scrollbar">
       {/* Navbar */}
       <DiscordOrbsPageNavbar />
       <main className="p-6">

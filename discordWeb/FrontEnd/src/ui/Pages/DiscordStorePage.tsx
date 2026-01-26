@@ -1,12 +1,10 @@
-import React from "react";
-import dcMagaza from "../../assets/discordmağazaimage.png";
-import { Gamepad2 } from "lucide-react";
-
-import DiscordStoreNavbar from "../Molecules/DiscordStoreNavbar";
 import { useSearchParams } from "react-router-dom";
+import { Gamepad2 } from "lucide-react";
+import React from "react";
 
+import dcMagaza from "../../assets/discordmağazaimage.png";
+import DiscordStoreNavbar from "../Molecules/DiscordStoreNavbar";
 import TakeALookPage from "./TakeALookPage";
-
 import OrbsPage from "./OrbsPage";
 import Tutacard from "../Organisms/Tutacard";
 
@@ -16,7 +14,7 @@ const DiscordStorePage: React.FC = () => {
 
   return (
     <>
-      <div className="Discord-Store-Page bg-[#1E1F22]  relative text-gray-200 font-sans overflow-y-auto custom-scrollbar">
+      <div className="Discord-Store-Page bg-[#1E1F22]  relative text-gray-200 font-sans overflow-y-auto discord-scrollbar">
         {/* Navbar */}
         <DiscordStoreNavbar />
 

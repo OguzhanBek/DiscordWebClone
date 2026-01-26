@@ -1,4 +1,6 @@
 import { useContext, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { AppContext } from "../../context/userProvider";
 import DirectConversationItem from "../Molecules/DirectConversationItem";
 import tuta from "../../assets/Tuta.png";
@@ -7,7 +9,6 @@ import {
   getFriendList,
   UnauthorizedError,
 } from "../../helpers/helpers";
-import { useNavigate } from "react-router-dom";
 
 function DirectConversationItems() {
   const ctx = useContext(AppContext);

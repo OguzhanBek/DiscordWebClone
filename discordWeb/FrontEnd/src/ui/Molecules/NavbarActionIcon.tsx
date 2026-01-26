@@ -1,15 +1,12 @@
-import { grayBackground } from "../../Colors";
 import React from "react";
+import { grayBackground } from "../../Colors";
 
-type NavbarActionIcon = {
+type NavbarActionIconProps = {
   Icon: React.ComponentType<{ size?: number; className?: string }>;
   tooltipText: string;
 };
 
-function NavbarActionIcon({
-  Icon,
-  tooltipText,
-}: NavbarActionIcon) {
+function NavbarActionIcon({ Icon, tooltipText }: NavbarActionIconProps) {
   return (
     <span className="NavbarActionIcon gap-1 shadow-xl ">
       <span className="relative group/item shadow-2xl shadow-xl/20">

@@ -1,7 +1,6 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { Gamepad2, Compass, ArrowLeft } from "lucide-react";
-
+import React from "react";
 
 /**
  * Discord esintili NotFound sayfası

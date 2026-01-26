@@ -1,17 +1,18 @@
 import { useContext, useState } from "react";
 import { IoClose, IoSearchOutline } from "react-icons/io5";
-import tuta from "../../assets/Tuta.png";
-import { AppContext } from "../../context/userProvider";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-
+import tuta from "../../assets/Tuta.png";
+import { AppContext } from "../../context/userProvider";
 
 function CreateDMModal() {
+  const ctx = useContext(AppContext);
   const navigate = useNavigate();
+
   const [input, setInput] = useState("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const ctx = useContext(AppContext);
+
   if (!ctx) return null;
   const {
     setOpenCreateDmModal,
@@ -65,7 +66,6 @@ function CreateDMModal() {
 
       setDmFriendName(friendNames);
 
-
       const newConversations = friendNames.map((name: string) => ({
         conversationId: data.conversationId,
         friendId: friendId,
@@ -79,7 +79,8 @@ function CreateDMModal() {
           (c) => c.conversationId === data.conversationId,
         );
 
-        if (firstOccurrenceIndex === -1) { // bu eşleşem yoksa demek.
+        if (firstOccurrenceIndex === -1) {
+          // bu eşleşem yoksa demek.
           return [...current, ...newConversations];
         }
 
@@ -135,7 +136,7 @@ function CreateDMModal() {
         </div>
 
         {/* FRIEND LIST */}
-        <div className="scrollbar-discord h-[460px] overflow-y-auto px-2 text-left">
+        <div className="discord-scrollbar h-[460px] overflow-y-auto px-2 text-left">
           {friendList
             ?.filter((f) =>
               f.userName.toLowerCase().includes(input.toLowerCase()),
@@ -203,30 +204,6 @@ function CreateDMModal() {
           </button>
         </div>
       </div>
-      {/* Discord Style Scrollbar CSS */}
-      <style>{`
-        .scrollbar-discord::-webkit-scrollbar {
-          width: 8px;
-        }
-        
-        .scrollbar-discord::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        
-        .scrollbar-discord::-webkit-scrollbar-thumb {
-          background-color: #1a1b1e;
-          border-radius: 4px;
-        }
-        
-        .scrollbar-discord::-webkit-scrollbar-thumb:hover {
-          background-color: #2e3035;
-        }
-        
-        .scrollbar-discord {
-          scrollbar-width: thin;
-          scrollbar-color: #1a1b1e transparent;
-        }
-      `}</style>
     </div>
   );
 }

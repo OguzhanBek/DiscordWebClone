@@ -1,9 +1,10 @@
-import { useContext, useState } from "react";
-import tuta from "../../assets/Tuta.png";
-import type { FriendType } from "../../types/types";
-import { useNavigate } from "react-router-dom";
-import { AppContext } from "../../context/userProvider";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+
+import tuta from "../../assets/Tuta.png";
+import { AppContext } from "../../context/userProvider";
+import type { FriendType } from "../../types/friend";
 
 type FindFriendsProps = {
   friendList?: FriendType[];
@@ -14,10 +15,11 @@ function StartConversationPanel({
   friendList,
   setOpenFindFriends,
 }: FindFriendsProps) {
-  const [input, setInput] = useState("");
+  const ctx = useContext(AppContext);
   const navigate = useNavigate();
 
-  const ctx = useContext(AppContext);
+  const [input, setInput] = useState("");
+
   if (!ctx) return null;
   const { setDmFriendName, jwtToken, setJwtToken, setConversationList } = ctx;
 
@@ -103,7 +105,7 @@ function StartConversationPanel({
 
       <span className="text-xs">ÖNCEKİ KANALLAR</span>
 
-      <div className="scrollbar-discord bg-[#212125] h-full overflow-y-auto">
+      <div className="discord-scrollbar bg-[#212125] h-full overflow-y-auto">
         {friendList
           ?.filter((f) =>
             f.userName.toLowerCase().includes(input.toLowerCase()),
@@ -125,30 +127,4 @@ function StartConversationPanel({
     </>
   );
 }
-{
-  /* Discord Style Scrollbar CSS */
-}
-<style>{`
-        .scrollbar-discord::-webkit-scrollbar {
-          width: 8px;
-        }
-        
-        .scrollbar-discord::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        
-        .scrollbar-discord::-webkit-scrollbar-thumb {
-          background-color: #1a1b1e;
-          border-radius: 4px;
-        }
-        
-        .scrollbar-discord::-webkit-scrollbar-thumb:hover {
-          background-color: #2e3035;
-        }
-        
-        .scrollbar-discord {
-          scrollbar-width: thin;
-          scrollbar-color: #1a1b1e transparent;
-        }
-      `}</style>;
 export default StartConversationPanel;

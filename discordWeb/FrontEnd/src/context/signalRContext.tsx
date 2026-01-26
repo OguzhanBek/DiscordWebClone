@@ -1,11 +1,9 @@
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { createContext, useContext, useEffect, useState } from "react";
 import { AppContext } from "./userProvider";
+import type { SignalRContextType } from "../types/types";
 
-interface SignalRContextType {
-  chatConnection: HubConnection | null;
-  presenceConnection: HubConnection | null;
-}
+
 
 export const SignalRContext = createContext<SignalRContextType | null>(null);
 

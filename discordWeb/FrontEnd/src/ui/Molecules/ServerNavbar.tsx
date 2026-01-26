@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
 import { Search } from "lucide-react";
 import { FaUserFriends } from "react-icons/fa";
 import { IoIosNotifications } from "react-icons/io";
 import { PiPushPinBold } from "react-icons/pi";
 import { IoPricetag } from "react-icons/io5";
+import React, { useContext } from "react";
+
 import { AppContext } from "../../context/userProvider";
 import NavbarActionIcon from "./NavbarActionIcon";
 

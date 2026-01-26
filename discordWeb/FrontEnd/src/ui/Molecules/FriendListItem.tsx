@@ -2,30 +2,30 @@ import { useContext } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoChatbubble } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "../../context/userProvider";
 import { toast } from "react-toastify";
+
+import { AppContext } from "../../context/userProvider";
+
+type FriendListItemProps = {
+  userPhoto: string;
+  userName: string;
+  onlineStatus: string;
+  friendId: string;
+};
 
 function FriendListItem({
   userPhoto,
   userName,
   onlineStatus,
   friendId,
-}: {
-  userPhoto: string;
-  userName: string;
-  onlineStatus: string;
-  friendId: string;
-}) {
-  const navigate = useNavigate();
+}: FriendListItemProps) {
   const context = useContext(AppContext);
+  const navigate = useNavigate();
+
   if (!context) return null;
 
-  const {
-    jwtToken,
-    setDmFriendName,
-    setJwtToken,
-    setConversationList,
-  } = context;
+  const { jwtToken, setDmFriendName, setJwtToken, setConversationList } =
+    context;
   const createOrOpenDm = async () => {
     if (!jwtToken) {
       navigate("/login");
@@ -93,13 +93,11 @@ function FriendListItem({
         : [data.friendName];
       setDmFriendName(friendNames);
 
-      const newConversations = friendNames.map(
-        (name: string) => ({
-          conversationId: data.conversationId,
-          friendId: friendId, // ✅ Mevcut friendId'yi kullan (FriendListItem'dan geliyor)
-          userName: name,
-        }),
-      );
+      const newConversations = friendNames.map((name: string) => ({
+        conversationId: data.conversationId,
+        friendId: friendId, // ✅ Mevcut friendId'yi kullan (FriendListItem'dan geliyor)
+        userName: name,
+      }));
 
       setConversationList((prev) => {
         const current = prev || [];

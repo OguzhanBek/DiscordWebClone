@@ -1,13 +1,11 @@
 import { createContext, useState, type ReactNode } from "react";
-import {
-  type AppContextType,
-  type conversationList,
-  type friendReuestType,
-  type FriendType,
-  type TopSideTitle,
-  type User,
-} from "../types/types";
+
 import { FaDiscord } from "react-icons/fa";
+import type { AppContextType } from "../types/userProvider";
+import type { User } from "../types/user";
+import type { conversationList } from "../types/chat/conversation";
+import type { friendReuestType, FriendType } from "../types/friend";
+import type { TopSideTitle } from "../types/common";
 
 export const AppContext = createContext<AppContextType | null>(null);
 
@@ -36,7 +34,6 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [sidebarWidth, setSidebarWidth] = useState(240);
 
-  //
   const setJwtToken = (token: string | null) => {
     _setJwtToken(token);
     localStorage.setItem("jwtToken", token || "");
@@ -79,5 +76,4 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
     </AppContext.Provider>
   );
 };
-
 export default AppProvider;

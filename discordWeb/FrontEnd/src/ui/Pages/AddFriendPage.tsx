@@ -1,14 +1,16 @@
-import { useContext, useState } from "react";
-import { AppContext } from "../../context/userProvider";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+
+import { AppContext } from "../../context/userProvider";
 import { getFriendRequests, UnauthorizedError } from "../../helpers/helpers";
 
 function AddFriendPage() {
+  const context = useContext(AppContext);
   const navigate = useNavigate();
 
   const [input, setInput] = useState("");
-  const context = useContext(AppContext);
+
   if (!context) return null;
   const { jwtToken, setJwtToken, setFriendRequests } = context;
 
@@ -36,7 +38,7 @@ function AddFriendPage() {
             ReceiverName: input.trim(),
             SenderId: jwtToken,
           }),
-        }
+        },
       );
 
       if (response.status === 401) {

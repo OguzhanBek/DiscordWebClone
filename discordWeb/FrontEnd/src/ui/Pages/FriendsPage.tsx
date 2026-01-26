@@ -1,16 +1,23 @@
+import { useLocation } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
+
 import tuta from "../../assets/Tuta.png";
 import FriendListItem from "../Molecules/FriendListItem";
 import { AppContext } from "../../context/userProvider";
 import AddFriendPage from "./AddFriendPage";
-
-import { useLocation } from "react-router-dom";
 import FriendRequestItem from "../Molecules/FriendRequestItem";
 import FriendsNavbar from "../Molecules/FriendsNavbar";
 import { SignalRContext } from "../../context/signalRContext";
+import type { onlinefriend } from "../../types/friend";
 
 function FriendsPage() {
-  const [friendsInfo] = useState([
+  const ctx = useContext(AppContext);
+  const signalContext = useContext(SignalRContext);
+  const location = useLocation();
+
+  const [input, setInput] = useState("");
+  const [onlineFriends, setOnlineFriends] = useState<onlinefriend[]>([]);
+  const [dummyFriendsInfo] = useState([
     {
       userPhoto: tuta,
       userName: "Tuta Montana",
@@ -43,27 +50,16 @@ function FriendsPage() {
     },
   ]);
 
-  type onlinefriend = {
-    friendId: string;
-    userName: string;
-  };
-
-  const [input, setInput] = useState("");
-  const [onlineFriends, setOnlineFriends] = useState<onlinefriend[]>([]);
-  const ctx = useContext(AppContext);
-  const signalContext = useContext(SignalRContext);
-
   if (!ctx) return null;
 
   const { selectedNavbarButton, friendRequests, friendList } = ctx;
-  const location = useLocation();
 
   useEffect(() => {
     if (!signalContext?.presenceConnection) return;
 
     const handleInitialOnlineUsers = (users: any[]) => {
       console.log("📋 İlk online liste:", users);
-      users.filter(user  => user.friendId !== ctx.jwtToken)
+      users.filter((user) => user.friendId !== ctx.jwtToken);
       setOnlineFriends(users);
     };
 
@@ -83,23 +79,23 @@ function FriendsPage() {
     };
 
     // Listener'ları ekle
-    signalContext.presenceConnection.on("initialOnlineUsers",handleInitialOnlineUsers,);
+    signalContext.presenceConnection.on(
+      "initialOnlineUsers",
+      handleInitialOnlineUsers,
+    );
     signalContext.presenceConnection.on("useronline", handleUserOnline);
     signalContext.presenceConnection.on("useroffline", handleUserOffline);
-
 
     signalContext.presenceConnection
       .invoke("GetOnlineUsers")
       .then(() => console.log("✅ GetOnlineUsers başarıyla çağrıldı"))
-      .catch((err) => console.error("❌ GetOnlineUsers hatası:", err));
-
+      .catch((err:any) => console.error("❌ GetOnlineUsers hatası:", err));
 
     signalContext.presenceConnection
       .invoke("OnConnectedAsync")
       .then(() => console.log("✅ OnConnectedAsync başarıyla çağrıldı"))
-      .catch((err) => console.error("❌ OnConnectedAsync hatası:", err));
+      .catch((err:any) => console.error("❌ OnConnectedAsync hatası:", err));
 
-      
     return () => {
       signalContext.presenceConnection?.off(
         "initialOnlineUsers",
@@ -116,7 +112,7 @@ function FriendsPage() {
 
       {(location.pathname === "/friends" || location.pathname === "/") &&
         (selectedNavbarButton.toLowerCase().trim() !== "arkadaş ekle" ? (
-          <div className="flex-1 bg-[#1A1A1E] custom-scrollbar">
+          <div className="flex-1 bg-[#1A1A1E] discord-scrollbar">
             <div className="w-[95%] mx-auto">
               {/* SEARCH BAR */}
               <div className="bg-[#1A1A1E] w-full border-t border-[#2d2d30]">
@@ -143,7 +139,7 @@ function FriendsPage() {
               </p>
 
               {/* CONTENT */}
-              <div className="custom-scrollbar h-[calc(100vh-200px)]">
+              <div className="discord-scrollbar h-[calc(100vh-200px)]">
                 {/* TÜMÜ */}
                 {selectedNavbarButton === "tümü" &&
                   (input.length > 0
@@ -184,7 +180,7 @@ function FriendsPage() {
 
                 {/* ARKADAŞ EKLE */}
                 {selectedNavbarButton === "arkadaş ekle" &&
-                  friendsInfo.map(
+                  dummyFriendsInfo.map(
                     ({ userPhoto, userName, onlineStatus, friendId }) => (
                       <FriendListItem
                         friendId={friendId}

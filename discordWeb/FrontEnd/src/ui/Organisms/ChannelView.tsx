@@ -3,14 +3,15 @@ import {
   PiPencilSimpleLineDuotone,
   PiSubtitlesDuotone,
 } from "react-icons/pi";
-import ben from "../../assets/Tuta.png";
-import IconWithUpSideHoverText from "../Molecules/IconWithUpSideHoverText";
 import { FaGift, FaPlus } from "react-icons/fa";
 import { LuSticker } from "react-icons/lu";
 import { BiSolidWidget } from "react-icons/bi";
-import { useState } from "react";
 import { AiTwotoneFileAdd } from "react-icons/ai";
 import { RiSurveyFill } from "react-icons/ri";
+import { useState } from "react";
+
+import ben from "../../assets/Tuta.png";
+import IconWithUpSideHoverText from "../Molecules/IconWithUpSideHoverText";
 
 function ChannelView() {
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -40,10 +41,8 @@ text-3xl cursor-pointer  flex items-center justify-center"
          ${
            openDropdown && "opacity-100 "
          } bg-[#2b2b30] shadow-lg p-2 pointer-events-none ${
-                    openDropdown === true
-                      ? "pointer-events-auto"
-                      : "pointer-events-none"
-                  }  z-5000`}
+           openDropdown === true ? "pointer-events-auto" : "pointer-events-none"
+         }  z-5000`}
                 >
                   <button
                     className={` px-4 py-2 flex gap-2 cursor-pointer z-5000 rounded-xl hover:bg-[#303035] whitespace-nowrap  ${

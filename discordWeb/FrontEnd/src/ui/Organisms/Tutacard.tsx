@@ -1,5 +1,5 @@
-import type { Game } from "../../types/types";
 import tuta from "../../assets/tuta.png";
+import type { Game } from "../../types/common";
 function Tutacard() {
   const games: Game[] = [
     {

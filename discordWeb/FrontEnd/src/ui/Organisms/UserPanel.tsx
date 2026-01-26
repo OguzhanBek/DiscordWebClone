@@ -1,23 +1,25 @@
-// UserPanel.tsx
-import { useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import tuta from "../../assets/Tuta.png";
-import { FaMicrophone, FaHeadphones } from "react-icons/fa";
-import { AppContext } from "../../context/userProvider";
 import { IoIosSettings } from "react-icons/io";
-import { fetchUser, UnauthorizedError } from "../../helpers/helpers";
 import { useNavigate } from "react-router-dom";
+import { FaMicrophone, FaHeadphones } from "react-icons/fa";
+import { useContext, useEffect, useState } from "react";
+
+import tuta from "../../assets/Tuta.png";
+import { AppContext } from "../../context/userProvider";
+import { fetchUser, UnauthorizedError } from "../../helpers/helpers";
+
 
 function UserPanel() {
+  const ctx = useContext(AppContext);
   const navigate = useNavigate();
 
   const [mounted, setMounted] = useState(false);
   const [root, setRoot] = useState<HTMLElement | null>(null);
 
-  const ctx = useContext(AppContext);
-  if (!ctx) {
+  if (!ctx || !mounted || !root) {
     return null;
   }
+
   const { sidebarWidth, jwtToken, setJwtToken, setUserInfo, userInfo } = ctx;
 
   useEffect(() => {
@@ -44,9 +46,6 @@ function UserPanel() {
     loadUser();
   }, [jwtToken]);
 
-  if (!ctx || !mounted || !root) {
-    return null;
-  }
   console.log(" User info : ", userInfo);
 
   return createPortal(
@@ -80,7 +79,7 @@ function UserPanel() {
         </div>
       </div>
     </div>,
-    root
+    root,
   );
 }
 

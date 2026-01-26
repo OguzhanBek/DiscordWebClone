@@ -1,12 +1,16 @@
 import { grayBackground } from "../../Colors";
-import type { DmOlusturBeforeContentProps } from "../../types/types";
+import type { TooltipItem } from "../../types/common";
 
+
+export interface DmOlusturBeforeContentProps {
+  items: TooltipItem[];
+}
 function ChannelIcon({ items }: DmOlusturBeforeContentProps) {
   return (
     <span className="DM-Olustur-Before-Context  gap-1 hidden group group-hover/channel:flex ">
       {items.map(({ content, tooltipText }, index) => (
         <span key={index} className="relative group/item  ">
-          <span  className="hover:cursor-pointer hover:text-white text-lg text-gray-400 ">
+          <span className="hover:cursor-pointer hover:text-white text-lg text-gray-400 ">
             {content}
           </span>
           {/* Her item'ın kendi tooltip'i */}

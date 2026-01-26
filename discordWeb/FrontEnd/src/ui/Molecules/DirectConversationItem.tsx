@@ -1,11 +1,9 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "../../context/userProvider";
 
-interface Participant {
-  friendId: string;
-  userName: string;
-}
+import { AppContext } from "../../context/userProvider";
+import type { Participant } from "../../types/chat/conversation";
+
 
 interface DirectConversationItemProps {
   conversationId: string;
@@ -26,15 +24,10 @@ function DirectConversationItem({
   const { setDmFriendName } = ctx;
 
   const handleClick = () => {
-    // Tüm participant isimlerini context'e kaydet
     const names = participants.map((p) => p.userName);
     setDmFriendName(names);
-    
-    // Conversation'a yönlendir
-    navigate(`/directMessage/${conversationId}`);
+        navigate(`/directMessage/${conversationId}`);
   };
-
-  // Gösterim için isimleri birleştir
   const displayName = participants.map((p) => p.userName).join(", ");
 
   return (

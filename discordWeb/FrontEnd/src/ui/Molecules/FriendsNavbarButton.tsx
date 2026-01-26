@@ -1,16 +1,22 @@
+import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
+
 import { AppContext } from "../../context/userProvider";
 import {
   getFriendList,
   getFriendRequests,
   UnauthorizedError,
 } from "../../helpers/helpers";
-import { useNavigate } from "react-router-dom";
 
-function FriendsNavbarButton({ buttonText }: { buttonText: string }) {
+type FriendsNavbarButtonProps = {
+  buttonText: string;
+};
+
+function FriendsNavbarButton({ buttonText }: FriendsNavbarButtonProps) {
+  const ctx = useContext(AppContext);
   const navigate = useNavigate();
   const [friendRequestLength, setFriendRequestLength] = useState<number>(0);
-  const ctx = useContext(AppContext);
+
   if (!ctx) return null;
   const {
     jwtToken,
@@ -107,10 +113,10 @@ function FriendsNavbarButton({ buttonText }: { buttonText: string }) {
         ? "bg-[#4654C0] cursor-pointer transition-all font-medium hover:bg-[#4343e9]"
         : "transition-all cursor-pointer hover:text-white hover:bg-[#232327] active:bg-[#404044]"
     } ${
-        selectedNavbarButton == buttonText.toLowerCase().trim() &&
-        buttonText.toLowerCase().trim() !== "arkadaş ekle" &&
-        "text-white bg-[#404044]"
-      }
+      selectedNavbarButton == buttonText.toLowerCase().trim() &&
+      buttonText.toLowerCase().trim() !== "arkadaş ekle" &&
+      "text-white bg-[#404044]"
+    }
       ${
         selectedNavbarButton == buttonText.toLowerCase().trim() &&
         buttonText.toLowerCase().trim() !== "arkadaş ekle" &&

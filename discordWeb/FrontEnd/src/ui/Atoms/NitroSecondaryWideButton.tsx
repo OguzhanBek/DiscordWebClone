@@ -1,4 +1,8 @@
-function NitroSecondaryWideButton({ text }: { text: string }) {
+type NitroSecondaryWideButtonProps = {
+  text: string;
+};
+
+function NitroSecondaryWideButton({ text }: NitroSecondaryWideButtonProps) {
   return (
     <button
       className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 transform cursor-pointer  bg-[#2d2f35] hover:bg-[#393b42] text-white hover:shadow-lg`}

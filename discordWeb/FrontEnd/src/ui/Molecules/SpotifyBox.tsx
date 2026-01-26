@@ -1,6 +1,10 @@
 import { FaSpotify } from "react-icons/fa";
 
-function SpotifyBox({ src }: { src: string }) {
+type ServerListItemProps = {
+  src: string;
+};
+
+function SpotifyBox({ src }: ServerListItemProps) {
   return (
     <div className="bg-[#2a2a2e] hover:bg-[#363434] transition-colors cursor-pointer border border-[#36363b] rounded-xl p-3 mb-3">
       <div className="flex gap-3 items-center mb-2">

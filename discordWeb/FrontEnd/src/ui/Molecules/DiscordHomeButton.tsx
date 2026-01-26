@@ -1,18 +1,21 @@
 import { FaDiscord } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+type DiscordHomeButtonProps = {
+  activeServer?: number | null;
+  setActiveServer?: React.Dispatch<React.SetStateAction<number | null>>;
+};
+
 function DiscordHomeButton({
   activeServer,
   setActiveServer,
-}: {
-  activeServer?: number | null;
-  setActiveServer?: React.Dispatch<React.SetStateAction<number | null>>;
-}) {
+}: DiscordHomeButtonProps) {
   const navigate = useNavigate();
   return (
     <div
-      onClick={() =>{ setActiveServer?.(null); 
-        navigate("/")
+      onClick={() => {
+        setActiveServer?.(null);
+        navigate("/");
       }}
       className={`h-10 w-10 mb-2 relative rounded-xl  hover:bg-[#5764F1] focus:bg-[#5764F1] cursor-pointer flex items-center justify-center transition-all duration-200 server-item group mt-2   hover:cursor-pointer  select-none
       before:content-[''] before:absolute before:left-[-22px] before:top-1/2 before:-translate-y-1/2 

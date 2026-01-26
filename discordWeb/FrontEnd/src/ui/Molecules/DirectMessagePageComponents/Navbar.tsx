@@ -1,13 +1,13 @@
-import React, { useContext } from "react";
 import { Search } from "lucide-react";
 import { FaPhoneVolume, FaUserPlus } from "react-icons/fa";
-import { AppContext } from "../../../context/userProvider";
-
-import IconWithDownSideHoverText from "../NavbarActionIcon";
-import ben from "../../../assets/Tuta.png";
 import { IoVideocam } from "react-icons/io5";
 import { BsPinAngleFill } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
+
+import React, { useContext } from "react";
+import { AppContext } from "../../../context/userProvider";
+import IconWithDownSideHoverText from "../NavbarActionIcon";
+import ben from "../../../assets/Tuta.png";
 
 const Navbar: React.FC = () => {
   const ctx = useContext(AppContext);

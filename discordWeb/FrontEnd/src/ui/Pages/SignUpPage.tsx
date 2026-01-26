@@ -1,21 +1,26 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import type { BadRequest, LoginResponse } from "../../types/types";
+
 import { AppContext } from "../../context/userProvider";
+import type { BadRequest } from "../../types/request";
+import type { LoginResponse } from "../../types/common";
 
 export default function DiscordSignup() {
+  const ctx = useContext(AppContext);
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [user_name, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [emailOptIn, setEmailOptIn] = useState(false);
-  const ctx = useContext(AppContext);
-  const navigate = useNavigate();
+
   if (!ctx) {
     return null;
   }
-  const {setJwtToken} = ctx;
+
+  const { setJwtToken } = ctx;
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
 
@@ -30,7 +35,6 @@ export default function DiscordSignup() {
         }),
       });
 
-      // Backend başarılı dönmezse
       if (!res.ok) {
         const err: BadRequest = await res.json().catch(() => null);
         console.error("Register failed:", err || res.statusText);
@@ -41,7 +45,7 @@ export default function DiscordSignup() {
       // Başarılı olduysa
       const data: LoginResponse = await res.json();
       console.log("Register success:", data);
-      if (data.token) setJwtToken(data.token); // Giriş sonrası
+      if (data.token) setJwtToken(data.token);
       toast.success("Başarıyla giriş yapıldı");
       navigate("/friends");
     } catch (error) {
@@ -49,6 +53,7 @@ export default function DiscordSignup() {
       toast.error("Sunucuya bağlanırken hata oluştu.");
     }
   }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-900 via-purple-900 to-blue-800 relative overflow-hidden">
       {/* Background decorative circles */}

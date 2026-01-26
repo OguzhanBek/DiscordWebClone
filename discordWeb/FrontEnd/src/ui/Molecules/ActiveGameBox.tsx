@@ -1,5 +1,8 @@
 import { FaGamepad } from "react-icons/fa";
-function ActiveGameBox({ src }: { src: string }) {
+type ActiveGameBoxProps = {
+  src: string;
+};
+function ActiveGameBox({ src }: ActiveGameBoxProps) {
   return (
     <div className="bg-[#2a2a2e] cursor-pointer hover:bg-[#363434] transition-colors border border-[#36363b] rounded-xl p-3 mb-3">
       <div className="flex gap-3 items-center mb-2">
