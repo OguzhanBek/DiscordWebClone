@@ -4,15 +4,16 @@ import { FaDiscord } from "react-icons/fa";
 import type { AppContextType } from "../types/userProvider";
 import type { User } from "../types/user";
 import type { conversationList } from "../types/chat/conversation";
-import type { friendReuestType, FriendType } from "../types/friend";
+import type { FriendType } from "../types/friend/friend";
 import type { TopSideTitle } from "../types/common";
+import type { friendRequestType } from "../types/friend/friendRequest";
 
 export const AppContext = createContext<AppContextType | null>(null);
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [dmFriendName, setDmFriendName] = useState<string[]>([]);
-  const [friendRequests, setFriendRequests] = useState<friendReuestType[]>([]);
+  const [friendRequests, setFriendRequests] = useState<friendRequestType[]>([]);
   const [conversationList, setConversationList] =
     useState<conversationList[]>();
   const [friendList, setFriendList] = useState<FriendType[]>();
@@ -42,7 +43,6 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem("jwtToken");
     _setJwtToken(null);
   };
-
 
   return (
     <AppContext.Provider

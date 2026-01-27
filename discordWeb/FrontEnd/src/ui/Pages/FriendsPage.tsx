@@ -8,7 +8,7 @@ import AddFriendPage from "./AddFriendPage";
 import FriendRequestItem from "../Molecules/FriendRequestItem";
 import FriendsNavbar from "../Molecules/FriendsNavbar";
 import { SignalRContext } from "../../context/signalRContext";
-import type { onlinefriend } from "../../types/friend";
+import type { onlinefriend } from "../../types/friend/friend";
 
 function FriendsPage() {
   const ctx = useContext(AppContext);

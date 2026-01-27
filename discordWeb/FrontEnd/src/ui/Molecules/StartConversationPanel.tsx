@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 
 import tuta from "../../assets/Tuta.png";
 import { AppContext } from "../../context/userProvider";
-import type { FriendType } from "../../types/friend";
+import type { FriendType } from "../../types/friend/friend";
 
 type FindFriendsProps = {
   friendList?: FriendType[];
