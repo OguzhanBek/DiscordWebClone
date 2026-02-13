@@ -44,7 +44,6 @@ export default function DiscordSignup() {
 
       // Başarılı olduysa
       const data: LoginResponse = await res.json();
-      console.log("Register success:", data);
       if (data.token) setJwtToken(data.token);
       toast.success("Başarıyla giriş yapıldı");
       navigate("/friends");

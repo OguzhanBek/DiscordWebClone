@@ -6,13 +6,13 @@ import VoiceChannel from "../Molecules/RightBarVoiceChannel";
 import SpotifyBox from "../Molecules/SpotifyBox";
 import { rightBarColor } from "../../Colors";
 
-
 function Rightbar() {
   const location = useLocation();
 
   const home = location.pathname === "/";
   const friendsPage = location.pathname === "/friends";
   const directMessagePage = location.pathname === "/directMessage";
+
 
   return (
     <>

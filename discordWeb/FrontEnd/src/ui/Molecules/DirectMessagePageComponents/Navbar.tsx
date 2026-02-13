@@ -9,18 +9,26 @@ import { AppContext } from "../../../context/userProvider";
 import IconWithDownSideHoverText from "../NavbarActionIcon";
 import ben from "../../../assets/Tuta.png";
 
-const Navbar: React.FC = () => {
+type NavbarProps = {
+  isRightBarOpen: boolean;
+  setIsRightBarOpen: (value: boolean) => void;
+};
+
+const Navbar: React.FC<NavbarProps> = ({
+  isRightBarOpen,
+  setIsRightBarOpen,
+}) => {
   const ctx = useContext(AppContext);
   if (!ctx) return null;
   const { dmFriendName } = ctx;
 
   return (
-    <nav className="Discord-Store-Navbar fixed  w-[-webkit-fill-available] h-12  z-100 bg-[#1A1A1E] border-b border-[#303035] text-white px-4  flex items-center justify-between  ">
+    <nav className="Discord-Store-Navbar fixed w-[-webkit-fill-available] h-12 z-100 bg-[#1A1A1E] border-b border-[#303035] text-white px-4 flex items-center justify-between">
       {/* Left side */}
-      <div className="flex items-center space-x-6 h-12 ">
-        <section className="flex items-center space-x-2  h-full ">
-          <div className=" rounded flex items-center justify-center text-gray-500 text-2xl mr-4">
-            <img className="rounded-full w-8 h-8 ml-4 " src={ben} alt="tuta" />
+      <div className="flex items-center space-x-6 h-12">
+        <section className="flex items-center space-x-2 h-full">
+          <div className="rounded flex items-center justify-center text-gray-500 text-2xl mr-4">
+            <img className="rounded-full w-8 h-8 ml-4" src={ben} alt="tuta" />
           </div>
           {dmFriendName.map((friendName, index) => (
             <span
@@ -36,7 +44,7 @@ const Navbar: React.FC = () => {
 
       {/* Right side */}
       <section className="flex items-center space-x-4">
-        <div className="relative flex items-center gap-6 ">
+        <div className="relative flex items-center gap-6">
           <IconWithDownSideHoverText
             Icon={FaPhoneVolume}
             tooltipText="Sesli arama başlat"
@@ -53,14 +61,25 @@ const Navbar: React.FC = () => {
             Icon={FaUserPlus}
             tooltipText="DM'ye arkadaş ekle"
           />
-          <IconWithDownSideHoverText
-            Icon={CgProfile}
-            tooltipText="Kullanıcı profilini göster"
-          />
+          <button
+            onClick={() => setIsRightBarOpen(!isRightBarOpen)}
+            className={`text-xl p-2 rounded transition ${
+              isRightBarOpen
+                ? "bg-[#232428] text-white"
+                : "text-gray-400 hover:text-white hover:bg-[#232428]"
+            }`}
+            title="Üye Listesi"
+          >
+            <IconWithDownSideHoverText
+              Icon={CgProfile}
+              tooltipText="Kullanıcı profilini göster"
+            />
+          </button>
+
           <input
             type="text"
             placeholder={`${dmFriendName} sunucusunu ara`}
-            className="bg-[#17171B]  text-gray-300 placeholder-gray-500 px-3 py-1.5  rounded text-sm w-60 focus:outline-none ring-1 ring-gray-700"
+            className="bg-[#17171B] text-gray-300 placeholder-gray-500 px-3 py-1.5 rounded text-sm w-60 focus:outline-none ring-1 ring-gray-700"
           />
           <Search className="absolute right-2.5 top-2 w-3.5 h-3.5 text-gray-500" />
         </div>

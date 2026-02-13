@@ -4,7 +4,7 @@ import { FaDiscord } from "react-icons/fa";
 import type { AppContextType } from "../types/userProvider";
 import type { User } from "../types/user";
 import type { conversationList } from "../types/chat/conversation";
-import type { FriendType } from "../types/friend/friend";
+import type { FriendType, onlinefriend } from "../types/friend/friend";
 import type { TopSideTitle } from "../types/common";
 import type { friendRequestType } from "../types/friend/friendRequest";
 
@@ -35,6 +35,8 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [sidebarWidth, setSidebarWidth] = useState(240);
 
+  const [onlineFriends, setOnlineFriends] = useState<onlinefriend[]>([]);
+
   const setJwtToken = (token: string | null) => {
     _setJwtToken(token);
     localStorage.setItem("jwtToken", token || "");
@@ -51,6 +53,8 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
         logout,
         dmFriendName,
         setDmFriendName,
+        onlineFriends, 
+        setOnlineFriends,
         userInfo,
         setUserInfo,
         friendList,

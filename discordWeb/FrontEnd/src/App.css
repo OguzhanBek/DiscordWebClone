@@ -1,5 +1,29 @@
-*{
-font-family: Poppins, sans-serif;
+@font-face {
+  font-family: "GG Sans";
+  src: url("./assets/gg-sans-Bold.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GG Sans";
+  src: url("./assets/gg-sans-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GG Sans";
+  src: url("./assets/gg-sans-Regular.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "GG Sans";
+  src: url("./assets/gg-sans-Semibold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
 }
 
 .server-item.active::before {

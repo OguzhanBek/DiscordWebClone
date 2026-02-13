@@ -13,7 +13,7 @@ public class PresenceHub : Hub
     {
         _context = context;
     }
-
+    // Bu fonklsyionun adı getonline users ama online arkadaşlarımı buluyor sadece. Sokete giriş yapan kullanıcılardan benle arkadaş olanları alıyorum.
     public async Task GetOnlineUsers()
     {
         var userId = Context.User?
@@ -32,19 +32,16 @@ public class PresenceHub : Hub
 
         if (user == null) return;
 
-        // Kullanıcının arkadaşlarını al
         var friendIds = await GetUserFriendIds(userId);
 
-        // Sadece arkadaş olan ve online olanları filtrele
         var onlineUsers = OnlineUserStore.Users
             .Where(u => u.FriendId != user.UserId && friendIds.Contains(u.FriendId))
             .ToList();
 
         await Clients.Caller.SendAsync("initialOnlineUsers", onlineUsers);
-
-        Console.WriteLine($"📋 Online friends sent: {onlineUsers.Count}");
+        Console.WriteLine($"Online friends sent: {onlineUsers.Count}");
     }
-
+    // Bağlanan kullanıcıları onineuserstore verisine ekliyorum. Ardından arkadaşlara initialonlineusers endpointinden kendim hariç herkesin online durumunu yolluyorum. Arkadaşlar için de ayrı endpoint var. Orada kendi bilgiliermi arkadaşlara yolluyorum.
     public override async Task OnConnectedAsync()
     {
         var userId = Context.User?
@@ -72,25 +69,21 @@ public class PresenceHub : Hub
             });
         }
 
-        Console.WriteLine($"✅ {user.UserName} connected. Online count: {OnlineUserStore.Users.Count}");
+        Console.WriteLine($"{user.UserName} connected. Online count: {OnlineUserStore.Users.Count}");
 
-        // Kullanıcının arkadaşlarını al
         var friendIds = await GetUserFriendIds(userId);
 
-        // 🔥 Sadece arkadaş olan ve online olanları gönder (kendisi hariç)
         var onlineUsersExceptMe = OnlineUserStore.Users
             .Where(u => u.FriendId != user.UserId && friendIds.Contains(u.FriendId))
             .ToList();
 
         await Clients.Caller.SendAsync("initialOnlineUsers", onlineUsersExceptMe);
 
-        // 🔥 Sadece bu kullanıcının arkadaşı olanlara bildirim gönder
         var usersWhoAreFriendsWithMe = OnlineUserStore.Users
             .Where(u => u.FriendId != user.UserId)
             .Select(u => u.FriendId)
             .ToList();
 
-        // Bu kullanıcıyla arkadaş olan ve şu anda online olanları bul
         var friendsToNotify = await _context.Friends
             .Where(f =>
                 (f.UserId1 == userId || f.UserId2 == userId) &&
@@ -99,7 +92,6 @@ public class PresenceHub : Hub
             .Select(f => f.UserId1 == userId ? f.UserId2 : f.UserId1)
             .ToListAsync();
 
-        // Sadece arkadaşlarına online olduğunu bildir
         foreach (var friendId in friendsToNotify)
         {
             await Clients.User(friendId).SendAsync(

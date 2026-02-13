@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoChatbubble } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +23,8 @@ function FriendListItem({
   const navigate = useNavigate();
 
   if (!context) return null;
+
+  const [isMoreOpen, setIsMoreOpen] = useState<boolean>(false);
 
   const { jwtToken, setDmFriendName, setJwtToken, setConversationList } =
     context;
@@ -73,7 +75,7 @@ function FriendListItem({
       }
 
       if (!response.ok) {
-        console.log(response.text);
+        console.error(response.text);
         toast.error(`"Bir hata oluştu. Lütfen tekrar deneyin. `);
         return;
       }
@@ -83,11 +85,8 @@ function FriendListItem({
         toast.error("Geçersiz sunucu yanıtı.");
         return;
       }
-      console.log("data : ", data);
-      console.log(data);
       navigate(`/directMessage/${data.conversationId}`);
 
-      // ✅ İsimleri array olarak set et
       const friendNames = Array.isArray(data.friendName)
         ? data.friendName
         : [data.friendName];
@@ -95,24 +94,20 @@ function FriendListItem({
 
       const newConversations = friendNames.map((name: string) => ({
         conversationId: data.conversationId,
-        friendId: friendId, // ✅ Mevcut friendId'yi kullan (FriendListItem'dan geliyor)
+        friendId: friendId,
         userName: name,
       }));
 
       setConversationList((prev) => {
         const current = prev || [];
-
-        // Eski conversation'ın index'ini bul
         const firstOccurrenceIndex = current.findIndex(
           (c) => c.conversationId === data.conversationId,
         );
 
         if (firstOccurrenceIndex === -1) {
-          // Yoksa sona ekle
           return [...current, ...newConversations];
         }
 
-        // Varsa aynı pozisyonda güncelle
         const withoutOld = current.filter(
           (c) => c.conversationId !== data.conversationId,
         );
@@ -134,10 +129,12 @@ function FriendListItem({
   };
 
   return (
-    <button
-      className="Friend-List-Item border-t group border-[#31313b] hover:border-transparent flex items-center justify-between
-             rounded-md h-16 transition-all bg-[#1A1A1E] w-full px-4
-             hover:bg-[#232327] hover:cursor-pointer active:bg-[#2C2C30] group"
+    <div
+      onClick={() => createOrOpenDm()}
+      className="relative Friend-List-Item border-t border-[#31313b]
+                 flex items-center justify-between rounded-md h-16
+                 transition-all bg-[#1A1A1E] w-full px-4
+                 hover:bg-[#232327] active:bg-[#2C2C30] cursor-pointer"
     >
       {/* LEFT SIDE */}
       <div className="flex items-center gap-3">
@@ -145,47 +142,87 @@ function FriendListItem({
 
         <div className="flex flex-col items-start">
           <p className="text-md font-semibold text-white">{userName}</p>
-          <span className="text-xs  text-gray-400">{onlineStatus}</span>
+          <span className="text-xs text-gray-400">{onlineStatus}</span>
         </div>
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="flex items-center gap-2 group text-gray-400  ">
+      <div className="flex items-center gap-2 text-gray-400">
+        {/* MESSAGE */}
         <div className="relative group/icon">
           <IoChatbubble
-            onClick={() => {
-              createOrOpenDm();
-            }}
+            onClick={createOrOpenDm}
             size={40}
-            className="group-hover:bg-[#19191D] hover:text-white rounded-full p-2 transition"
+            className="rounded-full p-2 hover:bg-[#19191D] hover:text-white transition cursor-pointer"
           />
 
           <span
             className="absolute left-1/2 -translate-x-1/2 -translate-y-full top-0
-               p-2  text-white text-xs  rounded opacity-0
-               group-hover/icon:opacity-100 transition-opacity whitespace-nowrap pointer-events-none bg-[#36363b]"
+                       bg-[#36363b] text-white text-xs p-2 rounded
+                       opacity-0 group-hover/icon:opacity-100 transition-opacity
+                       whitespace-nowrap pointer-events-none"
           >
             Mesaj gönder
           </span>
         </div>
 
-        <div className="flex items-center gap-2 text-gray-400  ">
+        <div className="relative">
+          {/* Burada yeni bir div içerisinde group özelliği verdim . Eğer en büüyk parent'a group veseydim overlay tüm ekranı kapsayacağı için ve bir child olacağı için parent'ın bir elemanı olduğu için group özelliği devam ediyordu. O yüzden div açıp ayıtdım. Bunu overlay kullanırken asla unutma. Hep ayırma işlemi yapmam lazım. */}
           <div className="relative group/icon">
             <BsThreeDotsVertical
+              onClick={(e) => {
+                setIsMoreOpen(true);
+                e.stopPropagation();
+              }}
               size={40}
-              className="group-hover:bg-[#19191D] hover:text-white rounded-full p-2 transition"
+              className="rounded-full p-2 hover:bg-[#19191D] hover:text-white transition cursor-pointer"
             />
+
             <span
-              className="absolute left-1/2 -translate-x-1/2  bg-[#36363b] -translate-y-full top-0
-                text-white text-xs p-2  rounded opacity-0
-               group-hover/icon:opacity-100 transition-opacity whitespace-nowrap pointer-events-none"
+              className="absolute left-1/2 -translate-x-1/2 -translate-y-full top-0
+                         bg-[#36363b] text-white text-xs p-2 rounded
+                         opacity-0 group-hover/icon:opacity-100 transition-opacity
+                         whitespace-nowrap pointer-events-none "
             >
               Daha fazla
             </span>
           </div>
+
+          {/* OVERLAY + MENU */}
+          {isMoreOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-40 select-none cursor-default"
+                onClick={(e) => {
+                  setIsMoreOpen(false);
+                  e.stopPropagation();
+                }}
+              />
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute -top-4 left-10 z-50 select-none"
+              >
+                <ul className="w-56 rounded-lg bg-[#1f1f24] shadow-xl border border-[#2a2a2f] py-1 text-sm select-none">
+                  <li className="px-4 py-2 hover:bg-[#2b2b30] cursor-pointer transition">
+                    📹 Görüntülü arama başlat
+                  </li>
+
+                  <li className="px-4 py-2 hover:bg-[#2b2b30] cursor-pointer transition select-none">
+                    🔊 Sesli arama başlat
+                  </li>
+
+                  <div className="my-1 border-t border-[#2a2a2f]" />
+
+                  <li className="px-4 py-2 text-red-400 hover:bg-[#3a1f25] cursor-pointer transition select-none">
+                    ❌ Arkadaşı çıkar
+                  </li>
+                </ul>
+              </div>
+            </>
+          )}
         </div>
       </div>
-    </button>
+    </div>
   );
 }
 export default FriendListItem;

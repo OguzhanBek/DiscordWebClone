@@ -6,6 +6,6 @@ export type user = {
 };
 export type User = {
   email: string;
-  user_name: string;
+  user_name: string | undefined;
   token: string;
 };

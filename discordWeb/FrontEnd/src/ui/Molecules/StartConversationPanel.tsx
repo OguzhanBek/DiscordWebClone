@@ -54,7 +54,6 @@ function StartConversationPanel({
 
       const data = await response.json();
 
-      // 🔹 friendName her zaman array olsun
       const friendNames = Array.isArray(data.friendName)
         ? data.friendName
         : [data.friendName];

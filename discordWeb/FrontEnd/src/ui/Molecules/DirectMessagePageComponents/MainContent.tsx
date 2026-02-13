@@ -15,7 +15,6 @@ import { SignalRContext } from "../../../context/signalRContext";
 import type { Message } from "../../../types/chat/message";
 import type { TypingUser } from "../../../types/chat/typing";
 
-
 function MainContent() {
   const context = useContext(AppContext);
   const signalContext = useContext(SignalRContext);
@@ -40,16 +39,8 @@ function MainContent() {
     }
 
     try {
-      //socketi provider'dan yönetilen hook şeklinde istiyorlar.
       await signalContext?.chatConnection?.invoke("SendMessage", chatId, input);
-
-      // Typing durumunu kapat
       await signalContext?.chatConnection?.invoke("UserTyping", chatId, false);
-      console.log("signal context mount bilgisi : ", signalContext);
-      console.log(
-        "signal context chat konection bilgisi : ",
-        signalContext?.chatConnection,
-      );
       setInput("");
     } catch (error) {
       console.error(error);
@@ -62,7 +53,6 @@ function MainContent() {
 
     if (!chatId || !signalContext) return;
 
-    // Typing
     try {
       await signalContext.chatConnection?.invoke("UserTyping", chatId, true);
 
@@ -111,7 +101,7 @@ function MainContent() {
           setDmFriendName(friendNames);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 
@@ -121,12 +111,8 @@ function MainContent() {
   useEffect(() => {
     if (!signalContext?.chatConnection) return;
 
-    // Bağlantının hazır olmasını bekle
     const setupListeners = async () => {
-      // Eğer bağlantı "Connected" durumunda değilse, bekle
       if (signalContext.chatConnection?.state !== "Connected") {
-        console.log("Bağlantı henüz hazır değil, bekleniyor...");
-        // Bağlantının kurulmasını bekle
         await new Promise((resolve) => {
           const checkConnection = setInterval(() => {
             if (signalContext.chatConnection?.state === "Connected") {
@@ -140,7 +126,6 @@ function MainContent() {
       const handleReceiveMessage = (msg: Message) => {
         if (msg.conversationId !== chatId) return;
         setMessages((prev) => [...prev, msg]);
-        console.log("Mesaj alındı:", msg.content);
       };
 
       const handleUserTyping = (data: {
@@ -166,20 +151,15 @@ function MainContent() {
         });
       };
 
-      // Listener'ları ekle
       signalContext.chatConnection?.on("ReceiveMessage", handleReceiveMessage);
       signalContext.chatConnection?.on("UserTyping", handleUserTyping);
 
-      console.log("✅ SignalR listeners kuruldu");
-
-      // Cleanup
       return () => {
         signalContext.chatConnection?.off(
           "ReceiveMessage",
           handleReceiveMessage,
         );
         signalContext.chatConnection?.off("UserTyping", handleUserTyping);
-        console.log("🧹 SignalR listeners temizlendi");
       };
     };
 
@@ -201,7 +181,6 @@ function MainContent() {
     const joinConversation = async () => {
       try {
         await signalContext.chatConnection?.invoke("JoinConversation", chatId);
-        console.log("✅ Sohbete katıldı:", chatId);
       } catch (error) {
         console.error("❌ Sohbete katılamadı:", error);
       }
@@ -212,80 +191,62 @@ function MainContent() {
     return () => {
       signalContext.chatConnection
         ?.invoke("LeaveConversation", chatId)
-        .catch((err : any) => console.error("Ayrılma hatası:", err));
+        .catch((err: any) => console.error("Ayrılma hatası:", err));
     };
   }, [chatId, signalContext?.chatConnection]);
 
   return (
-    <div className="flex h-full flex-col-reverse overflow-y-auto discord-scrollbar">
+    <div className="flex h-full flex-col-reverse overflow-y-scroll  discord-scrollbar">
       {/* Message Input Bar – en altta */}
-      <div className="mx-auto fixed w-[82%] px-2 bg-[#1A1A1E] h-14">
-        <div className="mx-auto flex items-center bg-[#232428] rounded-xl px-4 gap-3 h-full">
+      <div className="fixed bottom-0 w-full px-2 shrink-0 bg-[#1A1A1E]">
+        <div className="mx-auto flex items-center bg-[#232428] rounded-xl px-4 py-4 gap-3 h-full">
           {/* Attach Button */}
-          <div
-            className="text-gray-300 transition-all hover:text-white 
-text-3xl cursor-pointer flex items-center justify-center"
-          >
+          <div className="text-gray-300 transition-all hover:text-white text-3xl flex items-center justify-center">
             {/* + butonu - Dropdown menü  Burası tamamen klomponent olacak.*/}
-            <div
-              onClick={() => {
-                setOpenDropdown(!openDropdown);
-              }}
-              className="flex items-center relative space-x-1 cursor-pointer h-full"
-            >
-              <div className="Göz-At-Butonu h-full flex items-center">
-                <FaPlus className="hover:bg-[#4B4C52] p-1 rounded-full" />
+            <div className="Göz-At-Butonu h-full flex items-center relative">
+              <FaPlus
+                onClick={() => {
+                  setOpenDropdown(!openDropdown);
+                }}
+                className="hover:bg-[#4B4C52] p-1 rounded-full cursor-pointer"
+              />
 
-                {/* Dropdown Menü */}
-                <div
-                  className={`absolute bottom-[200px] translate-y-full left-1 text-sm rounded-xl opacity-0 flex flex-col 
-         ${
-           openDropdown && "opacity-100 "
-         } bg-[#2b2b30] shadow-lg p-2 pointer-events-none ${
-           openDropdown === true ? "pointer-events-auto" : "pointer-events-none"
-         } z-5000`}
-                >
-                  <button
-                    className={`px-4 py-2 flex gap-2 cursor-pointer z-5000 rounded-xl hover:bg-[#303035] whitespace-nowrap ${
-                      openDropdown === true
-                        ? "pointer-events-auto"
-                        : "pointer-events-none"
-                    }`}
+              {openDropdown && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setOpenDropdown(false)}
+                  />
+
+                  {/* DROPDOWN MENU */}
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute bottom-full mb-2 left-1 z-50
+                 text-sm rounded-xl flex flex-col
+                 bg-[#2b2b30] shadow-lg p-2"
                   >
-                    <AiTwotoneFileAdd />
-                    Bir dosya ekle
-                  </button>
-                  <button
-                    className={`px-4 py-2 flex gap-2 cursor-pointer z-5000 rounded-xl hover:bg-[#303035] whitespace-nowrap ${
-                      openDropdown === true
-                        ? "pointer-events-auto"
-                        : "pointer-events-none"
-                    }`}
-                  >
-                    <PiSubtitlesDuotone />
-                    Alt başlık oluştur
-                  </button>
-                  <button
-                    className={`px-4 py-2 flex gap-2 cursor-pointer z-5000 rounded-xl hover:bg-[#303035] whitespace-nowrap ${
-                      openDropdown === true
-                        ? "pointer-events-auto"
-                        : "pointer-events-none"
-                    }`}
-                  >
-                    <RiSurveyFill />
-                    Anket oluştur
-                  </button>
-                  <button
-                    className={`px-4 py-2 flex gap-2 cursor-pointer z-5000 rounded-xl hover:bg-[#303035] whitespace-nowrap ${
-                      openDropdown === true
-                        ? "pointer-events-auto"
-                        : "pointer-events-none"
-                    }`}
-                  >
-                    <BiSolidWidget /> Uygulamaları kullan
-                  </button>
-                </div>
-              </div>
+                    <button className="px-4 py-2 flex gap-2 rounded-xl hover:bg-[#303035] whitespace-nowrap">
+                      <AiTwotoneFileAdd />
+                      Bir dosya ekle
+                    </button>
+
+                    <button className="px-4 py-2 flex gap-2 rounded-xl hover:bg-[#303035] whitespace-nowrap">
+                      <PiSubtitlesDuotone />
+                      Alt başlık oluştur
+                    </button>
+
+                    <button className="px-4 py-2 flex gap-2 rounded-xl hover:bg-[#303035] whitespace-nowrap">
+                      <RiSurveyFill />
+                      Anket oluştur
+                    </button>
+
+                    <button className="px-4 py-2 flex gap-2 rounded-xl hover:bg-[#303035] whitespace-nowrap">
+                      <BiSolidWidget />
+                      Uygulamaları kullan
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
           {/* Input */}
@@ -316,9 +277,9 @@ text-3xl cursor-pointer flex items-center justify-center"
       </div>
 
       {/* Messages + Header */}
-      <div className="w-[calc(100%-50px)] pb-[60px] select-text mx-auto">
+      <div className="w-[calc(100%-50px)] h-200 select-text mx-auto pb-20 shrink-0  flex flex-col justify-end">
         {/* Header (kanal adı bölümü) */}
-        <div className="mt-22 mb-5">
+        <div className="mt-22 ">
           <img
             src={ben}
             className="select-none mb-4 p-2 text-5xl rounded-full w-24 h-24 flex items-center justify-center"
@@ -330,48 +291,87 @@ text-3xl cursor-pointer flex items-center justify-center"
           <div className="w-full h-0.5 mb-4 bg-[#28282D] mt-4"></div>
         </div>
 
-        {/* Messages */}
-        {messages.map((msg) => (
-          <div key={msg.createdAt} className="flex gap-4 mb-6">
-            <img src={ben} className="select-none h-10 w-10 rounded-full" />
-            <div className="text-white">
-              <div className="flex items-center gap-3">
-                <span className="font-bold">{msg.authorUsername}</span>{" "}
-                <span className="text-sm text-gray-500">
-                  {new Date(msg.createdAt).toLocaleString()}
-                </span>
-              </div>
-              <p className="mt-1">{msg.content}</p>
-            </div>
-          </div>
-        ))}
+        {/* Messages Container */}
+        <div className="flex flex-col">
+          {messages.map((msg, index) => {
+            const isFirstOfSequence =
+              index === 0 ||
+              messages[index - 1].authorUserId !== msg.authorUserId;
 
-        {/* Typing Indicator */}
-        {typingUsers.length > 0 && (
-          <div className="flex gap-4 mb-6">
-            <img src={ben} className="select-none h-10 w-10 rounded-full" />
-            <div className="text-gray-400 flex items-center gap-2">
-              <span className="italic">
-                {typingUsers.map((u) => u.username).join(", ")} yazıyor
-              </span>
-              <div className="flex gap-1">
-                <span className="animate-bounce">.</span>
-                <span
-                  className="animate-bounce"
-                  style={{ animationDelay: "0.1s" }}
-                >
-                  .
+            return (
+              <div
+                key={msg.createdAt}
+                className="flex gap-4 mb-1 group hover:bg-[#28282D] transition-all "
+              >
+                {isFirstOfSequence ? (
+                  <img
+                    src={ben}
+                    className="select-none h-10 w-10 rounded-full mt-4"
+                  />
+                ) : (
+                  <div className="w-10 flex items-center justify-center">
+                    <span
+                      className="text-xs text-gray-500 opacity-0 
+                       group-hover:opacity-100 transition-opacity"
+                    >
+                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                )}
+
+                <div className="text-white">
+                  {/* HEADER */}
+                  {isFirstOfSequence && (
+                    <div className="flex items-center gap-3 mt-4">
+                      <span className="font-bold">{msg.authorUsername}</span>
+                      <span className="text-sm text-gray-500">
+                        {new Date(msg.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* MESSAGE */}
+                  <p className={isFirstOfSequence ? "mt-1" : ""}>
+                    {msg.content}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Typing Indicator */}
+          {typingUsers.length > 0 && (
+            <div className="flex gap-4 mb-6">
+              <img src={ben} className="select-none h-10 w-10 rounded-full" />
+              <div className="text-gray-400 flex items-center gap-2">
+                <span className="italic">
+                  {typingUsers.map((u) => u.username).join(", ")} yazıyor
                 </span>
-                <span
-                  className="animate-bounce"
-                  style={{ animationDelay: "0.2s" }}
-                >
-                  .
-                </span>
+                <div className="flex gap-1">
+                  <span className="animate-bounce">.</span>
+                  <span
+                    className="animate-bounce"
+                    style={{ animationDelay: "0.1s" }}
+                  >
+                    .
+                  </span>
+                  <span
+                    className="animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  >
+                    .
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

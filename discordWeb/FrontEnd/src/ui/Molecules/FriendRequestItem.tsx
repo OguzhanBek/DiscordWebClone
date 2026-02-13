@@ -34,9 +34,6 @@ function FriendRequestItem({
 
   const acceptFriendRequest = async () => {
     try {
-      console.log("=== Accept Friend Request ===");
-      console.log("JWT Token:", jwtToken);
-      console.log("Username:", otherPersonName);
 
       const response = await fetch(
         "http://localhost:5200/api/friendrequest/accept",
@@ -51,8 +48,6 @@ function FriendRequestItem({
           }),
         },
       );
-
-      console.log("Response status:", response.status);
 
       if (response.status === 401) {
         localStorage.removeItem("jwtToken");
@@ -75,7 +70,6 @@ function FriendRequestItem({
       }
 
       const result = await response.text();
-      console.log("Success response:", result);
 
       toast.success("Arkadaşlık isteği kabul edildi.");
 
