@@ -1,7 +1,6 @@
-
 import type { conversationList } from "./chat/conversation";
 import type { TopSideTitle } from "./common";
-import type {  FriendType } from "./friend/friend";
+import type { FriendType, onlinefriend } from "./friend/friend";
 import type { friendRequestType } from "./friend/friendRequest";
 import type { User } from "./user";
 
@@ -10,6 +9,8 @@ export type AppContextType = {
   logout: () => void;
   setJwtToken: (token: string | null) => void;
   setDmFriendName: React.Dispatch<React.SetStateAction<string[]>>;
+  onlineFriends: onlinefriend[];
+  setOnlineFriends: React.Dispatch<React.SetStateAction<onlinefriend[]>>;
   userInfo: User | null;
   setUserInfo: React.Dispatch<React.SetStateAction<User | null>>;
   friendRequests: friendRequestType[];

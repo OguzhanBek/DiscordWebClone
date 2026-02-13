@@ -19,8 +19,7 @@ function ServerListItem({
   return (
     <div
       onClick={() => {
-        console.log(`Clicked server ${index}`);
-        setActiveServer(index);
+         setActiveServer(index);
         navigate(`/channels/${index}`);
       }}
       className={`server-item relative group mt-2 h-10 w-[40%] hover:cursor-pointer transition-all select-none

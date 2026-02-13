@@ -42,7 +42,6 @@ function DirectConversationItems() {
     handleGetFriendList();
   }, []);
 
-  // ✅ Conversation'ları conversationId'ye göre grupla
   const groupedConversations = useMemo(() => {
     if (!conversationList) return [];
 
@@ -81,8 +80,6 @@ function DirectConversationItems() {
 
     return grouped;
   }, [conversationList]);
-
-  console.log("grouped conversations:", groupedConversations);
 
   return (
     <div className="mt-2">

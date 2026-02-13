@@ -15,7 +15,6 @@ public class ChatHub : Hub
         _context = context;
     }
 
-    // Kullanıcı bağlandığında
     public override async Task OnConnectedAsync()
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -35,7 +34,6 @@ public class ChatHub : Hub
         await base.OnConnectedAsync();
     }
 
-    // Kullanıcı ayrıldığında
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -87,19 +85,16 @@ public class ChatHub : Hub
 
         if (!isParticipant)
         {
-            Console.WriteLine($"⚠️ User {userId} is not a participant of {conversationId}");
             return;
         }
-
         await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
-        Console.WriteLine($"✅ User {userId} joined conversation {conversationId}");
     }
 
     public async Task LeaveConversation(string conversationId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, conversationId);
-        Console.WriteLine($"🚪 User left conversation {conversationId}");
     }
+    
     public async Task UserTyping(string conversationId, bool isTyping)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -112,7 +107,7 @@ public class ChatHub : Hub
 
         var user = await _context.Users.FindAsync(userId);
 
-        // Kendisi hariç diğer kullanıcılara typing durumunu bildir
+        // Kendisi hariç diğer kullanıcılara typing durumunu bildirmek için group excep kullanılıyorumiş
         await Clients.GroupExcept(conversationId, Context.ConnectionId).SendAsync("UserTyping", new
         {
             conversationId = conversationId,

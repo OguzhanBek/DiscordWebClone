@@ -1,6 +1,5 @@
 import { FaUserFriends } from "react-icons/fa";
-import { GiSpinningBlades } from "react-icons/gi";
-import { CiCirclePlus, CiShop } from "react-icons/ci";
+import { CiCirclePlus } from "react-icons/ci";
 import { RxCross1 } from "react-icons/rx";
 import { FiFolderPlus } from "react-icons/fi";
 import { PiPencilSimpleDuotone } from "react-icons/pi";
@@ -16,16 +15,18 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { useLocation } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
-
+import MyIcon from "../../assets/svg/Screenshot_1 (1).svg";
+import Nitro from "../../assets/svg/nitro.svg";
+import Mağaza from "../../assets/svg/mağaza 1.svg";
 import SidebarNavItem from "../Molecules/SidebarNavItem";
 import DirectConversationItems from "./DirectConversationItems";
 import Transparentmodal from "../../model/Transparentmodal";
 import StartConversationPanel from "../Molecules/StartConversationPanel";
 import ChannelButton from "../Molecules/ChannelButton";
-import UserPanel from "./UserPanel";
 import { AppContext } from "../../context/userProvider";
 import CreateDMModal from "./CreateDMModal";
 import { grayBackground } from "../../Colors";
+import UserPanel from "./UserPanel";
 
 function SideBar() {
   const ctx = useContext(AppContext);
@@ -47,9 +48,9 @@ function SideBar() {
   const [openFindFriends, setOpenFindFriends] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [iconsAndTitles] = useState([
-    { Icon: FaUserFriends, title: "Arkadaşlar", route: "/friends" },
-    { Icon: GiSpinningBlades, title: "Nitro", route: "/store" },
-    { Icon: CiShop, title: "Mağaza", route: "/shop" },
+    { icon: MyIcon, title: "Arkadaşlar", route: "/friends" },
+    { icon: Nitro, title: "Nitro", route: "/store" },
+    { icon: Mağaza, title: "Mağaza", route: "/shop" },
   ]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -69,13 +70,11 @@ function SideBar() {
       return;
     }
     setSidebarWidth(clampedWidth);
-    console.log("genişlik değiştiriliyor");
   };
 
   const handleMouseUp = () => {
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
-    console.log("fare bırakıldı");
   };
 
   const isChannelPage = pathname.startsWith("/channels");
@@ -102,6 +101,7 @@ function SideBar() {
         className=" relative flex flex-col items-center  text-amber-50 border-r border-transparent text-center"
       >
         <UserPanel />
+
         {/*Server adı ve özellikleri partı*/}
         {isChannelPage ? (
           <div className="relative w-full">
@@ -225,10 +225,10 @@ function SideBar() {
             </button>
             {/* seçenekler kısmı */}
             <div className="pb-2 w-full border-b  border-[#212124]">
-              {iconsAndTitles.map(({ Icon, title, route }, index) => (
+              {iconsAndTitles.map(({ icon, title, route }, index) => (
                 <SidebarNavItem
                   key={index}
-                  Icon={Icon}
+                  icon={icon}
                   title={title}
                   route={route}
                 />

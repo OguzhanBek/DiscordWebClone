@@ -8,7 +8,6 @@ import AddFriendPage from "./AddFriendPage";
 import FriendRequestItem from "../Molecules/FriendRequestItem";
 import FriendsNavbar from "../Molecules/FriendsNavbar";
 import { SignalRContext } from "../../context/signalRContext";
-import type { onlinefriend } from "../../types/friend/friend";
 
 function FriendsPage() {
   const ctx = useContext(AppContext);
@@ -16,7 +15,6 @@ function FriendsPage() {
   const location = useLocation();
 
   const [input, setInput] = useState("");
-  const [onlineFriends, setOnlineFriends] = useState<onlinefriend[]>([]);
   const [dummyFriendsInfo] = useState([
     {
       userPhoto: tuta,
@@ -52,19 +50,23 @@ function FriendsPage() {
 
   if (!ctx) return null;
 
-  const { selectedNavbarButton, friendRequests, friendList } = ctx;
+  const {
+    selectedNavbarButton,
+    friendRequests,
+    friendList,
+    onlineFriends,
+    setOnlineFriends,
+  } = ctx;
 
   useEffect(() => {
     if (!signalContext?.presenceConnection) return;
 
     const handleInitialOnlineUsers = (users: any[]) => {
-      console.log("📋 İlk online liste:", users);
-      users.filter((user) => user.friendId !== ctx.jwtToken);
       setOnlineFriends(users);
     };
 
     const handleUserOnline = (user: any) => {
-      console.log("👤 Yeni online user:", user);
+      console.log("Yeni online user:", user);
       setOnlineFriends((prev) => {
         if (prev.some((u) => u.friendId === user.friendId)) {
           return prev;
@@ -78,7 +80,6 @@ function FriendsPage() {
       setOnlineFriends((prev) => prev.filter((u) => u.friendId !== userId));
     };
 
-    // Listener'ları ekle
     signalContext.presenceConnection.on(
       "initialOnlineUsers",
       handleInitialOnlineUsers,
@@ -88,13 +89,13 @@ function FriendsPage() {
 
     signalContext.presenceConnection
       .invoke("GetOnlineUsers")
-      .then(() => console.log("✅ GetOnlineUsers başarıyla çağrıldı"))
-      .catch((err:any) => console.error("❌ GetOnlineUsers hatası:", err));
+      .then(() => console.log("GetOnlineUsers başarıyla çağrıldı"))
+      .catch((err: any) => console.error("GetOnlineUsers hatası:", err));
 
     signalContext.presenceConnection
       .invoke("OnConnectedAsync")
-      .then(() => console.log("✅ OnConnectedAsync başarıyla çağrıldı"))
-      .catch((err:any) => console.error("❌ OnConnectedAsync hatası:", err));
+      .then(() => console.log("OnConnectedAsync başarıyla çağrıldı"))
+      .catch((err: any) => console.error("OnConnectedAsync hatası:", err));
 
     return () => {
       signalContext.presenceConnection?.off(

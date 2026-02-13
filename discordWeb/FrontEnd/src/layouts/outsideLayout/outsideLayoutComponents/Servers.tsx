@@ -13,7 +13,7 @@ import DiscordHomeButton from "../../../ui/Molecules/DiscordHomeButton";
 import { CiCirclePlus } from "react-icons/ci";
 import { FaCompass } from "react-icons/fa";
 import { TfiDownload } from "react-icons/tfi";
-import type { ServerInfo } from "../../../types/types";
+import type { ServerInfo } from "../../../types/server";
 import ServerListItem from "../../../ui/Molecules/ServerListItem";
 import ServerListAction from "../../../ui/Molecules/ServerListAction";
 
@@ -64,7 +64,6 @@ function Servers() {
   ]);
   const [activeServer, setActiveServer] = useState<number | null>(null);
   
-  console.log("active server : ", activeServer);
   return (
     <>
       <div className="bg-[#121214] TUTA flex relative ">

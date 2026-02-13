@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import type { User } from "../types/types";
+import type { User } from "../types/user";
 
 export class UnauthorizedError extends Error {}
 
@@ -97,7 +97,6 @@ export const getFriendRequests = async (jwtToken: string | null) => {
     }
 
     const data = await response.json();
-    console.log("Friend requests:", data);
     return data;
   } catch (error: any) {
     if (error instanceof UnauthorizedError) {

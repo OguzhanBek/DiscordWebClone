@@ -1,7 +1,7 @@
-import { FaUserFriends } from "react-icons/fa";
 import { TbMessageCircleCheck } from "react-icons/tb";
 import { useLocation } from "react-router-dom";
 import { useContext, useState } from "react";
+import Friend from "../../assets/svg/Screenshot_1 (1).svg";
 
 import { AppContext } from "../../context/userProvider";
 import FriendsNavbarButton from "./FriendsNavbarButton";
@@ -29,7 +29,7 @@ function FriendsNavbar() {
               <>
                 <div className="flex gap-4 items-center">
                   <div className="flex items-center gap-2">
-                    <FaUserFriends />
+                    <img src={Friend} alt="Friend" />
                     <span className="select-none">Arkadaşlar</span>
                   </div>
                   {butons.map((buttonText, index) => (

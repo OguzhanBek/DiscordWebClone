@@ -2,8 +2,14 @@ import type { ReactNode } from "react";
 import type { IconType } from "react-icons/lib";
 
 export type TopSideTitle = {
-  Icon: IconType;
+  Icon: string | IconType;
   title: string;
+};
+
+export type SidebarNavItemProps = {
+  icon: string | IconType;
+  title: string;
+  route: string;
 };
 export interface TooltipItem {
   content: ReactNode;
@@ -29,13 +35,7 @@ export type Product = {
   discount?: string;
   orbs?: string;
   image: string;
-  gradient: string; 
-};
-
-export type SidebarNavItemProps = {
-  Icon: IconType;
-  title: string;
-  route: string;
+  gradient: string;
 };
 
 export type directMessageButton = {

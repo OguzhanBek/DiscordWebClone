@@ -41,10 +41,8 @@ function DiscordLogin() {
 
       const data: User = await res.json();
 
-      console.log("Register success:", data);
-      setUserInfo(data); // Kullanıcnın bilgileirni context'e koyuyor burası
-      console.log("login olduktan sonra user : ", data);
-      if (data.token) setJwtToken(data.token); // Bu localeStoreage'a jwt token bilgisini atyor.
+      setUserInfo(data); 
+      if (data.token) setJwtToken(data.token); 
       toast.success("Başarıyla giriş yapıldı");
       navigate("/friends");
     } catch (error) {

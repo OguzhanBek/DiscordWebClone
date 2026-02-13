@@ -68,7 +68,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 if (!string.IsNullOrEmpty(accessToken) &&
                     (path.StartsWithSegments("/hub/chat") ||
-                     path.StartsWithSegments("/hub/presence")))
+                     path.StartsWithSegments("/hub/presence") ||
+                      path.StartsWithSegments("/hub/editHub")))
+
                 {
                     context.Token = accessToken;
                     Console.WriteLine($"✅ Token set for hub connection");
@@ -106,4 +108,6 @@ app.MapControllers();
 // SIGNALR HUB ROUTE
 app.MapHub<ChatHub>("/hub/chat");
 app.MapHub<PresenceHub>("/hub/presence");
+app.MapHub<EditHub>("/hub/editHub"); 
+
 app.Run();
