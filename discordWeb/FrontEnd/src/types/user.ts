@@ -8,4 +8,5 @@ export type User = {
   email: string;
   user_name: string | undefined;
   token: string;
+  profile_photo?: string;
 };

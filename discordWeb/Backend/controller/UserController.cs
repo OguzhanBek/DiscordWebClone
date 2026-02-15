@@ -21,9 +21,8 @@ namespace Backend.Controllers
         [Authorize]
         public async Task<IActionResult> GetCurrentUser()
         {
-            // Token'dan user_id'yi al
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            
+
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized("Invalid token");
 
@@ -36,7 +35,8 @@ namespace Backend.Controllers
             return Ok(new
             {
                 email = user.Email,
-                user_name = user.UserName
+                user_name = user.UserName,
+                profile_photo = user.ProfilePhoto
             });
         }
     }

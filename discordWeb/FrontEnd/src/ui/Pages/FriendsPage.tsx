@@ -92,10 +92,6 @@ function FriendsPage() {
       .then(() => console.log("GetOnlineUsers başarıyla çağrıldı"))
       .catch((err: any) => console.error("GetOnlineUsers hatası:", err));
 
-    signalContext.presenceConnection
-      .invoke("OnConnectedAsync")
-      .then(() => console.log("OnConnectedAsync başarıyla çağrıldı"))
-      .catch((err: any) => console.error("OnConnectedAsync hatası:", err));
 
     return () => {
       signalContext.presenceConnection?.off(

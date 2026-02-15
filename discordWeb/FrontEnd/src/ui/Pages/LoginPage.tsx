@@ -6,13 +6,13 @@ import { AppContext } from "../../context/userProvider";
 import type { BadRequest } from "../../types/request";
 import type { User } from "../../types/user";
 
-function DiscordLogin() { 
-  const ctx = useContext(AppContext);  
+function DiscordLogin() {
+  const ctx = useContext(AppContext);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
- 
+
   if (!ctx) {
     return null;
   }
@@ -31,7 +31,6 @@ function DiscordLogin() {
         }),
       });
 
-      // Backend başarılı dönmezse
       if (!res.ok) {
         const err: BadRequest = await res.json().catch(() => null);
         console.error("Register failed:", err || res.statusText);
@@ -41,8 +40,8 @@ function DiscordLogin() {
 
       const data: User = await res.json();
 
-      setUserInfo(data); 
-      if (data.token) setJwtToken(data.token); 
+      setUserInfo(data);
+      if (data.token) setJwtToken(data.token);
       toast.success("Başarıyla giriş yapıldı");
       navigate("/friends");
     } catch (error) {

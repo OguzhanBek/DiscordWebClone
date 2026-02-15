@@ -85,7 +85,6 @@ export const SignalRProvider = ({
   }
   const {
     setFriendList,
-    setDmFriendName,
     setConversationList,
     setOnlineFriends,
   } = ctx;

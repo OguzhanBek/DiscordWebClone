@@ -25,5 +25,8 @@ namespace LoginAPI.Models
         [Required]
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Column("profile_photo")]
+        public string? ProfilePhoto { get; set; }
     }
 }

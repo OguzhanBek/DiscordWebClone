@@ -1,25 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { createPortal } from "react-dom";
 import { IoClose } from "react-icons/io5";
+import { AppContext } from "../../context/userProvider";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export type changePasswordProps = {
   isOpen: boolean;
   onClose: () => void;
-  currentPassword: string;
   onSave: (newPassword: string) => void;
 };
 
-function ChangePassword({
-  isOpen,
-  onClose,
-  currentPassword,
-  onSave,
-}: changePasswordProps) {
+function ChangePassword({ isOpen, onClose, onSave }: changePasswordProps) {
   const [currentPasswordInput, setCurrentPasswordInput] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
 
   const [isAnimating, setIsAnimating] = useState(false);
+
+  const ctx = useContext(AppContext);
+  if (!ctx) {
+    return null;
+  }
+  const navigate = useNavigate();
+
+  const { jwtToken, setJwtToken } = ctx;
 
   const handleClose = () => {
     setIsAnimating(false);
@@ -27,18 +32,57 @@ function ChangePassword({
       onClose();
     }, 200);
   };
+
   const isFormValid =
     !!currentPasswordInput && !!newPassword && !!newPasswordConfirm;
-  const handleSave = () => {
-    if (!currentPasswordInput || !newPassword || !newPasswordConfirm) return;
 
-    if (newPassword !== newPasswordConfirm) {
-      alert("Yeni şifreler uyuşmuyor");
-      return;
+  const handleSave = async () => {
+    try {
+      if (!currentPasswordInput || !newPassword || !newPasswordConfirm) return;
+
+      if (newPassword !== newPasswordConfirm) {
+        toast.error("Yeni şifreler uyuşmuyor");
+        return;
+      }
+
+      const response = await fetch(
+        "http://localhost:5200/api/password/changePassword",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwtToken}`,
+          },
+          body: JSON.stringify({
+            currentPassword: currentPasswordInput, // ✅ State'ten al
+            newPassword: newPassword,
+            newPasswordConfirm: newPasswordConfirm, // ✅ Backend ile eşleşmeli
+          }),
+        },
+      );
+
+      if (response.status === 401) {
+        localStorage.removeItem("jwtToken");
+        setJwtToken(null);
+        navigate("/login");
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.text(); 
+        toast.error(errorData || "Şifre değiştirilemedi");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("data :", data);
+      onSave(newPassword);
+      handleClose();
+      toast.success("Şifre başarıyla değiştirildi!");
+    } catch (error) {
+      console.error("Şifre değiştirilirken hata oluştu", error);
+      toast.error("Bir hata oluştu");
     }
-
-    onSave(newPassword);
-    handleClose();
   };
   useEffect(() => {
     if (isOpen) {

@@ -24,7 +24,6 @@ public class FriendRequestController : ControllerBase
     [HttpPost("send")]
     public async Task<IActionResult> SendFriendRequest([FromBody] AddFriendRequestDto request)
     {
-        // JWT token'dan userId'yi al
         var userIdFromToken = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                            ?? User.FindFirst("sub")?.Value
                            ?? User.FindFirst("userId")?.Value;
@@ -32,7 +31,6 @@ public class FriendRequestController : ControllerBase
         if (string.IsNullOrEmpty(userIdFromToken))
             return Unauthorized("User ID not found in token.");
 
-        // Sender'ı bul
         var sender = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserId == userIdFromToken);
 
         if (sender == null)
