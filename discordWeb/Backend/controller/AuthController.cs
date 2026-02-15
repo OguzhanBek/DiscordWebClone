@@ -35,7 +35,6 @@ namespace LoginAPI.Controllers
                 });
             }
 
-            // Kullanıcıyı veritabanından bul
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
@@ -47,7 +46,6 @@ namespace LoginAPI.Controllers
                 });
             }
 
-            // JWT token oluştur
             var token = GenerateJwtToken(user);
             var expiresAt = DateTime.UtcNow.AddHours(2);
             return Ok(new LoginResponse
@@ -58,7 +56,8 @@ namespace LoginAPI.Controllers
                 ExpiresAt = expiresAt,
                 UserId = user.UserId,
                 UserName = user.UserName,
-                Email = user.Email
+                Email = user.Email,
+                ProfilePhoto = user.ProfilePhoto
             });
         }
 
@@ -75,7 +74,6 @@ namespace LoginAPI.Controllers
                 });
             }
 
-            // Email kontrolü
             if (await _context.Users.AnyAsync(u => u.Email == request.Email))
             {
                 return BadRequest(new LoginResponse
@@ -85,7 +83,6 @@ namespace LoginAPI.Controllers
                 });
             }
 
-            // UserName kontrolü (opsiyonel)
             if (await _context.Users.AnyAsync(u => u.UserName == request.UserName))
             {
                 return BadRequest(new LoginResponse
@@ -104,6 +101,7 @@ namespace LoginAPI.Controllers
                 UserName = request.UserName ?? string.Empty,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password, 13),
                 CreatedAt = DateTime.UtcNow,
+                ProfilePhoto = string.Empty
             };
 
             Console.WriteLine($"New user: {newUser.UserName} {newUser.Email}");
@@ -124,6 +122,7 @@ namespace LoginAPI.Controllers
                 Email = newUser.Email,
                 Token = token,
                 ExpiresAt = expiresAt,
+                ProfilePhoto = string.Empty,
             });
         }
 

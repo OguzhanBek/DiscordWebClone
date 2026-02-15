@@ -13,6 +13,7 @@ import {
 import { useContext, useEffect, useState } from "react";
 
 import tuta from "../../assets/Tuta.png";
+import defaultfoto from "../../../public/discord kullanıcı default foto.jpeg";
 import { AppContext } from "../../context/userProvider";
 import { fetchUser, UnauthorizedError } from "../../helpers/helpers";
 import { LuHeadphoneOff } from "react-icons/lu";
@@ -49,10 +50,12 @@ function UserPanel() {
         }
       }
     };
-
     loadUser();
   }, []);
   if (!root) return null;
+
+  console.log("tutaaa : ", userInfo?.profile_photo);
+
   return createPortal(
     <>
       <div
@@ -64,7 +67,11 @@ function UserPanel() {
           onClick={() => setIsProfileOpen(true)}
           className="flex flex-1 mx-2 h-10 hover:bg-[#323238] cursor-pointer transition-all rounded-xl items-center"
         >
-          <img src={tuta} alt="tuta" className="w-8 rounded mx-2" />
+          <img
+            src={userInfo?.profile_photo || defaultfoto}
+            alt="tuta"
+            className="w-8 rounded-full mx-2"
+          />
           <div className="flex flex-col justify-center leading-tight text-left min-w-0 h-8">
             <h3 className="text-sm truncate">{userInfo?.user_name}</h3>
             <span className="text-xs truncate">Açıklama</span>
@@ -130,10 +137,9 @@ function UserPanel() {
           showSettings={showSettings}
           setShowSettings={setShowSettings}
           userData={{
-            user_name: userInfo?.user_name,
-            avatar: tuta ,
-            banner: tuta ,
-            
+            user_name: userInfo?.user_name || "kullanıcı adı yüklenemedi",
+            avatar: userInfo?.profile_photo || defaultfoto,
+            banner: userInfo?.profile_photo || defaultfoto,
           }}
         />
       )}
@@ -151,13 +157,13 @@ function UserPanel() {
           >
             <div className="relative h-28 bg-linear-to-r from-[#3a0a4a] to-[#5a1a6b]">
               <img
-                src={tuta}
+                src={userInfo?.profile_photo || defaultfoto}
                 className="absolute  w-full h-full object-cover"
               />
 
               <div className="absolute -bottom-8 left-4">
                 <img
-                  src={tuta}
+                  src={userInfo?.profile_photo || defaultfoto}
                   className="w-20 h-20 rounded-full border-4 border-[#2b1037]"
                 />
               </div>

@@ -42,7 +42,6 @@ export default function DiscordSignup() {
         return;
       }
 
-      // Başarılı olduysa
       const data: LoginResponse = await res.json();
       if (data.token) setJwtToken(data.token);
       toast.success("Başarıyla giriş yapıldı");

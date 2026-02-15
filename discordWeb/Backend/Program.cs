@@ -58,7 +58,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
 
-        // 🔥 SIGNALR JWT İÇİN ŞART
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
@@ -99,15 +98,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//  SIRA ÖNEMLİ
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseStaticFiles();       
+app.UseRouting();            
+app.UseAuthentication();     
+app.UseAuthorization();      
+app.MapControllers();       
 
-app.MapControllers();
 
 // SIGNALR HUB ROUTE
 app.MapHub<ChatHub>("/hub/chat");
 app.MapHub<PresenceHub>("/hub/presence");
-app.MapHub<EditHub>("/hub/editHub"); 
+app.MapHub<EditHub>("/hub/editHub");
 
 app.Run();

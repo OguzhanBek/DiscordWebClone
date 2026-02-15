@@ -3,7 +3,7 @@ import { IoClose } from "react-icons/io5";
 import { FaUser, FaLink } from "react-icons/fa";
 import { GrLogout } from "react-icons/gr";
 
-import tuta from "../../assets/Tuta.png";
+import defaultfoto from "../../../public/discord kullanıcı default foto.jpeg";
 import Logout from "../Molecules/Logout";
 import ProfieEditor from "./ProfieEditor";
 import Connections from "./Connections";
@@ -14,8 +14,8 @@ import { AppContext } from "../../context/userProvider";
 type UserSettingProps = {
   userData: {
     user_name: string | undefined;
-    avatar: string;
-    banner: string;
+    avatar: string | undefined;
+    banner: string | undefined;
   };
   showSettings: boolean;
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
@@ -49,7 +49,7 @@ function UserSettings({
     return null;
   }
   const { userInfo } = ctx;
-
+  console.log("user info usersetting :S");
   useEffect(() => {
     if (showSettings) {
       setIsAnimating(true);
@@ -99,7 +99,7 @@ function UserSettings({
               className={`flex items-center gap-3 mb-4 px-2  hover:bg-[#2D2D33] ${activeTab === "profileEditor" ? "bg-[#2D2D33] " : ""} cursor-pointer rounded-lg `}
             >
               <img
-                src={tuta || "/default-avatar.png"}
+                src={userInfo?.profile_photo || defaultfoto}
                 alt="avatar"
                 className="w-10 h-10 rounded-full"
               />
@@ -167,7 +167,6 @@ function UserSettings({
         <ChangePassword
           isOpen={isChangePassword}
           onClose={() => setIsChangePassword(false)}
-          currentPassword={password}
           onSave={handleSavePassword}
         />
         <div className="flex-1 flex flex-col relative">
@@ -193,7 +192,7 @@ function UserSettings({
                     {/* Banner */}
                     <div className="relative h-[100px] bg-linear-to-r from-orange-600 to-red-600">
                       <img
-                        src={tuta || "/default-banner.jpg"}
+                        src={userInfo?.profile_photo || defaultfoto}
                         alt="banner"
                         className="w-full h-full object-cover"
                       />
@@ -205,7 +204,7 @@ function UserSettings({
                         {/* Avatar */}
                         <div className="relative">
                           <img
-                            src={tuta || "/default-avatar.png"}
+                            src={userInfo?.profile_photo || defaultfoto}
                             alt="avatar"
                             className="w-24 h-24 rounded-full border-[6px] border-[#232428]"
                           />
