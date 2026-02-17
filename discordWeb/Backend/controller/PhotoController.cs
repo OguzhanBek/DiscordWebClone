@@ -119,7 +119,7 @@ public class PhotoController : ControllerBase
                         var response = new
                         {
                                     message = "Fotoğraf değiştirildi",
-                                    profile_photo = user.ProfilePhoto
+                                    profilePhoto = user.ProfilePhoto
                         };
 
                         Console.WriteLine($"📤 Response gönderiliyor: {System.Text.Json.JsonSerializer.Serialize(response)}");

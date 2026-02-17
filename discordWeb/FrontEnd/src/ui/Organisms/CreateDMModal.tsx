@@ -3,8 +3,8 @@ import { IoClose, IoSearchOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-import tuta from "../../assets/Tuta.png";
 import { AppContext } from "../../context/userProvider";
+import { normalizePhotoUrl } from "../../helpers/helpers";
 
 function CreateDMModal() {
   const ctx = useContext(AppContext);
@@ -19,7 +19,7 @@ function CreateDMModal() {
     friendList,
     jwtToken,
     setJwtToken,
-    setDmFriendName,
+    setDmParticipants,
     setConversationList,
   } = ctx;
 
@@ -28,10 +28,16 @@ function CreateDMModal() {
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
   }
-  const createOrOpenDm = async (friendId: string[]) => {
+
+  const createOrOpenDm = async (friendIds: string[]) => {
     if (!jwtToken) {
       toast.error("Oturum süreniz dolmuş.");
       navigate("/login");
+      return;
+    }
+
+    if (friendIds.length === 0) {
+      toast.error("En az bir arkadaş seçmelisiniz.");
       return;
     }
 
@@ -42,7 +48,7 @@ function CreateDMModal() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${jwtToken}`,
         },
-        body: JSON.stringify({ friendId }),
+        body: JSON.stringify({ friendId: friendIds }),
       });
 
       if (response.status === 401) {
@@ -59,44 +65,58 @@ function CreateDMModal() {
 
       const data = await response.json();
 
-      // friendName'in her zaman aray ollmasını sağlamak için kullanıldı.'
-      const friendNames = Array.isArray(data.friendName)
-        ? data.friendName
-        : [data.friendName];
+      // Seçilen arkadaşların bilgilerini al
+      const selectedFriends = friendList?.filter((f) =>
+        friendIds.includes(f.friendId),
+      );
 
-      setDmFriendName(friendNames);
+      if (selectedFriends && selectedFriends.length > 0) {
+        // Participant bilgilerini kaydet
+        const participants = selectedFriends.map((friend) => ({
+          userId: friend.friendId,
+          userName: friend.userName,
+          profilePhoto: friend.profilePhoto,
+        }));
 
-      const newConversations = friendNames.map((name: string) => ({
-        conversationId: data.conversationId,
-        friendId: friendId,
-        userName: name,
-      }));
+        setDmParticipants(participants);
 
-      setConversationList((prev) => {
-        const current = prev || [];
+        // ConversationList'e ekle
+        setConversationList((prev) => {
+          const current = prev || [];
 
-        const firstOccurrenceIndex = current.findIndex(
-          (c) => c.conversationId === data.conversationId,
-        );
+          const firstOccurrenceIndex = current.findIndex(
+            (c) => c.conversationId === data.conversationId,
+          );
 
-        if (firstOccurrenceIndex === -1) {
-          // bu eşleşem yoksa demek.
-          return [...current, ...newConversations];
-        }
+          // Her arkadaş için bir entry oluştur
+          const newConversations = selectedFriends.map((friend) => ({
+            conversationId: data.conversationId,
+            friendId: friend.friendId,
+            userName: friend.userName,
+            profilePhoto: friend.profilePhoto,
+          }));
 
-        const withoutOld = current.filter(
-          (c) => c.conversationId !== data.conversationId,
-        );
+          if (firstOccurrenceIndex === -1) {
+            return [...current, ...newConversations];
+          }
 
-        withoutOld.splice(firstOccurrenceIndex, 0, ...newConversations);
-        return withoutOld;
-      });
+          const withoutOld = current.filter(
+            (c) => c.conversationId !== data.conversationId,
+          );
+
+          withoutOld.splice(firstOccurrenceIndex, 0, ...newConversations);
+          return withoutOld;
+        });
+      }
 
       navigate(`/directMessage/${data.conversationId}`);
     } catch (error) {
+      console.error("DM oluşturma hatası:", error);
       toast.error("Bir hata oluştu");
     }
   };
+
+
 
   return (
     <div
@@ -152,7 +172,11 @@ function CreateDMModal() {
                     ${isSelected ? "bg-[#3f4147]" : "hover:bg-[#2b2d31]"}`}
                 >
                   <div className="flex items-center gap-3">
-                    <img src={tuta} className="w-8 h-8 rounded-full" alt="" />
+                    <img
+                      src={normalizePhotoUrl(friend.profilePhoto)}
+                      className="w-8 h-8 rounded-full"
+                      alt={friend.userName}
+                    />
                     <div>
                       <p className="text-sm font-medium">{friend.userName}</p>
                       <p className="text-xs text-gray-400">tag</p>

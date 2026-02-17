@@ -1,14 +1,14 @@
-import type { conversationList } from "./chat/conversation";
+import type { conversationList, DmParticipant } from "./chat/conversation";
 import type { TopSideTitle } from "./common";
 import type { FriendType, onlinefriend } from "./friend/friend";
 import type { friendRequestType } from "./friend/friendRequest";
 import type { User } from "./user";
 
 export type AppContextType = {
-  dmFriendName: string[];
+  dmParticipants: DmParticipant[];
+  setDmParticipants: React.Dispatch<React.SetStateAction<DmParticipant[]>>;
   logout: () => void;
   setJwtToken: (token: string | null) => void;
-  setDmFriendName: React.Dispatch<React.SetStateAction<string[]>>;
   onlineFriends: onlinefriend[];
   setOnlineFriends: React.Dispatch<React.SetStateAction<onlinefriend[]>>;
   userInfo: User | null;

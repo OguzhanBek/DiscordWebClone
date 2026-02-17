@@ -6,7 +6,7 @@ export type user = {
 };
 export type User = {
   email: string;
-  user_name: string | undefined;
+  userName: string | undefined;
   token: string;
-  profile_photo?: string;
+  profilePhoto?: string;
 };

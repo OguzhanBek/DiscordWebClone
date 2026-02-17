@@ -122,7 +122,8 @@ namespace ChatController.Controllers
                     (dp, user) => new
                     {
                         user.UserId,
-                        user.UserName
+                        user.UserName,
+                        user.ProfilePhoto,
                     })
                 .ToListAsync();
 
@@ -145,7 +146,7 @@ namespace ChatController.Controllers
 
             return Ok(new
             {
-                FriendName = otherUsers.Select(friend => friend.UserName),
+                Participants = otherUsers,  
                 Messages = messages
             });
         }
@@ -177,7 +178,8 @@ namespace ChatController.Controllers
                     {
                         ConversationId = dp.ConversationId,
                         FriendId = u.UserId,
-                        UserName = u.UserName
+                        UserName = u.UserName,
+                        ProfilePhoto = u.ProfilePhoto
                     }
                 )
                 .ToListAsync();

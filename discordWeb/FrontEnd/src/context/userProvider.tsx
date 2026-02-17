@@ -3,7 +3,10 @@ import { createContext, useState, type ReactNode } from "react";
 import { FaDiscord } from "react-icons/fa";
 import type { AppContextType } from "../types/userProvider";
 import type { User } from "../types/user";
-import type { conversationList } from "../types/chat/conversation";
+import type {
+  conversationList,
+  DmParticipant,
+} from "../types/chat/conversation";
 import type { FriendType, onlinefriend } from "../types/friend/friend";
 import type { TopSideTitle } from "../types/common";
 import type { friendRequestType } from "../types/friend/friendRequest";
@@ -12,7 +15,7 @@ export const AppContext = createContext<AppContextType | null>(null);
 
 const AppProvider = ({ children }: { children: ReactNode }) => {
   const [userInfo, setUserInfo] = useState<User | null>(null);
-  const [dmFriendName, setDmFriendName] = useState<string[]>([]);
+  const [dmParticipants, setDmParticipants] = useState<DmParticipant[]>([]);
   const [friendRequests, setFriendRequests] = useState<friendRequestType[]>([]);
   const [conversationList, setConversationList] =
     useState<conversationList[]>();
@@ -51,9 +54,9 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
       value={{
         setJwtToken,
         logout,
-        dmFriendName,
-        setDmFriendName,
-        onlineFriends, 
+        dmParticipants,
+        setDmParticipants,
+        onlineFriends,
         setOnlineFriends,
         userInfo,
         setUserInfo,

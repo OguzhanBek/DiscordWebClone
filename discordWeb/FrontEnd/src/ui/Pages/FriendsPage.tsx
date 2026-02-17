@@ -15,38 +15,6 @@ function FriendsPage() {
   const location = useLocation();
 
   const [input, setInput] = useState("");
-  const [dummyFriendsInfo] = useState([
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-      onlineStatus: "Porno izliyor",
-      friendId: "31",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-      onlineStatus: "DUa ediyor",
-      friendId: "31",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-      onlineStatus: "bekleyen",
-      friendId: "31",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-      onlineStatus: "çevrim içi",
-      friendId: "31",
-    },
-    {
-      userPhoto: tuta,
-      userName: "Tuta Montana",
-      onlineStatus: "çevrim içi",
-      friendId: "31",
-    },
-  ]);
 
   if (!ctx) return null;
 
@@ -57,14 +25,12 @@ function FriendsPage() {
     onlineFriends,
     setOnlineFriends,
   } = ctx;
-
   useEffect(() => {
     if (!signalContext?.presenceConnection) return;
 
     const handleInitialOnlineUsers = (users: any[]) => {
       setOnlineFriends(users);
     };
-
     const handleUserOnline = (user: any) => {
       console.log("Yeni online user:", user);
       setOnlineFriends((prev) => {
@@ -91,7 +57,6 @@ function FriendsPage() {
       .invoke("GetOnlineUsers")
       .then(() => console.log("GetOnlineUsers başarıyla çağrıldı"))
       .catch((err: any) => console.error("GetOnlineUsers hatası:", err));
-
 
     return () => {
       signalContext.presenceConnection?.off(
@@ -146,13 +111,12 @@ function FriendsPage() {
                           .includes(input.toLowerCase()),
                       )
                     : friendList
-                  )?.map(({ userName, friendId }) => (
+                  )?.map(({ userName, friendId, profilePhoto }) => (
                     <FriendListItem
                       key={friendId}
                       friendId={friendId}
                       userName={userName}
-                      userPhoto={tuta}
-                      onlineStatus="porno"
+                      profilePhoto={profilePhoto}
                     />
                   ))}
 
@@ -165,29 +129,25 @@ function FriendsPage() {
                           .includes(input.toLowerCase()),
                       )
                     : onlineFriends
-                  )?.map(({ userName, friendId }) => (
+                  )?.map(({ userName, friendId, profilePhoto }) => (
                     <FriendListItem
                       key={friendId}
                       friendId={friendId}
                       userName={userName}
-                      userPhoto={tuta}
-                      onlineStatus="çevrim içi"
+                      profilePhoto={profilePhoto}
                     />
                   ))}
 
                 {/* ARKADAŞ EKLE */}
                 {selectedNavbarButton === "arkadaş ekle" &&
-                  dummyFriendsInfo.map(
-                    ({ userPhoto, userName, onlineStatus, friendId }) => (
-                      <FriendListItem
-                        friendId={friendId}
-                        key={friendId}
-                        userName={userName}
-                        userPhoto={userPhoto}
-                        onlineStatus={onlineStatus}
-                      />
-                    ),
-                  )}
+                  friendList?.map(({ profilePhoto, userName, friendId }) => (
+                    <FriendListItem
+                      friendId={friendId}
+                      key={friendId}
+                      userName={userName}
+                      profilePhoto={profilePhoto}
+                    />
+                  ))}
 
                 {/* BEKLEYEN */}
                 {selectedNavbarButton === "bekleyen" && (
@@ -205,7 +165,7 @@ function FriendsPage() {
                         otherPersonName={request.otherPersonName}
                         isSentByMe={request.isSentByMe}
                         requestId={request.requestId}
-                        userPhoto={tuta}
+                        profilePhoto={tuta}
                       />
                     ))}
                   </div>

@@ -69,13 +69,12 @@ function ChangePassword({ isOpen, onClose, onSave }: changePasswordProps) {
       }
 
       if (!response.ok) {
-        const errorData = await response.text(); 
+        const errorData = await response.text();
         toast.error(errorData || "Şifre değiştirilemedi");
         return;
       }
 
-      const data = await response.json();
-      console.log("data :", data);
+      // const data = await response.json();
       onSave(newPassword);
       handleClose();
       toast.success("Şifre başarıyla değiştirildi!");

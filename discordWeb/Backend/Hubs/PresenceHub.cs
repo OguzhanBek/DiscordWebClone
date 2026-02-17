@@ -54,7 +54,8 @@ public class PresenceHub : Hub
             .Select(u => new
             {
                 u.UserId,
-                u.UserName
+                u.UserName,
+                u.ProfilePhoto
             })
             .FirstOrDefaultAsync();
 
@@ -65,7 +66,8 @@ public class PresenceHub : Hub
             OnlineUserStore.Users.Add(new OnlineUserDto
             {
                 FriendId = user.UserId,
-                UserName = user.UserName
+                UserName = user.UserName,
+                ProfilePhoto = user.ProfilePhoto
             });
         }
 
@@ -99,7 +101,8 @@ public class PresenceHub : Hub
                 new OnlineUserDto
                 {
                     FriendId = user.UserId,
-                    UserName = user.UserName
+                    UserName = user.UserName,
+                    ProfilePhoto = user.ProfilePhoto
                 }
             );
         }

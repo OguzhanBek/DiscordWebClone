@@ -109,7 +109,6 @@ namespace LoginAPI.Controllers
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            // JWT token oluştur (Login ile aynı şekilde)
             var token = GenerateJwtToken(newUser);
             var expiresAt = DateTime.UtcNow.AddHours(5);
 

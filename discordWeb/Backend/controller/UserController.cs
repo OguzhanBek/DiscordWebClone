@@ -35,8 +35,8 @@ namespace Backend.Controllers
             return Ok(new
             {
                 email = user.Email,
-                user_name = user.UserName,
-                profile_photo = user.ProfilePhoto
+                userName = user.UserName,
+                profilePhoto = user.ProfilePhoto
             });
         }
     }
