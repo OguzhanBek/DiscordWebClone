@@ -4,14 +4,20 @@ import { AppContext } from "../../context/userProvider";
 import defaultPhoto from "../../../public/discord kullanıcı default foto.jpeg";
 import { createPortal } from "react-dom";
 import { toast } from "react-toastify";
+import { normalizePhotoUrl } from "../../helpers/helpers";
+import { SignalRContext } from "../../context/signalRContext";
 
 function ProfileEditor() {
   const ctx = useContext(AppContext);
   if (!ctx) {
     return null;
   }
+
+  const signalctx = useContext(SignalRContext);
+  if (!signalctx) {
+    return null;
+  }
   const { userInfo, setUserInfo, jwtToken } = ctx;
-  console.log("foto url :", userInfo?.profile_photo);
   const [bio, _setBio] = useState("Tutanın yaveri");
   const [pronouns, setPronouns] = useState("");
   const [color, setColor] = useState("#9333EA");
@@ -21,25 +27,18 @@ function ProfileEditor() {
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string>("");
 
-  // Dosya seçildiğinde önizleme oluştur
   useEffect(() => {
     if (photo) {
       const objectUrl = URL.createObjectURL(photo);
       setPhotoPreview(objectUrl);
-      console.log("📸 Photo preview oluşturuldu:", objectUrl);
 
-      // Cleanup: Memory leak önlemek için
       return () => {
-        console.log("🧹 Photo preview temizlendi");
         URL.revokeObjectURL(objectUrl);
       };
     }
   }, [photo]);
 
   const handlePhotoChange = async () => {
-    console.log("🚀 handlePhotoChange başladı");
-    console.log("📁 Seçilen photo:", photo);
-
     if (!photo) {
       toast.error("Lütfen bir fotoğraf seçin");
       return;
@@ -47,10 +46,8 @@ function ProfileEditor() {
 
     const formData = new FormData();
     formData.append("photo", photo);
-    console.log("📦 FormData oluşturuldu");
 
     try {
-      console.log("🌐 Backend'e istek gönderiliyor...");
       const response = await fetch("http://localhost:5200/api/photo", {
         method: "POST",
         headers: {
@@ -59,27 +56,20 @@ function ProfileEditor() {
         body: formData,
       });
 
-      console.log("📡 Response alındı:", response.status);
-
       if (!response.ok) {
         const errorData = await response.json();
         console.error("❌ Backend error:", errorData);
         toast.error(errorData.message || "Fotoğraf yüklenemedi");
         return;
       }
-
       const data = await response.json();
-      console.log("✅ Backend response data:", data);
-
-      const fullPhotoUrl = `http://localhost:5200${data.profile_photo}`;
-      console.log("🖼️ Tam foto URL'i:", fullPhotoUrl);
+      const fullPhotoUrl = `http://localhost:5200${data.profilePhoto}`;
 
       setUserInfo((prev) => {
-        console.log("📝 Önceki userInfo:", prev);
         const newUserInfo = prev
           ? {
               ...prev,
-              profile_photo: fullPhotoUrl,
+              profilePhoto: fullPhotoUrl,
             }
           : prev;
         console.log("📝 Yeni userInfo:", newUserInfo);
@@ -87,25 +77,22 @@ function ProfileEditor() {
       });
 
       toast.success(data.message);
+      await signalctx?.editConnection?.invoke(
+        "UpdateProfilePhoto",
+        data.profilePhoto,
+      );
+
       setIsChangeAvatar(false);
-      setPhoto(null); // Reset
-      setPhotoPreview(""); // Preview'i temizle
-      console.log("🎉 İşlem tamamlandı!");
+      setPhoto(null);
+      setPhotoPreview("");
     } catch (error) {
-      console.error("💥 Fetch error:", error);
+      console.error("Fetch error:", error);
       toast.error("Bir hata oluştu");
     }
   };
 
-  // Görüntülenecek fotoğraf: önizleme varsa önizleme, yoksa userInfo'dan, yoksa default
-  const displayPhoto = photoPreview || userInfo?.profile_photo || defaultPhoto;
-
-  console.log("🎨 Display Photo Decision:");
-  console.log("  - photoPreview:", photoPreview);
-  console.log("  - userInfo?.profile_photo:", userInfo?.profile_photo);
-  console.log("  - defaultPhoto:", defaultPhoto);
-  console.log("  - SONUÇ displayPhoto:", displayPhoto);
-
+  const displayPhoto =
+    photoPreview || normalizePhotoUrl(userInfo?.profilePhoto) || defaultPhoto;
   return (
     <div
       onClick={() => setIsAvatarOptionsOpen(false)}
@@ -131,7 +118,7 @@ function ProfileEditor() {
         <div className="flex items-center gap-4">
           <div className="relative">
             <img
-              src={userInfo?.profile_photo || defaultPhoto}
+              src={displayPhoto || defaultPhoto}
               alt="avatar"
               className="w-20 h-20 rounded-full border-4 border-white"
             />
@@ -159,10 +146,10 @@ function ProfileEditor() {
             </label>
             <input
               type="text"
-              value={userInfo?.user_name || ""}
+              value={userInfo?.userName || ""}
               onChange={(e) =>
                 setUserInfo((prev) =>
-                  prev ? { ...prev, user_name: e.target.value } : prev,
+                  prev ? { ...prev, userName: e.target.value } : prev,
                 )
               }
               className="w-full text-white px-3 py-2 rounded-md outline-none focus:ring-2 focus:ring-blue-500 border-2 border-[#303036] bg-transparent"
@@ -339,10 +326,10 @@ function ProfileEditor() {
 
               <div className="mb-3">
                 <h2 className="text-white text-xl font-bold">
-                  {userInfo?.user_name || "Kullanıcı Adı"}
+                  {userInfo?.userName || "Kullanıcı Adı"}
                 </h2>
                 <p className="text-gray-300 text-sm">
-                  {userInfo?.user_name || "username"}
+                  {userInfo?.userName || "username"}
                   {pronouns && ` • ${pronouns}`}
                 </p>
               </div>
@@ -371,7 +358,7 @@ function ProfileEditor() {
                 className="w-8 h-8 object-cover rounded-full"
               />
               <h3 className="text-white">
-                {userInfo?.user_name || "Kullanıcı Adı"}
+                {userInfo?.userName || "Kullanıcı Adı"}
               </h3>
             </div>
           </div>
@@ -387,7 +374,7 @@ function ProfileEditor() {
               className="absolute inset-0 bg-black/60"
               onClick={() => {
                 setIsChangeAvatar(false);
-                if (!userInfo?.profile_photo) {
+                if (!userInfo?.profilePhoto) {
                   setPhoto(null);
                   setPhotoPreview("");
                 }
@@ -446,7 +433,7 @@ function ProfileEditor() {
               <button
                 onClick={() => {
                   setIsChangeAvatar(false);
-                  if (!userInfo?.profile_photo) {
+                  if (!userInfo?.profilePhoto) {
                     setPhoto(null);
                     setPhotoPreview("");
                   }

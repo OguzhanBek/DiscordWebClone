@@ -96,6 +96,8 @@ function FriendsNavbarButton({ buttonText }: FriendsNavbarButtonProps) {
     loadFriendList();
   }, []);
 
+
+
   return (
     <button
       onClick={() => {

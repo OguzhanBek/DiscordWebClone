@@ -2,9 +2,9 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 
-import tuta from "../../assets/Tuta.png";
 import { AppContext } from "../../context/userProvider";
 import type { FriendType } from "../../types/friend/friend";
+import { normalizePhotoUrl } from "../../helpers/helpers";
 
 type FindFriendsProps = {
   friendList?: FriendType[];
@@ -21,9 +21,13 @@ function StartConversationPanel({
   const [input, setInput] = useState("");
 
   if (!ctx) return null;
-  const { setDmFriendName, jwtToken, setJwtToken, setConversationList } = ctx;
+  const { setDmParticipants, jwtToken, setJwtToken, setConversationList } = ctx;
 
-  const createOrOpenDm = async (friendId: string[]) => {
+  const createOrOpenDm = async (
+    friendId: string,
+    userName: string,
+    profilePhoto?: string,
+  ) => {
     if (!jwtToken) {
       toast.error("Oturum süreniz dolmuş.");
       navigate("/login");
@@ -37,7 +41,7 @@ function StartConversationPanel({
           "Content-Type": "application/json",
           Authorization: `Bearer ${jwtToken}`,
         },
-        body: JSON.stringify({ friendId }),
+        body: JSON.stringify({ friendId: [friendId] }),
       });
 
       if (response.status === 401) {
@@ -54,19 +58,16 @@ function StartConversationPanel({
 
       const data = await response.json();
 
-      const friendNames = Array.isArray(data.friendName)
-        ? data.friendName
-        : [data.friendName];
+      // Participant bilgilerini kaydet
+      setDmParticipants([
+        {
+          userId: friendId,
+          userName: userName,
+          profilePhoto: profilePhoto,
+        },
+      ]);
 
-      setDmFriendName(friendNames);
-
-      // 🔹 ConversationList için entry’ler
-      const newConversations = friendNames.map((name: string) => ({
-        conversationId: data.conversationId,
-        friendId: friendId,
-        userName: name,
-      }));
-
+      // ConversationList'e ekle
       setConversationList((prev) => {
         const current = prev || [];
 
@@ -74,15 +75,22 @@ function StartConversationPanel({
           (c) => c.conversationId === data.conversationId,
         );
 
+        const newConversation = {
+          conversationId: data.conversationId,
+          friendId: friendId,
+          userName: userName,
+          profilePhoto: profilePhoto,
+        };
+
         if (firstOccurrenceIndex === -1) {
-          return [...current, ...newConversations];
+          return [...current, newConversation];
         }
 
         const withoutOld = current.filter(
           (c) => c.conversationId !== data.conversationId,
         );
 
-        withoutOld.splice(firstOccurrenceIndex, 0, ...newConversations);
+        withoutOld.splice(firstOccurrenceIndex, 0, newConversation);
         return withoutOld;
       });
 
@@ -113,12 +121,20 @@ function StartConversationPanel({
             <div
               key={friend.friendId}
               onClick={() => {
-                createOrOpenDm([friend.friendId]);
+                createOrOpenDm(
+                  friend.friendId,
+                  friend.userName,
+                  friend.profilePhoto,
+                );
                 setOpenFindFriends(false);
               }}
               className="px-2 flex items-center gap-2 hover:bg-[#2f2f3a] cursor-pointer py-2"
             >
-              <img className="h-6 w-6 rounded-2xl" src={tuta} />
+              <img
+                className="h-6 w-6 rounded-2xl"
+                src={normalizePhotoUrl(friend.profilePhoto)}
+                alt={friend.userName}
+              />
               <span>{friend.userName}</span>
             </div>
           ))}

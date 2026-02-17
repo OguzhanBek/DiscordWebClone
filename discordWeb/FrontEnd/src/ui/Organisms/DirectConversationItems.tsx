@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { AppContext } from "../../context/userProvider";
 import DirectConversationItem from "../Molecules/DirectConversationItem";
-import tuta from "../../assets/Tuta.png";
 import {
   getConversationList,
   getFriendList,
@@ -52,19 +51,19 @@ function DirectConversationItems() {
         );
 
         if (existing) {
-          // Aynı conversation'a ait başka bir kullanıcı, ekle
           existing.participants.push({
-            friendId: item.friendId,
+            userId: item.friendId, // userId olarak kaydet
             userName: item.userName,
+            profilePhoto: item.profilePhoto,
           });
         } else {
-          // Yeni conversation
           acc.push({
             conversationId: item.conversationId,
             participants: [
               {
-                friendId: item.friendId,
+                userId: item.friendId, // userId olarak kaydet
                 userName: item.userName,
+                profilePhoto: item.profilePhoto,
               },
             ],
           });
@@ -74,7 +73,11 @@ function DirectConversationItems() {
       },
       [] as Array<{
         conversationId: string;
-        participants: Array<{ friendId: string; userName: string }>;
+        participants: Array<{
+          userId: string; 
+          userName: string;
+          profilePhoto?: string;
+        }>;
       }>,
     );
 
@@ -88,7 +91,7 @@ function DirectConversationItems() {
           key={conversationId}
           conversationId={conversationId}
           participants={participants}
-          userPhoto={tuta}
+          profilePhoto={participants.map((tuta) => tuta.profilePhoto)}
         />
       ))}
     </div>

@@ -10,10 +10,11 @@ import Connections from "./Connections";
 import EditUsername from "./EditUserName";
 import ChangePassword from "./ChangePassword";
 import { AppContext } from "../../context/userProvider";
+import { normalizePhotoUrl } from "../../helpers/helpers";
 
 type UserSettingProps = {
   userData: {
-    user_name: string | undefined;
+    userName: string | undefined;
     avatar: string | undefined;
     banner: string | undefined;
   };
@@ -32,10 +33,8 @@ function UserSettings({
   const [isEditUsername, setIsEditUsername] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
   const [showEmail, setShowEmail] = useState<boolean>(false);
-  const [username, setUsername] = useState(
-    userData?.user_name || "oguzhan2000",
-  );
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState(userData?.userName || "oguzhan2000");
+  const [_password, setPassword] = useState("");
   const menuItems = [
     { id: "kullanici-ayarlari", label: "Kullanıcı Ayarları", type: "header" },
     { id: "hesabim", label: "Hesabım", icon: <FaUser />, type: "item" },
@@ -49,7 +48,6 @@ function UserSettings({
     return null;
   }
   const { userInfo } = ctx;
-  console.log("user info usersetting :S");
   useEffect(() => {
     if (showSettings) {
       setIsAnimating(true);
@@ -76,6 +74,7 @@ function UserSettings({
   const handleSavePassword = (newPassword: string) => {
     setPassword(newPassword);
   };
+
   return (
     <>
       <div
@@ -99,7 +98,7 @@ function UserSettings({
               className={`flex items-center gap-3 mb-4 px-2  hover:bg-[#2D2D33] ${activeTab === "profileEditor" ? "bg-[#2D2D33] " : ""} cursor-pointer rounded-lg `}
             >
               <img
-                src={userInfo?.profile_photo || defaultfoto}
+                src={normalizePhotoUrl(userInfo?.profilePhoto) || defaultfoto}
                 alt="avatar"
                 className="w-10 h-10 rounded-full"
               />
@@ -192,7 +191,10 @@ function UserSettings({
                     {/* Banner */}
                     <div className="relative h-[100px] bg-linear-to-r from-orange-600 to-red-600">
                       <img
-                        src={userInfo?.profile_photo || defaultfoto}
+                        src={
+                          normalizePhotoUrl(userInfo?.profilePhoto) ||
+                          defaultfoto
+                        }
                         alt="banner"
                         className="w-full h-full object-cover"
                       />
@@ -204,7 +206,10 @@ function UserSettings({
                         {/* Avatar */}
                         <div className="relative">
                           <img
-                            src={userInfo?.profile_photo || defaultfoto}
+                            src={
+                              normalizePhotoUrl(userInfo?.profilePhoto) ||
+                              defaultfoto
+                            }
                             alt="avatar"
                             className="w-24 h-24 rounded-full border-[6px] border-[#232428]"
                           />
@@ -235,7 +240,7 @@ function UserSettings({
                               Görünen Ad
                             </p>
                             <p className="text-white">
-                              {userData?.user_name || "OğuzhanDaud"}
+                              {userData?.userName || "OğuzhanDaud"}
                             </p>
                           </div>
                           <button

@@ -14,6 +14,9 @@ export const SignalRProvider = ({
   const [chatConnection, setChatConnection] = useState<HubConnection | null>(
     null,
   );
+  if (!appCtx) {
+    return null;
+  }
   const [presenceConnection, setPresenceConnection] =
     useState<HubConnection | null>(null);
   const [editConnection, setEditConnection] = useState<HubConnection | null>(
@@ -87,52 +90,71 @@ export const SignalRProvider = ({
     setFriendList,
     setConversationList,
     setOnlineFriends,
+    setDmParticipants,
   } = ctx;
 
   useEffect(() => {
     if (!editConnection) return;
 
-    const handleUpdateSuccess = (userId: string, newUsername: string) => {
+    const handleUserUpdated = (data: {
+      userId: string;
+      userName?: string;
+      profilePhoto?: string;
+    }) => {
       setFriendList((prev) =>
-        prev?.map((friend) =>
-          friend.friendId === userId
-            ? { ...friend, userName: newUsername }
-            : friend,
-        ),
-      );
-      setOnlineFriends((prev) =>
-        prev?.map((friend) =>
-          friend.friendId === userId
-            ? { ...friend, userName: newUsername }
-            : friend,
-        ),
-      );
-      //conversationId: string;
-      // friendId: string;
-      // userName: string;
-      setConversationList((prev) =>
-        prev?.map((friend) =>
-          friend.friendId === userId
-            ? { ...friend, userName: newUsername }
-            : friend,
+        prev?.map((item) =>
+          item.friendId === data.userId
+            ? {
+                ...item,
+                ...(data.userName && { userName: data.userName }),
+                ...(data.profilePhoto && { profilePhoto: data.profilePhoto }),
+              }
+            : item,
         ),
       );
 
-      // setDmFriendName(
-      //   () =>
-      //     friendList?.map((friend) =>
-      //       friend.friendId === userId ? newUsername : friend.userName,
-      //     ) || [],
-      // );
-      // alert("sex");
+      setOnlineFriends((prev) =>
+        prev?.map((item) =>
+          item.friendId === data.userId
+            ? {
+                ...item,
+                ...(data.userName && { userName: data.userName }),
+                ...(data.profilePhoto && { profilePhoto: data.profilePhoto }),
+              }
+            : item,
+        ),
+      );
+      setConversationList((prev) =>
+        prev?.map((item) =>
+          item.friendId === data.userId
+            ? {
+                ...item,
+                ...(data.userName && { userName: data.userName }),
+                ...(data.profilePhoto && { profilePhoto: data.profilePhoto }),
+              }
+            : item,
+        ),
+      );
+
+      setDmParticipants((prev) =>
+        prev?.map((item) =>
+          item.userId === data.userId
+            ? {
+                ...item,
+                ...(data.userName && { userName: data.userName }), // 3 nokta olmadan yazılmıyormuş yav. Analamdım burasını. Öğren gel.
+                ...(data.profilePhoto && { profilePhoto: data.profilePhoto }),
+              }
+            : item,
+        ),
+      );
     };
 
-    editConnection.on("UsernameChanged", handleUpdateSuccess);
+    editConnection.on("UserUpdated", handleUserUpdated);
 
     return () => {
-      editConnection.off("UsernameChanged", handleUpdateSuccess);
+      editConnection.off("UserUpdated", handleUserUpdated);
     };
-  }, [editConnection]); // Sabah bak çalışmıyor adam akıllı
+  }, [editConnection]);
 
   return (
     <SignalRContext.Provider

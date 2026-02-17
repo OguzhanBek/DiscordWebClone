@@ -53,6 +53,7 @@ public class FriendController : ControllerBase
                 friendId = u.UserId,
                 u.UserName,
                 u.Email,
+                u.ProfilePhoto
             })
             .ToListAsync();
 

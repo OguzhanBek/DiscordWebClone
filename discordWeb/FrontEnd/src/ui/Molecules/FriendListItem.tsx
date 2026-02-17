@@ -5,19 +5,18 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { AppContext } from "../../context/userProvider";
+import { normalizePhotoUrl } from "../../helpers/helpers";
 
 type FriendListItemProps = {
-  userPhoto: string;
   userName: string;
-  onlineStatus: string;
   friendId: string;
+  profilePhoto?: string | undefined;
 };
 
 function FriendListItem({
-  userPhoto,
   userName,
-  onlineStatus,
   friendId,
+  profilePhoto,
 }: FriendListItemProps) {
   const context = useContext(AppContext);
   const navigate = useNavigate();
@@ -26,8 +25,8 @@ function FriendListItem({
 
   const [isMoreOpen, setIsMoreOpen] = useState<boolean>(false);
 
-  const { jwtToken, setDmFriendName, setJwtToken, setConversationList } =
-    context;
+  const { jwtToken, setDmParticipants, setJwtToken, setConversationList } = context;
+    
   const createOrOpenDm = async () => {
     if (!jwtToken) {
       navigate("/login");
@@ -41,7 +40,7 @@ function FriendListItem({
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 saniye timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const response = await fetch("http://localhost:5200/api/chat/create", {
         method: "POST",
@@ -87,31 +86,37 @@ function FriendListItem({
       }
       navigate(`/directMessage/${data.conversationId}`);
 
-      const friendNames = Array.isArray(data.friendName)
-        ? data.friendName
-        : [data.friendName];
-      setDmFriendName(friendNames);
+      // Participant bilgilerini kaydet (isim + foto + id)
+      setDmParticipants([
+        {
+          userId: friendId,
+          userName: userName,
+          profilePhoto: profilePhoto,
+        },
+      ]);
 
-      const newConversations = friendNames.map((name: string) => ({
-        conversationId: data.conversationId,
-        friendId: friendId,
-        userName: name,
-      }));
-
+      // Conversation list'i güncelle
       setConversationList((prev) => {
         const current = prev || [];
         const firstOccurrenceIndex = current.findIndex(
           (c) => c.conversationId === data.conversationId,
         );
 
+        const newConversation = {
+          conversationId: data.conversationId,
+          friendId: friendId,
+          userName: userName,
+          profilePhoto: profilePhoto,
+        };
+
         if (firstOccurrenceIndex === -1) {
-          return [...current, ...newConversations];
+          return [...current, newConversation];
         }
 
         const withoutOld = current.filter(
           (c) => c.conversationId !== data.conversationId,
         );
-        withoutOld.splice(firstOccurrenceIndex, 0, ...newConversations);
+        withoutOld.splice(firstOccurrenceIndex, 0, newConversation);
         return withoutOld;
       });
     } catch (error: any) {
@@ -128,6 +133,8 @@ function FriendListItem({
     }
   };
 
+
+
   return (
     <div
       onClick={() => createOrOpenDm()}
@@ -138,11 +145,14 @@ function FriendListItem({
     >
       {/* LEFT SIDE */}
       <div className="flex items-center gap-3">
-        <img className="h-10 w-10 rounded-2xl" src={userPhoto} alt="" />
+        <img
+          className="h-10 w-10 rounded-2xl"
+          src={normalizePhotoUrl(profilePhoto)}
+          alt=""
+        />
 
         <div className="flex flex-col items-start">
           <p className="text-md font-semibold text-white">{userName}</p>
-          <span className="text-xs text-gray-400">{onlineStatus}</span>
         </div>
       </div>
 
@@ -167,7 +177,6 @@ function FriendListItem({
         </div>
 
         <div className="relative">
-          {/* Burada yeni bir div içerisinde group özelliği verdim . Eğer en büüyk parent'a group veseydim overlay tüm ekranı kapsayacağı için ve bir child olacağı için parent'ın bir elemanı olduğu için group özelliği devam ediyordu. O yüzden div açıp ayıtdım. Bunu overlay kullanırken asla unutma. Hep ayırma işlemi yapmam lazım. */}
           <div className="relative group/icon">
             <BsThreeDotsVertical
               onClick={(e) => {

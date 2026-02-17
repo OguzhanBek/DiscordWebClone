@@ -30,7 +30,7 @@ function EditUsername({
     return null;
   }
   const { editConnection } = signalctx;
-  const { setUserInfo } = ctx;
+  const {  setUserInfo } = ctx;
 
   useEffect(() => {
     if (isOpen) {
@@ -43,9 +43,7 @@ function EditUsername({
 
     const handleUpdateSuccess = (newUsername: string) => {
       setCurrentUsername(newUsername);
-      setUserInfo((prev) =>
-        prev ? { ...prev, user_name: newUsername } : prev,
-      );
+      setUserInfo((prev) => (prev ? { ...prev, userName: newUsername } : prev));
       handleClose();
     };
 

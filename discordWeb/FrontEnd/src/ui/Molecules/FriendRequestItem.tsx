@@ -8,14 +8,14 @@ import { getFriendList, UnauthorizedError } from "../../helpers/helpers";
 import { AppContext } from "../../context/userProvider";
 
 type FriendRequestItemProps = {
-  userPhoto: string;
+  profilePhoto: string;
   otherPersonName: string;
   isSentByMe: boolean;
   requestId: number;
 };
 
 function FriendRequestItem({
-  userPhoto,
+  profilePhoto,
   otherPersonName,
   isSentByMe,
   requestId,
@@ -34,7 +34,6 @@ function FriendRequestItem({
 
   const acceptFriendRequest = async () => {
     try {
-
       const response = await fetch(
         "http://localhost:5200/api/friendrequest/accept",
         {
@@ -68,8 +67,6 @@ function FriendRequestItem({
         }
         return;
       }
-
-      const result = await response.text();
 
       toast.success("Arkadaşlık isteği kabul edildi.");
 
@@ -141,7 +138,7 @@ function FriendRequestItem({
     >
       {/* LEFT SIDE */}
       <div className="flex items-center gap-3">
-        <img className="h-10 w-10 rounded-2xl" src={userPhoto} alt="" />
+        <img className="h-10 w-10 rounded-2xl" src={profilePhoto} alt="" />
 
         <div className="flex flex-col items-start">
           <p className="text-md font-semibold text-white">{otherPersonName}</p>

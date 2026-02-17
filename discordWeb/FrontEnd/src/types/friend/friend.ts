@@ -1,6 +1,7 @@
 export type onlinefriend = {
   friendId: string;
   userName: string;
+  profilePhoto?: string;
 };
 
 export type FriendType = {
@@ -8,4 +9,5 @@ export type FriendType = {
   email: string;
   userId: string;
   friendId: string;
+  profilePhoto?: string;
 };
