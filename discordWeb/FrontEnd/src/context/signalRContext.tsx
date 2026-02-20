@@ -156,6 +156,44 @@ export const SignalRProvider = ({
     };
   }, [editConnection]);
 
+
+  useEffect(() => {
+    if (!presenceConnection) return;
+
+    const handleInitialOnlineUsers = (users: any[]) => {
+      setOnlineFriends(users);
+    };
+    const handleUserOnline = (user: any) => {
+      console.log("Yeni online user:", user);
+      setOnlineFriends((prev) => {
+        if (prev.some((u) => u.friendId === user.friendId)) {
+          return prev;
+        }
+        return [...prev, user];
+      });
+    };
+
+    const handleUserOffline = (userId: string) => {
+      console.log("👋 User offline:", userId);
+      setOnlineFriends((prev) => prev.filter((u) => u.friendId !== userId));
+    };
+
+    presenceConnection?.on("initialOnlineUsers", handleInitialOnlineUsers);
+    presenceConnection?.on("useronline", handleUserOnline);
+    presenceConnection?.on("useroffline", handleUserOffline);
+
+    presenceConnection
+      ?.invoke("GetOnlineUsers")
+      .then(() => console.log("GetOnlineUsers başarıyla çağrıldı"))
+      .catch((err: any) => console.error("GetOnlineUsers hatası:", err));
+
+    return () => {
+      presenceConnection?.off("initialOnlineUsers", handleInitialOnlineUsers);
+      presenceConnection?.off("useronline", handleUserOnline);
+      presenceConnection?.off("useroffline", handleUserOffline);
+    };
+  }, [presenceConnection]);
+
   return (
     <SignalRContext.Provider
       value={{ presenceConnection, chatConnection, editConnection }}

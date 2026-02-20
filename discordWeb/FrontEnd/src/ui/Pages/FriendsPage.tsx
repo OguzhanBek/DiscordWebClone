@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 
 import tuta from "../../assets/Tuta.png";
 import FriendListItem from "../Molecules/FriendListItem";
@@ -7,66 +7,17 @@ import { AppContext } from "../../context/userProvider";
 import AddFriendPage from "./AddFriendPage";
 import FriendRequestItem from "../Molecules/FriendRequestItem";
 import FriendsNavbar from "../Molecules/FriendsNavbar";
-import { SignalRContext } from "../../context/signalRContext";
 
 function FriendsPage() {
   const ctx = useContext(AppContext);
-  const signalContext = useContext(SignalRContext);
   const location = useLocation();
 
   const [input, setInput] = useState("");
 
   if (!ctx) return null;
 
-  const {
-    selectedNavbarButton,
-    friendRequests,
-    friendList,
-    onlineFriends,
-    setOnlineFriends,
-  } = ctx;
-  useEffect(() => {
-    if (!signalContext?.presenceConnection) return;
-
-    const handleInitialOnlineUsers = (users: any[]) => {
-      setOnlineFriends(users);
-    };
-    const handleUserOnline = (user: any) => {
-      console.log("Yeni online user:", user);
-      setOnlineFriends((prev) => {
-        if (prev.some((u) => u.friendId === user.friendId)) {
-          return prev;
-        }
-        return [...prev, user];
-      });
-    };
-
-    const handleUserOffline = (userId: string) => {
-      console.log("👋 User offline:", userId);
-      setOnlineFriends((prev) => prev.filter((u) => u.friendId !== userId));
-    };
-
-    signalContext.presenceConnection.on(
-      "initialOnlineUsers",
-      handleInitialOnlineUsers,
-    );
-    signalContext.presenceConnection.on("useronline", handleUserOnline);
-    signalContext.presenceConnection.on("useroffline", handleUserOffline);
-
-    signalContext.presenceConnection
-      .invoke("GetOnlineUsers")
-      .then(() => console.log("GetOnlineUsers başarıyla çağrıldı"))
-      .catch((err: any) => console.error("GetOnlineUsers hatası:", err));
-
-    return () => {
-      signalContext.presenceConnection?.off(
-        "initialOnlineUsers",
-        handleInitialOnlineUsers,
-      );
-      signalContext.presenceConnection?.off("useronline", handleUserOnline);
-      signalContext.presenceConnection?.off("useroffline", handleUserOffline);
-    };
-  }, [signalContext?.presenceConnection]);
+  const { selectedNavbarButton, friendRequests, friendList, onlineFriends } =
+    ctx;
 
   return (
     <>
