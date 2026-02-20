@@ -48,6 +48,7 @@ function UserSettings({
     return null;
   }
   const { userInfo } = ctx;
+  
   useEffect(() => {
     if (showSettings) {
       setIsAnimating(true);
@@ -84,13 +85,13 @@ function UserSettings({
         onClick={handleClose}
       />
       <div
-        className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex bg-[#202024] w-[75vw] h-[85vh] rounded-lg overflow-hidden transition-all duration-200 select-none border-2 border-[#313131] ${
-          isAnimating ? "opacity-100 " : "opacity-0 scale-90"
+        className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex bg-[#202024] w-[95vw] max-w-[1400px] xl:max-w-[1400px] lg:max-w-[1200px] h-[750px] rounded-lg overflow-hidden select-none border border-[#313131] ${
+          isAnimating ? "opacity-100" : "opacity-0 scale-90"
         }`}
       >
         <div
           onClick={(e) => e.stopPropagation()}
-          className="w-[260px] bg-[#1A1A1E] p-4 overflow-y-auto discord-scrollbar shrink-0 relative"
+          className="lg:w-[260px] w-[200px] bg-[#1A1A1E] p-4 overflow-y-auto discord-scrollbar shrink-0 relative"
         >
           <div className="flex flex-col gap-1">
             <div
@@ -183,7 +184,7 @@ function UserSettings({
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto discord-scrollbar">
-            <div className="max-w-4xl w-200 mx-auto p-10">
+            <div className=" max-w-4xl whitespace-nowrap mx-auto p-10">
               {activeTab === "hesabim" ? (
                 <>
                   {/* Profil Banner ve Avatar */}
@@ -204,7 +205,7 @@ function UserSettings({
                     <div className="px-6 -mt-6 mb-8 flex items-end justify-between bg-[#121214]">
                       <div className="flex items-end gap-4">
                         {/* Avatar */}
-                        <div className="relative">
+                        <div className="relative w-24">
                           <img
                             src={
                               normalizePhotoUrl(userInfo?.profilePhoto) ||
@@ -335,7 +336,7 @@ function UserSettings({
                     <h3 className="text-white font-semibold text-base mb-2">
                       Hesap kaldırma{" "}
                     </h3>
-                    <p className="text-gray-400 text-sm mb-4">
+                    <p className="text-gray-400  text-sm mb-4">
                       Hesabı devre dışı bıraktıktan sonra istediğin zaman geri
                       açabilirsin
                     </p>

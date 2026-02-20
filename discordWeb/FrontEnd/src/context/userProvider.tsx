@@ -35,8 +35,11 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const [selectedNavbarElement, setSelectedNavbarElement] =
     useState("Öne Çıkanlar");
+  const sidebarWith = localStorage.getItem("sidebarWith");
 
-  const [sidebarWidth, setSidebarWidth] = useState(240);
+  const [sidebarWidth, setSidebarWidth] = useState(
+    sidebarWith ? parseInt(sidebarWith) : 240,
+  );
 
   const [onlineFriends, setOnlineFriends] = useState<onlinefriend[]>([]);
 

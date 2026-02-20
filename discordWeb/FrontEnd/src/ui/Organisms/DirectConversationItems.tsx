@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { AppContext } from "../../context/userProvider";
 import DirectConversationItem from "../Molecules/DirectConversationItem";
@@ -12,6 +12,9 @@ import {
 function DirectConversationItems() {
   const ctx = useContext(AppContext);
   if (!ctx) return null;
+  const location = useLocation();
+  const id = location.pathname.split("/").pop();
+  console.log("aaa", id);
   const navigate = useNavigate();
   const {
     jwtToken,
@@ -52,7 +55,7 @@ function DirectConversationItems() {
 
         if (existing) {
           existing.participants.push({
-            userId: item.friendId, // userId olarak kaydet
+            userId: item.friendId,
             userName: item.userName,
             profilePhoto: item.profilePhoto,
           });
@@ -61,7 +64,7 @@ function DirectConversationItems() {
             conversationId: item.conversationId,
             participants: [
               {
-                userId: item.friendId, // userId olarak kaydet
+                userId: item.friendId,
                 userName: item.userName,
                 profilePhoto: item.profilePhoto,
               },
@@ -74,7 +77,7 @@ function DirectConversationItems() {
       [] as Array<{
         conversationId: string;
         participants: Array<{
-          userId: string; 
+          userId: string;
           userName: string;
           profilePhoto?: string;
         }>;
@@ -92,6 +95,8 @@ function DirectConversationItems() {
           conversationId={conversationId}
           participants={participants}
           profilePhoto={participants.map((tuta) => tuta.profilePhoto)}
+          selectedDm={id}
+
         />
       ))}
     </div>

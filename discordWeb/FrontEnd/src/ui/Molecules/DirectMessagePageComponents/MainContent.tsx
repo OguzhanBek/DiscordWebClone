@@ -144,7 +144,6 @@ function MainContent() {
     signalContext.chatConnection.on("ReceiveMessage", handleReceiveMessage);
     signalContext.chatConnection.on("UserTyping", handleUserTyping);
 
-    // Bu artık gerçekten çalışıyor - async fonksiyon içinde değil
     return () => {
       signalContext.chatConnection?.off("ReceiveMessage", handleReceiveMessage);
       signalContext.chatConnection?.off("UserTyping", handleUserTyping);

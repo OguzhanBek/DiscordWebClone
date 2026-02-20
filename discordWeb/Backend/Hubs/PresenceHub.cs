@@ -96,6 +96,7 @@ public class PresenceHub : Hub
 
         foreach (var friendId in friendsToNotify)
         {
+
             await Clients.User(friendId).SendAsync(
                 "useronline",
                 new OnlineUserDto

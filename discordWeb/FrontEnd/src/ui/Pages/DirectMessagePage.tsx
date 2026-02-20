@@ -4,8 +4,8 @@ import MainContent from "../Molecules/DirectMessagePageComponents/MainContent";
 import FriendInfo from "../Organisms/FriendInfo";
 
 function DirectMessagePage() {
-  const [isRightBarOpen, setIsRightBarOpen] = useState(false);
-
+  const [isRightBarOpen, setIsRightBarOpen] = useState(()=> localStorage.getItem("rightbarOpen"));
+ 
   return (
     <div className="flex flex-col h-screen">
       <Navbar
@@ -17,8 +17,8 @@ function DirectMessagePage() {
           <MainContent />
         </div>
 
-        {isRightBarOpen && (
-          <div className="w-86 border-l border-[#1C1C1E] overflow-y-auto discord-scrollbar">
+        {isRightBarOpen === "true" && (
+          <div className="w-86 border-l border-[#1C1C1E]  discord-scrollbar">
             <FriendInfo />
           </div>
         )}

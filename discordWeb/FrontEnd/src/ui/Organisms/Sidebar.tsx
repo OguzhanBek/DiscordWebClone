@@ -40,7 +40,6 @@ function SideBar() {
   } = ctx;
 
   const { pathname } = useLocation();
-
   const startX = useRef(0);
   const startWidth = useRef(sidebarWidth);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -69,6 +68,9 @@ function SideBar() {
     if (clampedWidth == 400 || clampedWidth == 182) {
       return;
     }
+
+    localStorage.setItem("sidebarWith", clampedWidth.toString());
+
     setSidebarWidth(clampedWidth);
   };
 
@@ -236,12 +238,12 @@ function SideBar() {
             </div>
             {/* Direkt mesaj açmak için kişi listesi */}
             <div className="mb-4 w-full  " onClick={() => setIsOpen(false)}>
-              <div className=" Dm-Olustur-Yazısı  flex items-center  w-[85%] m-auto justify-between mt-2  hover:text-white group">
+              <div className=" Dm-Olustur-Yazısı  flex items-center  m-auto justify-between mt-2 px-4 hover:text-white group">
                 <p className="text-sm text-gray-400 hover:cursor-default select-none group-hover:text-white">
                   Direkt Mesaj
                 </p>
 
-                <span className="DM-Olustur-Before-Context  gap-1  ">
+                <span className="DM-Olustur-Before-Context    ">
                   <span className="relative group/item  ">
                     <span
                       onClick={() => {

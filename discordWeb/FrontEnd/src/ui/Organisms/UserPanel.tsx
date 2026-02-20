@@ -14,7 +14,11 @@ import { useContext, useEffect, useState } from "react";
 
 import defaultfoto from "../../../public/discord kullanıcı default foto.jpeg";
 import { AppContext } from "../../context/userProvider";
-import { fetchUser, normalizePhotoUrl, UnauthorizedError } from "../../helpers/helpers";
+import {
+  fetchUser,
+  normalizePhotoUrl,
+  UnauthorizedError,
+} from "../../helpers/helpers";
 import { LuHeadphoneOff } from "react-icons/lu";
 import UserSettings from "../Pages/UserSettings";
 
@@ -53,9 +57,6 @@ function UserPanel() {
   }, []);
   if (!root) return null;
 
-
-
-
   return createPortal(
     <>
       <div
@@ -70,7 +71,7 @@ function UserPanel() {
           <img
             src={normalizePhotoUrl(userInfo?.profilePhoto) || defaultfoto}
             alt="tuta"
-            className="w-8 rounded-full mx-2"
+            className="w-8 h-8 rounded-full mx-2"
           />
           <div className="flex flex-col justify-center leading-tight text-left min-w-0 h-8">
             <h3 className="text-sm truncate">{userInfo?.userName}</h3>

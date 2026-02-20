@@ -10,8 +10,8 @@ import IconWithDownSideHoverText from "../NavbarActionIcon";
 import { normalizePhotoUrl } from "../../../helpers/helpers";
 
 type NavbarProps = {
-  isRightBarOpen: boolean;
-  setIsRightBarOpen: (value: boolean) => void;
+  isRightBarOpen: string | null;
+  setIsRightBarOpen: (value: string) => void;
 };
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -20,23 +20,35 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const ctx = useContext(AppContext);
   if (!ctx) return null;
-  const { dmParticipants } = ctx;
+  const { dmParticipants, onlineFriends } = ctx;
 
-
+  const isOnline =
+    dmParticipants.length === 1
+      ? onlineFriends.some((f) => f.friendId === dmParticipants[0].userId)
+      : false;
 
   return (
-    <nav className="Discord-Store-Navbar fixed w-[-webkit-fill-available] h-12 z-100 bg-[#1A1A1E] border-b border-[#303035] text-white px-4 flex items-center justify-between">
+    <nav className="Discord-Store-Navbar fixed w-[-webkit-fill-available] h-12  bg-[#1A1A1E] border-b border-[#303035] text-white px-4 flex items-center justify-between">
       <div className="flex items-center space-x-6 h-12">
         <section className="flex items-center space-x-2 h-full">
-
           <div className="flex -space-x-2">
             {dmParticipants.slice(0, 2).map((participant, index) => (
-              <img
-                key={index}
-                className="rounded-full w-8 h-8 border-2 border-[#1A1A1E]"
-                src={normalizePhotoUrl(participant.profilePhoto)}
-                alt={participant.userName}
-              />
+              <div key={index} className="relative">
+                <img
+                  className="rounded-full w-8 h-8 border-2 border-[#1A1A1E]"
+                  src={normalizePhotoUrl(participant.profilePhoto)}
+                  alt={participant.userName}
+                />
+                {dmParticipants.length === 1 && (
+                  <div
+                    className={`absolute flex items-center justify-center -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#1A1A1E] ${isOnline ? "bg-[#45A366]" : "bg-[#77787F]"}`}
+                  >
+                    <div
+                      className={`w-1 h-1 rounded-full ${isOnline ? "bg-[#45A366]" : "bg-[#121214]"}`}
+                    />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
 
@@ -72,7 +84,10 @@ const Navbar: React.FC<NavbarProps> = ({
             tooltipText="DM'ye arkadaş ekle"
           />
           <button
-            onClick={() => setIsRightBarOpen(!isRightBarOpen)}
+            onClick={() => {
+              setIsRightBarOpen(isRightBarOpen === "true" ? "false" : "true");
+              localStorage.setItem("rightbarOpen", isRightBarOpen === "true" ? "false" : "true");
+            }}
             className={`text-xl p-2 rounded transition ${
               isRightBarOpen
                 ? "bg-[#232428] text-white"

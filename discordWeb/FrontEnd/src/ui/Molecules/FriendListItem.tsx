@@ -25,8 +25,16 @@ function FriendListItem({
 
   const [isMoreOpen, setIsMoreOpen] = useState<boolean>(false);
 
-  const { jwtToken, setDmParticipants, setJwtToken, setConversationList } = context;
-    
+  const {
+    jwtToken,
+    setDmParticipants,
+    setJwtToken,
+    setConversationList,
+    onlineFriends,
+  } = context;
+
+  const isOnline = onlineFriends.some((f) => f.friendId === friendId);
+
   const createOrOpenDm = async () => {
     if (!jwtToken) {
       navigate("/login");
@@ -86,7 +94,6 @@ function FriendListItem({
       }
       navigate(`/directMessage/${data.conversationId}`);
 
-      // Participant bilgilerini kaydet (isim + foto + id)
       setDmParticipants([
         {
           userId: friendId,
@@ -95,7 +102,6 @@ function FriendListItem({
         },
       ]);
 
-      // Conversation list'i güncelle
       setConversationList((prev) => {
         const current = prev || [];
         const firstOccurrenceIndex = current.findIndex(
@@ -133,8 +139,6 @@ function FriendListItem({
     }
   };
 
-
-
   return (
     <div
       onClick={() => createOrOpenDm()}
@@ -144,12 +148,23 @@ function FriendListItem({
                  hover:bg-[#232327] active:bg-[#2C2C30] cursor-pointer"
     >
       {/* LEFT SIDE */}
-      <div className="flex items-center gap-3">
-        <img
-          className="h-10 w-10 rounded-2xl"
-          src={normalizePhotoUrl(profilePhoto)}
-          alt=""
-        />
+      <div className=" flex items-center gap-3">
+        <div className="relative h-10 w-10 rounded-2xl">
+          <div
+            className={`absolute flex items-center justify-center -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#121214] ${
+              isOnline ? "bg-[#45A366]" : "bg-[#77787F]"
+            }`}
+          >
+            <div
+              className={`w-1 h-1 rounded-full ${isOnline ? "bg-[#45A366]" : "bg-[#121214]"}`}
+            />
+          </div>
+          <img
+            className="h-10 w-10 rounded-2xl"
+            src={normalizePhotoUrl(profilePhoto)}
+            alt=""
+          />
+        </div>
 
         <div className="flex flex-col items-start">
           <p className="text-md font-semibold text-white">{userName}</p>
