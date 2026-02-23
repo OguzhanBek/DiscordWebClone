@@ -138,6 +138,7 @@ namespace ChatController.Controllers
                         msg.AuthorUserId,
                         AuthorUsername = user.UserName,
                         msg.Content,
+                        msg.MessageType,
                         msg.CreatedAt,
                         msg.EditedAt
                     })
@@ -146,7 +147,7 @@ namespace ChatController.Controllers
 
             return Ok(new
             {
-                Participants = otherUsers,  
+                Participants = otherUsers,
                 Messages = messages
             });
         }
@@ -188,26 +189,49 @@ namespace ChatController.Controllers
         }
 
         [Authorize]
-        [HttpPost("{conversationId}/message")]
-        public async Task<IActionResult> SendMessage(string conversationId, [FromBody] SendMessageDto dto)
+        [HttpPost("{conversationId}/send")]
+        public async Task<IActionResult> SendMessage([FromForm] IFormFile? file, string conversationId, [FromForm] string? content, [FromForm] string messageType = "text")
         {
+            Console.WriteLine($"file: {file?.FileName}, length: {file?.Length}, content: {content}, messageType: {messageType}");
+
             var myUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (myUserId == null) return Unauthorized();
 
             var isParticipant = await _context.DirectParticipants
-                .AnyAsync(p =>
-                    p.ConversationId == conversationId &&
-                    p.UserId == myUserId);
+                .AnyAsync(p => p.ConversationId == conversationId && p.UserId == myUserId);
 
-            if (!isParticipant)
-                return Forbid();
+            if (!isParticipant) return Forbid();
+
+            string? finalContent = content;
+
+            // Dosya varsa wwwroot/uploads'a kaydet
+            if (file != null && file.Length > 0)
+            {
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+                // Klasör yoksa oluştur
+                if (!Directory.Exists(uploadsPath))
+                    Directory.CreateDirectory(uploadsPath);
+
+                var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+                var filePath = Path.Combine(uploadsPath, fileName);
+
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await file.CopyToAsync(stream);
+
+                finalContent = $"/uploads/{fileName}";
+                messageType = "file";
+            }
+
+            if (string.IsNullOrEmpty(finalContent)) return BadRequest("İçerik boş");
 
             var message = new DirectMessage
             {
                 Id = Guid.NewGuid().ToString(),
                 ConversationId = conversationId,
                 AuthorUserId = myUserId,
-                Content = dto.Content,
+                Content = finalContent,
+                MessageType = messageType,
                 CreatedAt = DateTime.UtcNow,
             };
 
@@ -224,7 +248,8 @@ namespace ChatController.Controllers
                 AuthorUsername = user?.UserName,
                 message.Content,
                 message.CreatedAt,
-                message.EditedAt
+                message.EditedAt,
+                message.MessageType
             });
         }
     }

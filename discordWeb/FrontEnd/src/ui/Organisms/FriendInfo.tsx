@@ -6,6 +6,8 @@ import { SignalRContext } from "../../context/signalRContext";
 import defaultPhoto from "../../../public/discord kullanıcı default foto.jpeg";
 import { normalizePhotoUrl } from "../../helpers/helpers";
 import MiniProfileCard from "./MiniProfileCard";
+import { createPortal } from "react-dom";
+import UserProfileModal from "./UserProfileModal";
 
 function FriendInfo() {
   const ctx = useContext(AppContext);
@@ -18,7 +20,9 @@ function FriendInfo() {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [activeUserId, setActiveUserId] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
-  const [_showUserDetails, setShowUserDetails] = useState<boolean>(false);
+  const [openUserProfile, setopenUserProfile] = useState(false);
+  const [selectedParticipant, setSelectedParticipant] = useState<any>(null);
+
   const isGroup = dmParticipants && dmParticipants.length > 1;
   const displayName =
     dmParticipants?.map((p) => p.userName).join(", ") || "Kullanıcı";
@@ -78,7 +82,10 @@ function FriendInfo() {
                 index={index}
                 cardRef={cardRef}
                 isAnimating={isAnimating}
-                setShowUserDetails={setShowUserDetails}
+                setShowUserDetails={() => {
+                  setSelectedParticipant(participant);
+                  setopenUserProfile(true);
+                }}
                 isParticipantOnline={isParticipantOnline}
               />
             );
@@ -94,7 +101,7 @@ function FriendInfo() {
         <img
           src={profilePhoto}
           alt="banner"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0  w-full h-full object-cover"
         />
         <div className="absolute top-3 right-3 flex gap-2">
           <button className="w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 flex items-center justify-center">
@@ -107,11 +114,22 @@ function FriendInfo() {
       </div>
 
       <div className="px-4 -mt-14">
-        <div className="relative inline-block">
+        <div className="relative inline-block group">
           <img
             src={profilePhoto}
             alt="avatar"
-            className="w-24 h-24 rounded-full border-4 border-[#1e1f22]"
+            className="w-24 h-24 rounded-full border-4 border-[#1e1f22] cursor-pointer"
+            onClick={() => {
+              setSelectedParticipant(firstParticipant);
+              setopenUserProfile(true);
+            }}
+          />
+          <div
+            className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/40 transition-colors duration-200 cursor-pointer"
+            onClick={() => {
+              setSelectedParticipant(firstParticipant);
+              setopenUserProfile(true);
+            }}
           />
           <div
             className={`absolute flex items-center justify-center bottom-2 right-2 w-4 h-4 rounded-full ${isOnline ? "bg-[#45A366] border-2 border-[#121214]" : "bg-[#77787F] border-2 border-[#121214]"}`}
@@ -158,6 +176,19 @@ function FriendInfo() {
       <div className="border-t border-[#2a2b30] px-4 py-3 text-center text-sm text-gray-400 hover:text-white cursor-pointer">
         Profilin Tamamını Görüntüle
       </div>
+
+      {openUserProfile &&
+        selectedParticipant &&
+        createPortal(
+          <UserProfileModal
+            participant={selectedParticipant}
+            onClose={() => {
+              setopenUserProfile(false);
+              setSelectedParticipant(null);
+            }}
+          />,
+          document.body,
+        )}
     </div>
   );
 }

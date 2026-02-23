@@ -215,7 +215,7 @@ function UserSettings({
                             className="w-24 h-24 rounded-full border-[6px] border-[#232428]"
                           />
                           {/* Status Badge */}
-                          <div className="absolute bottom-1 right-1 w-6 h-6 bg-red-500 rounded-full border-4 border-[#232428]" />
+                          <div className="absolute bottom-1 right-1 w-6 h-6 bg-[#45A366] rounded-full border-4 border-[#232428]" />
                         </div>
 
                         {/* Username */}

@@ -41,7 +41,7 @@ public class ChatHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task SendMessage(string conversationId, string content)
+    public async Task SendMessage(string conversationId, string content, string contentType)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId)) throw new HubException("Unauthorized");
@@ -57,6 +57,7 @@ public class ChatHub : Hub
             ConversationId = conversationId,
             AuthorUserId = userId,
             Content = content,
+            MessageType = contentType,
             CreatedAt = DateTime.UtcNow,
         };
 
@@ -71,7 +72,8 @@ public class ChatHub : Hub
             authorUserId = message.AuthorUserId,
             authorUsername = user?.UserName ?? "adım yok",
             content = message.Content,
-            createdAt = message.CreatedAt
+            messageType = message.MessageType,
+            createdAt = message.CreatedAt,
         });
     }
 
@@ -94,7 +96,7 @@ public class ChatHub : Hub
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, conversationId);
     }
-    
+
     public async Task UserTyping(string conversationId, bool isTyping)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -114,6 +116,21 @@ public class ChatHub : Hub
             userId = userId,
             username = user?.UserName ?? "Bilinmeyen",
             isTyping = isTyping
+        });
+    }
+    public async Task BroadcastMessage(string conversationId, string content, string contentType)
+    {
+        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var user = await _context.Users.FindAsync(userId);
+
+        await Clients.Group(conversationId).SendAsync("ReceiveMessage", new
+        {
+            conversationId,
+            authorUserId = userId,
+            authorUsername = user?.UserName ?? "adım yok",
+            content,
+            messageType = contentType,
+            createdAt = DateTime.UtcNow,
         });
     }
 }

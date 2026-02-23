@@ -13,13 +13,18 @@ function SidebarNavItem({ icon, title, route }: SidebarNavItemProps) {
 
   const url: boolean = location.pathname.includes(route);
 
+  const IconComponent = () => {
+    const IconComponent = icon;
+    return <IconComponent className=" text-gray-400 " />;
+  };
+
   return (
     <div
       onClick={() => {
         navigate(route);
         setTopSideTitle({ Icon: icon, title });
       }}
-      className="flex flex-col items-left m-auto justify-center mt-2"
+      className="flex flex-col items-left m-auto  mt-2"
     >
       <button
         style={{
@@ -33,15 +38,12 @@ function SidebarNavItem({ icon, title, route }: SidebarNavItemProps) {
                   : ""
             : "",
         }}
-        className={`flex gap-2 h-8 items-center bg-[#121214] rounded-xl ml-2 w-[97%] pt-2 pb-2 hover:bg-[#1C1C1E] hover:cursor-pointer active:bg-[#2C2C30]`}
+        className={`flex gap-2 h-8 items-center bg-[#121214] rounded-xl ml-2  w-[calc(100%-12px)] pt-2 pb-2 hover:bg-[#1C1C1E] hover:cursor-pointer active:bg-[#2C2C30]`}
       >
         {typeof icon === "string" ? (
           <img className="ml-4 w-5 h-5 " src={icon} alt={title} />
         ) : (
-          (() => {
-            const IconComponent = icon;
-            return <IconComponent className="ml-4 text-gray-400 " />;
-          })()
+          <IconComponent />
         )}
 
         <p className="text-md font-semibold text-gray-400">{title}</p>
