@@ -32,7 +32,7 @@ export const router = createBrowserRouter([
       { path: "store", element: <DiscordNitroPage /> },
       { path: "shop", element: <DiscordStorePage /> },
       { path: "channels/:id", element: <ServerPage /> },
-      { path: "directMessage/:chatId", element: <DirectMessagePage /> },
+      { path: "directMessage/:conversationId", element: <DirectMessagePage /> },
     ],
   },
   {

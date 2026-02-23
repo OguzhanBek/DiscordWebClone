@@ -32,7 +32,6 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
     Icon: FaDiscord,
     title: "Direkt Mesajlar",
   });
-
   const [selectedNavbarElement, setSelectedNavbarElement] =
     useState("Öne Çıkanlar");
   const sidebarWith = localStorage.getItem("sidebarWith");
@@ -69,6 +68,7 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
         setConversationList,
         openCreateDmModal,
         setOpenCreateDmModal,
+
         friendRequests,
         setFriendRequests,
         jwtToken,

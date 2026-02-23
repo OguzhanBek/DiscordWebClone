@@ -216,10 +216,10 @@ function SideBar() {
           </div>
         ) : (
           /* Sohbet bul butonu*/
-          <div className="SOHBET-BUTONU flex flex-col  h-12   items-center w-full pb-1 pt-1 mx-auto border-b border-[#1C1C1E] ">
+          <div className="SOHBET-BUTONU flex flex-col  h-12 shrink-0  w-full pb-1 pt-1 mx-auto border-b border-[#1C1C1E] ">
             <button
               onClick={() => setOpenFindFriends(true)}
-              className="bg-[#1C1C1E] h-full rounded-xl w-[95%]  pt-2 pb-2 hover:bg-[#27272A] hover:cursor-pointer transition-all "
+              className="bg-[#1c1c1e] h-full  w-[calc(100%-12px)] ml-2 mr-2 rounded-lg pt-2 pb-2 hover:bg-[#27272A] hover:cursor-pointer transition-all "
             >
               <span className="text-sm font-semibold">
                 Sohbet bul ya da başlat

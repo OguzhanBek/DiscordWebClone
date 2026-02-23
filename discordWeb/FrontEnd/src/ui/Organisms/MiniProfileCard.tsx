@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { normalizePhotoUrl } from "../../helpers/helpers";
 import type { DmParticipant } from "../../types/chat/conversation";
+import UserProfileModal from "./UserProfileModal";
+import { createPortal } from "react-dom";
 
 type MiniProfileCardProps = {
   handleOpen: (userId: string) => void;
@@ -19,9 +22,9 @@ export default function MiniProfileCard({
   index,
   cardRef,
   isAnimating,
-  setShowUserDetails,
   isParticipantOnline,
 }: MiniProfileCardProps) {
+  const [openUserProfile, setopenUserProfile] = useState(false);
   return (
     <div
       onClick={() => handleOpen(participant.userId)}
@@ -41,12 +44,12 @@ export default function MiniProfileCard({
             <div className="absolute left-4 -bottom-8">
               <div className="relative w-16 h-16">
                 {/* Avatar */}
-                <div className="relative group/avatar  rounded-full ">
+                <div
+                  onClick={() => setopenUserProfile(true)}
+                  className="relative group/avatar  rounded-full "
+                >
                   {" "}
                   <img
-                    onClick={() =>
-                      setShowUserDetails && setShowUserDetails(true)
-                    }
                     src={normalizePhotoUrl(participant.profilePhoto)}
                     alt="avatar"
                     className="w-16 h-16 rounded-full object-cover border-4 border-[#1e1f22] cursor-pointer  transition-all"
@@ -137,6 +140,14 @@ export default function MiniProfileCard({
       >
         {participant.userName}
       </span>
+      {openUserProfile &&
+        createPortal(
+          <UserProfileModal
+            participant={participant}
+            onClose={() => setopenUserProfile(false)}
+          />,
+          document.body,
+        )}
     </div>
   );
 }

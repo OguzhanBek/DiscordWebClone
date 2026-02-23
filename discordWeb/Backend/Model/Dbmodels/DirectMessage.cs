@@ -8,7 +8,7 @@ namespace LoginAPI.Models
     {
         [Key]
         [Column("id")]
-        public string Id { get; set; } = Guid.NewGuid().ToString(); // ✅ Default değer
+        public string Id { get; set; } = Guid.NewGuid().ToString(); 
 
         [Required]
         [Column("conversation_id")]
@@ -22,9 +22,12 @@ namespace LoginAPI.Models
         [Column("content")]
         public string Content { get; set; } = null!;
 
+        [Column("message_type")]
+        public string MessageType { get; set; } = string.Empty;
+
         [Required]
         [Column("created_at")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // ✅ Default değer
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Column("edited_at")]
         public DateTime? EditedAt { get; set; }
